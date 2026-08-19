@@ -10,7 +10,8 @@ import com.tvd12.ezyhttp.server.core.annotation.PropertiesSources;
 })
 @ComponentsScan({
     "org.youngmonkeys.ezyplatform",
-    "org.youngmonkeys.ezyrag"
+    "org.youngmonkeys.ezyrag",
+    "org.youngmonkeys.ezyai"
 })
 public class EzyRagWebPluginStartupTest {
 

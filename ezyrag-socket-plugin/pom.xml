@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -45,6 +45,81 @@
             <version>${ezy.version}</version>
             <scope>test</scope>
         </dependency>
+    <dependency>
+			<groupId>com.tvd12</groupId>
+			<artifactId>ezyfox-monitor</artifactId>
+			<version>${ezy.version}</version>
+		<scope>provided</scope>
+        </dependency>
+        <dependency>
+			<groupId>com.tvd12</groupId>
+			<artifactId>ezyfox-server-support</artifactId>
+			<version>${ezy.version}</version>
+		<scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>ezyai-sdk</artifactId>
+            <version>${ezyai.version}</version>
+        <scope>system</scope>
+            <systemPath>${ezyplatform.home}/socket/plugins/ezyai/lib/ezyai-sdk-${ezyai.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>ezyarticle-sdk</artifactId>
+            <version>${ezyarticle.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/admin/plugins/ezyarticle/lib/ezyarticle-sdk-${ezyarticle.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>ezychat-sdk</artifactId>
+            <version>${ezychat.version}</version>
+        <scope>system</scope>
+            <systemPath>${ezyplatform.home}/socket/apps/ezychat/lib/ezychat-sdk-${ezychat.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>ezychat-socket-app</artifactId>
+            <version>${ezychat.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/socket/apps/ezychat/lib/ezychat-socket-app-${ezychat.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>ezychat-socket-plugin</artifactId>
+            <version>${ezychat.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/socket/plugins/ezychat/lib/ezychat-socket-plugin-${ezychat.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>graphql-sdk</artifactId>
+            <version>${graphql.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/web/plugins/graphql/lib/graphql-sdk-${graphql.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>graphql-socket-plugin</artifactId>
+            <version>${graphql.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/socket/plugins/graphql/lib/graphql-socket-plugin-${graphql.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>socket-monitor</artifactId>
+            <version>${socket.monitor.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/socket/plugins/socket-monitor/lib/socket-monitor-${socket.monitor.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>ezyai-socket-plugin</artifactId>
+            <version>${ezyai.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/socket/plugins/ezyai/lib/ezyai-socket-plugin-${ezyai.version}.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -63,6 +138,9 @@
                     </resource>
                     <resource>
                         <directory>${ezyplatform.home}/socket/settings</directory>
+                    </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/socket/plugins/ezyai/resources</directory>
                     </resource>
                 </resources>
             </build>
