@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-12">
+        <h3>[[#{lucky_wheel.reward_table}]]</h3>
+    </div>
+</div>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+var helloWorld = /*[[${helloWorld}]]*/ '';
+ezyadmin.messages.hello = /*[[#{hello}]]*/ '';
+/*]]>*/
+
+console.log('Hello World');
+</script>
+</body>
+</html>
