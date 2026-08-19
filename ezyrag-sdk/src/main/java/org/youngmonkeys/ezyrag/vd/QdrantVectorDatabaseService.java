@@ -16,7 +16,6 @@
 
 package org.youngmonkeys.ezyrag.vd;
 
-import com.tvd12.ezyfox.bean.annotation.EzyAutoBind;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.client.HttpClient;
 import com.tvd12.ezyhttp.client.request.GetRequest;
@@ -26,7 +25,7 @@ import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import com.tvd12.ezyhttp.core.exception.HttpNotFoundException;
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.constant.VectorDatabaseProvider;
+import org.youngmonkeys.ezyrag.constant.VectorDatabaseServiceName;
 import org.youngmonkeys.ezyrag.model.VectorPointModel;
 import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
 
@@ -169,6 +168,6 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
     }
 
     public String getProviderName() {
-        return VectorDatabaseProvider.QDRANT.toString();
+        return VectorDatabaseServiceName.QDRANT.toString();
     }
 }

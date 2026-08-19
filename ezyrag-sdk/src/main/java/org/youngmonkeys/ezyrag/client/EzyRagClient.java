@@ -36,6 +36,7 @@ import org.youngmonkeys.ezyrag.processor.RagQueryProcessorManager;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetriever;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetrieverManager;
 import org.youngmonkeys.ezyrag.service.DataChunkService;
+import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 import org.youngmonkeys.ezyrag.vd.VectorDatabaseService;
 import org.youngmonkeys.ezyrag.vd.VectorDatabaseServiceManager;
 
@@ -54,6 +55,7 @@ public class EzyRagClient {
     private final RagTextCleanerManager textCleanerManager;
     private final VectorDatabaseServiceManager vectorDatabaseServiceManager;
     private final DataChunkService dataChunkService;
+    private final EzyRagSettingService settingService;
 
     public void storeData(
         DataSourceModel dataSource
@@ -63,17 +65,19 @@ public class EzyRagClient {
         Iterator<RagInputData> iterator = dataLoader
             .load(dataSource);
         RagEmbeddingService embeddingService = embeddingServiceManager
-            .getEmbeddingServiceByName("");
+            .getEmbeddingServiceByName(settingService.getEmbeddingService());
         VectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
-                .getEmbeddingServiceByName("");
+                .getEmbeddingServiceByName(
+                    settingService.getVectorDatabaseService()
+                );
         while (iterator.hasNext()) {
             RagInputData inputData = iterator.next();
             String text = textCleanerManager.cleanText(
                 (String) inputData.getData()
             );
             RagDataChunker chunker = dataChunkerManager
-                .getDataChunkerByName("");
+                .getDataChunkerByName(settingService.getDataChunker());
             List<DataChunkModel> chunks = chunker.chunk(text);
             for (DataChunkModel chunk : chunks) {
                 float[] vector = embeddingService
@@ -93,19 +97,23 @@ public class EzyRagClient {
         String processedQuery = queryProcessorManager
             .processQuery(query);
         RagEmbeddingService embeddingService = embeddingServiceManager
-            .getEmbeddingServiceByName("");
+            .getEmbeddingServiceByName(settingService.getEmbeddingService());
         float[] vector = embeddingService.embed(processedQuery);
         VectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
-                .getEmbeddingServiceByName("default");
+                .getEmbeddingServiceByName(
+                    settingService.getVectorDatabaseService()
+                );
         List<VectorSearchResultModel> result = vectorDatabaseService.search(vector, limit);
         RagDataRetriever retriever = dataRetrieverManager
-            .getDataRetrieverByName("default");
+            .getDataRetrieverByName(settingService.getDataRetriever());
         List<RagDocumentModel> documents = retriever
             .retrieve(result);
         RagKnowledgeDataBuilder knowledgeDataBuilder =
             knowledgeDataBuilderManager
-                .getKnowledgeDataBuilderByName("");
+                .getKnowledgeDataBuilderByName(
+                    settingService.getKnowledgeDataBuilder()
+                );
         return knowledgeDataBuilder.build(documents);
     }
 }
