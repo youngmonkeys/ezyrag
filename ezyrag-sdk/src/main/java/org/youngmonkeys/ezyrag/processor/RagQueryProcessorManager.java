@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 public class RagQueryProcessorManager {
 
     private final EzyLazyInitializer<Map<String, RagQueryProcessor>>
-        dataQueryProcessorBySourceType;
+        queryProcessorsByName;
 
     @SuppressWarnings("unchecked")
     public RagQueryProcessorManager(
         EzySingletonFactory singletonFactory
     ) {
-        this.dataQueryProcessorBySourceType = new EzyLazyInitializer<>(() ->
+        this.queryProcessorsByName = new EzyLazyInitializer<>(() ->
             ((List<RagQueryProcessor>) singletonFactory
                 .getSingletonsOf(RagQueryProcessor.class)
             )
@@ -47,9 +47,9 @@ public class RagQueryProcessorManager {
         );
     }
 
-    public RagQueryProcessor getEmbeddingServiceByName(
-        String serviceName
+    public RagQueryProcessor getQueryProcessorByName(
+        String processorName
     ) {
-        return dataQueryProcessorBySourceType.get().get(serviceName);
+        return queryProcessorsByName.get().get(processorName);
     }
 }
