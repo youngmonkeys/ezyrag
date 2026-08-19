@@ -24,5 +24,12 @@
             <scope>system</scope>
             <systemPath>${ezyplatform.home}/lib/ezyplatform-common-${ezy.platform.version}.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>org.youngmonkeys</groupId>
+            <artifactId>ezyai-sdk</artifactId>
+            <version>${ezyai.version}</version>
+            <scope>system</scope>
+            <systemPath>${ezyplatform.home}/web/plugins/ezyai/lib/ezyai-sdk-${ezyai.version}.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

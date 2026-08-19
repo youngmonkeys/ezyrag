@@ -18,6 +18,14 @@ package org.youngmonkeys.ezyrag.service;
 
 import org.youngmonkeys.ezyplatform.service.DefaultSettingService;
 
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_EXCERPT_LENGTH;
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH;
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_EXCERPT_LENGTH;
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH;
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_QDRANT_BASE_URL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_QDRANT_COLLECTION_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
@@ -56,6 +64,34 @@ public class EzyRagSettingService {
         return settingService.getTextValue(
             SETTING_NAME_QDRANT_COLLECTION_NAME,
             DEFAULT_QDRANT_COLLECTION_NAME
+        );
+    }
+
+    public int getKnowledgeChunkMaxLength() {
+        return settingService.getIntValue(
+            SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH,
+            DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH
+        );
+    }
+
+    public int getKnowledgeChunkExcerptLength() {
+        return settingService.getIntValue(
+            SETTING_NAME_KNOWLEDGE_CHUNK_EXCERPT_LENGTH,
+            DEFAULT_KNOWLEDGE_CHUNK_EXCERPT_LENGTH
+        );
+    }
+
+    public String getKnowledgeChunkParagraphSeparator() {
+        return settingService.getTextValue(
+            SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR,
+            DEFAULT_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR
+        );
+    }
+
+    public String getKnowledgeChunkSentenceBoundaryPattern() {
+        return settingService.getTextValue(
+            SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN,
+            DEFAULT_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN
         );
     }
 }
