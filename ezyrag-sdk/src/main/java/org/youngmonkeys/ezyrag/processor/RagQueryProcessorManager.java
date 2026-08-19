@@ -18,38 +18,35 @@ package org.youngmonkeys.ezyrag.processor;
 
 import com.tvd12.ezyfox.bean.EzySingletonFactory;
 import com.tvd12.ezyfox.concurrent.EzyLazyInitializer;
+import org.youngmonkeys.ezyrag.model.RagQueryModel;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class RagQueryProcessorManager {
 
-    private final EzyLazyInitializer<Map<String, RagQueryProcessor>>
-        queryProcessorsByName;
+    private final EzyLazyInitializer<List<RagQueryProcessor>>
+        queryProcessors;
 
     @SuppressWarnings("unchecked")
     public RagQueryProcessorManager(
         EzySingletonFactory singletonFactory
     ) {
-        this.queryProcessorsByName = new EzyLazyInitializer<>(() ->
+        this.queryProcessors = new EzyLazyInitializer<>(() ->
             ((List<RagQueryProcessor>) singletonFactory
                 .getSingletonsOf(RagQueryProcessor.class)
             )
-                .stream()
-                .collect(
-                    Collectors.toMap(
-                        RagQueryProcessor::getName,
-                        it -> it,
-                        (o, n) -> o
-                    )
-                )
         );
     }
 
-    public RagQueryProcessor getQueryProcessorByName(
-        String processorName
+    public String processQuery(
+        String query
     ) {
-        return queryProcessorsByName.get().get(processorName);
+        RagQueryModel answer = RagQueryModel.builder()
+            .query(query)
+            .build();
+        for (RagQueryProcessor processor : queryProcessors.get()) {
+            answer = processor.process(answer);
+        }
+        return answer.getQuery();
     }
 }

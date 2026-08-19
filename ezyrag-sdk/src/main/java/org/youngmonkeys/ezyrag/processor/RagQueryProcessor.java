@@ -1,8 +1,10 @@
 package org.youngmonkeys.ezyrag.processor;
 
+import org.youngmonkeys.ezyrag.model.RagQueryModel;
+
 public interface RagQueryProcessor {
 
-    String process(String query);
+    RagQueryModel process(RagQueryModel query);
 
     String getName();
 }

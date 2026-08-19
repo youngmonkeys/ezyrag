@@ -17,21 +17,24 @@
 package org.youngmonkeys.ezyrag.processor;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import org.youngmonkeys.ezyrag.model.RagQueryModel;
 
-import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
 @EzySingleton
 public class NormalizeQueryProcessor implements RagQueryProcessor {
 
     @Override
-    public String process(String query) {
-        if (isBlank(query)) {
-            return EMPTY_STRING;
+    public RagQueryModel process(RagQueryModel query) {
+        String text = query.getQuery();
+        if (isBlank(text)) {
+            return query;
         }
-        return query
-            .trim()
-            .replaceAll("\\s+", " ");
+        return query.toProcessedQuery(
+            text
+                .trim()
+                .replaceAll("\\s+", " ")
+        );
     }
 
     @Override
