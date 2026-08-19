@@ -7,8 +7,8 @@ import java.util.Map;
 
 @Getter
 @Builder
-public class VectorPoint {
+public class VectorSearchResultModel {
     private final String id;
-    private final float[] vector;
+    private final float score;
     private final Map<String, Object> payload;
 }

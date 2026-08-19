@@ -1,7 +1,7 @@
 package org.youngmonkeys.ezyrag.vd;
 
-import org.youngmonkeys.ezyrag.model.VectorPoint;
-import org.youngmonkeys.ezyrag.model.VectorSearchResult;
+import org.youngmonkeys.ezyrag.model.VectorPointModel;
+import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
 
 import java.util.List;
 
@@ -20,10 +20,10 @@ public interface VectorDatabaseService {
         String baseUrl,
         String apiKey,
         String collectionName,
-        List<VectorPoint> points
+        List<VectorPointModel> points
     ) throws Exception;
 
-    List<VectorSearchResult> search(
+    List<VectorSearchResultModel> search(
         String baseUrl,
         String apiKey,
         String collectionName,

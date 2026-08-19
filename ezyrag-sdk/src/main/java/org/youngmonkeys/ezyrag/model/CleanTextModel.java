@@ -5,14 +5,14 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CleanText {
+public class CleanTextModel {
     private final String text;
     private final int cleanTime;
 
-    public CleanText toCleanedText(
+    public CleanTextModel toCleanedText(
         String cleanedText
     ) {
-        return new CleanText(
+        return new CleanTextModel(
             cleanedText,
             cleanTime + 1
         );

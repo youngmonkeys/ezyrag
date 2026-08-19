@@ -27,8 +27,8 @@ import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import com.tvd12.ezyhttp.core.exception.HttpNotFoundException;
 import org.youngmonkeys.ezyrag.constant.VectorDatabaseProvider;
-import org.youngmonkeys.ezyrag.model.VectorPoint;
-import org.youngmonkeys.ezyrag.model.VectorSearchResult;
+import org.youngmonkeys.ezyrag.model.VectorPointModel;
+import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,10 +95,10 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
         String baseUrl,
         String apiKey,
         String collectionName,
-        List<VectorPoint> points
+        List<VectorPointModel> points
     ) throws Exception {
         List<Map<String, Object>> requestPoints = new ArrayList<>(points.size());
-        for (VectorPoint point : points) {
+        for (VectorPointModel point : points) {
             requestPoints.add(
                 EzyMapBuilder.mapBuilder()
                     .put("id", point.getId())
@@ -119,7 +119,7 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<VectorSearchResult> search(
+    public List<VectorSearchResultModel> search(
         String baseUrl,
         String apiKey,
         String collectionName,
@@ -138,10 +138,10 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
         );
         List<Map<String, Object>> result = (List<Map<String, Object>>) responseBody
             .get("result");
-        List<VectorSearchResult> searchResults = new ArrayList<>(result.size());
+        List<VectorSearchResultModel> searchResults = new ArrayList<>(result.size());
         for (Map<String, Object> point : result) {
             searchResults.add(
-                VectorSearchResult.builder()
+                VectorSearchResultModel.builder()
                     .id(String.valueOf(point.get("id")))
                     .score(((Number) point.get("score")).floatValue())
                     .payload((Map<String, Object>) point.get("payload"))

@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class DataChunk {
+public class DataChunkModel {
     private String content;
 }
