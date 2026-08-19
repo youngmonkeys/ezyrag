@@ -48,6 +48,8 @@ public class DataChunkEntity {
     @Column(name = "content")
     private String content;
 
+    private float[] embedding;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

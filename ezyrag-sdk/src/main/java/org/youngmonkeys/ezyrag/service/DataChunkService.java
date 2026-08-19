@@ -14,22 +14,18 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.socket.plugin;
+package org.youngmonkeys.ezyrag.service;
 
-import com.tvd12.ezyfoxserver.ext.EzyAbstractPluginEntryLoader;
-import com.tvd12.ezyfoxserver.ext.EzyPluginEntry;
-import com.tvd12.ezyfoxserver.support.entry.EzyDefaultPluginEntry;
+import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyrag.model.DataChunkModel;
+import org.youngmonkeys.ezyrag.repo.DataChunkRepository;
 
-public class PluginEntryLoader extends EzyAbstractPluginEntryLoader {
-    @Override
-    public EzyPluginEntry load() {
-        return new PluginEntry();
-    }
+@AllArgsConstructor
+public class DataChunkService {
 
-    public static class PluginEntry extends EzyDefaultPluginEntry {
-        @Override
-        protected boolean allowRequest() {
-            return false;
-        }
+    private final DataChunkRepository dataChunkRepository;
+
+    public void save(DataChunkModel model) {
+
     }
 }

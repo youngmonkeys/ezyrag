@@ -14,22 +14,17 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.socket.plugin;
+package org.youngmonkeys.ezyrag.model;
 
-import com.tvd12.ezyfoxserver.ext.EzyAbstractPluginEntryLoader;
-import com.tvd12.ezyfoxserver.ext.EzyPluginEntry;
-import com.tvd12.ezyfoxserver.support.entry.EzyDefaultPluginEntry;
+import lombok.Builder;
+import lombok.Getter;
 
-public class PluginEntryLoader extends EzyAbstractPluginEntryLoader {
-    @Override
-    public EzyPluginEntry load() {
-        return new PluginEntry();
-    }
+import java.util.Map;
 
-    public static class PluginEntry extends EzyDefaultPluginEntry {
-        @Override
-        protected boolean allowRequest() {
-            return false;
-        }
-    }
+@Getter
+@Builder
+public class RagInputData {
+    private Object data;
+    private String dataType;
+    private Map<String, Object> metadata;
 }

@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
 /**
- * Compacts whitespace in {@link KnowledgeData#getContent()} and, when the
+ * Strips HTML and compacts whitespace in a raw content string and, when the
  * compacted content is still longer than the configured max chunk length,
- * splits it into several smaller {@link KnowledgeData} chunks.
+ * splits it into several smaller {@link DataChunkModel} chunks.
  *
  * <p>The chunking algorithm prefers natural text boundaries in hierarchical
  * order:
@@ -97,35 +97,20 @@ import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
  * <p>Example, with {@code maxChunkLength = 40}:
  *
  * <pre>{@code
- * KnowledgeData source = KnowledgeData.builder()
- *     .id(1)
- *     .title("How to configure SSL")
- *     .content(
- *         "Step 1: issue a certificate with Let's Encrypt.\n\n" +
- *         "Step 2: point Nginx at the certificate you just made."
- *     )
- *     .build();
+ * String content =
+ *     "Step 1: issue a certificate with Let's Encrypt.\n\n" +
+ *     "Step 2: point Nginx at the certificate you just made.";
  *
- * List<KnowledgeData> chunks =
- *     new KnowledgeContentChunker(ezyAISettingService)
- *         .chunk(source);
- *
- * // chunks.get(0).getTitle()
- * // -> "How to configure SSL (1/2)"
+ * List<DataChunkModel> chunks =
+ *     new HierarchicalRagDataChunker(ezyRagSettingService)
+ *         .chunk(content);
  *
  * // chunks.get(0).getContent()
  * // -> "Step 1: issue a certificate with Let's Encrypt."
  *
- * // chunks.get(1).getTitle()
- * // -> "How to configure SSL (2/2)"
- *
  * // chunks.get(1).getContent()
  * // -> "Step 2: point Nginx at the certificate you just made."
  * }</pre>
- *
- * <p>Each returned chunk has {@link KnowledgeData#isChunked()} set to
- * {@code true}, both to mark it as already processed and so that calling
- * {@link #chunk(String)} again on a chunk is a no-op.
  */
 @AllArgsConstructor
 public class HierarchicalRagDataChunker implements RagDataChunker {
@@ -143,15 +128,15 @@ public class HierarchicalRagDataChunker implements RagDataChunker {
     private final EzyRagSettingService ezyRagSettingService;
 
     /**
-     * Compacts and, if needed, splits the given knowledge content into one
-     * or more smaller chunks.
+     * Compacts and, if needed, splits the given content into one or more
+     * smaller chunks.
      *
-     * @param data the knowledge data to chunk; {@code null}, data with blank
-     *             content, or data already marked as chunked is returned
-     *             unchanged, wrapped in a singleton list
-     * @return a list containing one chunk when no split is required, or
-     *         multiple chunks when the content exceeds the configured
-     *         maximum chunk length
+     * @param data the raw content to chunk; {@code null} or blank content
+     *             yields an empty list
+     * @return an empty list when {@code data} is blank, a list containing
+     *         one chunk when the compacted content already fits within the
+     *         configured maximum chunk length, or multiple chunks when it
+     *         does not
      */
     @Override
     public List<DataChunkModel> chunk(String data) {

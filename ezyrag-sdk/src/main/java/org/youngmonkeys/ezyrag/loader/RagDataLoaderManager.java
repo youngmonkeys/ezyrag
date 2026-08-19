@@ -49,9 +49,9 @@ public class RagDataLoaderManager {
         );
     }
 
-    public RagDataLoader getEmbeddingServiceByName(
-        String serviceName
+    public RagDataLoader getDataLoaderBySourceType(
+        String sourceType
     ) {
-        return dataLoaderBySourceType.get().get(serviceName);
+        return dataLoaderBySourceType.get().get(sourceType);
     }
 }

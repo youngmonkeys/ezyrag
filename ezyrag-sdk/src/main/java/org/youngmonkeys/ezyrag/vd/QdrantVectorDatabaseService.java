@@ -17,7 +17,6 @@
 package org.youngmonkeys.ezyrag.vd;
 
 import com.tvd12.ezyfox.bean.annotation.EzyAutoBind;
-import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.client.HttpClient;
 import com.tvd12.ezyhttp.client.request.GetRequest;
@@ -26,6 +25,7 @@ import com.tvd12.ezyhttp.client.request.PutRequest;
 import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import com.tvd12.ezyhttp.core.exception.HttpNotFoundException;
+import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.constant.VectorDatabaseProvider;
 import org.youngmonkeys.ezyrag.model.VectorPointModel;
 import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
@@ -36,16 +36,10 @@ import java.util.Map;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
-@EzySingleton
+@AllArgsConstructor
 public class QdrantVectorDatabaseService implements VectorDatabaseService {
 
-    @EzyAutoBind
-    protected HttpClient httpClient;
-
-    @Override
-    public String getProviderName() {
-        return VectorDatabaseProvider.QDRANT.toString();
-    }
+    private HttpClient httpClient;
 
     @Override
     public void createCollectionIfAbsent(
@@ -172,5 +166,9 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
 
     private String getPointsUrl(String baseUrl, String collectionName) {
         return getCollectionUrl(baseUrl, collectionName) + "/points";
+    }
+
+    public String getProviderName() {
+        return VectorDatabaseProvider.QDRANT.toString();
     }
 }

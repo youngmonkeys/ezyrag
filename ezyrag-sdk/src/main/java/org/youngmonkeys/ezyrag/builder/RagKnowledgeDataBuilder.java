@@ -14,22 +14,18 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.socket.plugin;
+package org.youngmonkeys.ezyrag.builder;
 
-import com.tvd12.ezyfoxserver.ext.EzyAbstractPluginEntryLoader;
-import com.tvd12.ezyfoxserver.ext.EzyPluginEntry;
-import com.tvd12.ezyfoxserver.support.entry.EzyDefaultPluginEntry;
+import org.youngmonkeys.ezyai.knowledge.KnowledgeData;
+import org.youngmonkeys.ezyrag.model.RagDocumentModel;
 
-public class PluginEntryLoader extends EzyAbstractPluginEntryLoader {
-    @Override
-    public EzyPluginEntry load() {
-        return new PluginEntry();
-    }
+import java.util.List;
 
-    public static class PluginEntry extends EzyDefaultPluginEntry {
-        @Override
-        protected boolean allowRequest() {
-            return false;
-        }
-    }
+public interface RagKnowledgeDataBuilder {
+
+    List<KnowledgeData> build(
+        List<RagDocumentModel> documents
+    );
+
+    String getName();
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.chunker;
+package org.youngmonkeys.ezyrag.builder;
 
 import com.tvd12.ezyfox.bean.EzySingletonFactory;
 import com.tvd12.ezyfox.concurrent.EzyLazyInitializer;
@@ -23,33 +23,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RagDataChunkerManager {
+public class RagKnowledgeDataBuilderManager {
 
-    private final EzyLazyInitializer<Map<String, RagDataChunker>>
-        dataChunkerBySourceType;
+    private final EzyLazyInitializer<Map<String, RagKnowledgeDataBuilder>>
+        knowledgeDataBuilderByName;
 
     @SuppressWarnings("unchecked")
-    public RagDataChunkerManager(
+    public RagKnowledgeDataBuilderManager(
         EzySingletonFactory singletonFactory
     ) {
-        this.dataChunkerBySourceType = new EzyLazyInitializer<>(() ->
-            ((List<RagDataChunker>) singletonFactory
-                .getSingletonsOf(RagDataChunker.class)
+        this.knowledgeDataBuilderByName = new EzyLazyInitializer<>(() ->
+            ((List<RagKnowledgeDataBuilder>) singletonFactory
+                .getSingletonsOf(RagKnowledgeDataBuilder.class)
             )
                 .stream()
                 .collect(
                     Collectors.toMap(
-                        RagDataChunker::getName,
-                        it -> it,
-                        (o, n) -> o
+                        RagKnowledgeDataBuilder::getName,
+                        it -> it
                     )
                 )
         );
     }
 
-    public RagDataChunker getDataChunkerByName(
-        String serviceName
+    public RagKnowledgeDataBuilder getKnowledgeDataBuilderByName(
+        String name
     ) {
-        return dataChunkerBySourceType.get().get(serviceName);
+        return knowledgeDataBuilderByName.get().get(name);
     }
 }

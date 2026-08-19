@@ -47,9 +47,9 @@ public class RagDataRetrieverManager {
         );
     }
 
-    public RagDataRetriever getEmbeddingServiceByName(
-        String serviceName
+    public RagDataRetriever getDataRetrieverByName(
+        String name
     ) {
-        return dataRetrieverBySourceType.get().get(serviceName);
+        return dataRetrieverBySourceType.get().get(name);
     }
 }

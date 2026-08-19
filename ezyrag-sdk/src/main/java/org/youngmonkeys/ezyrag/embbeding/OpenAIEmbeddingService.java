@@ -16,28 +16,21 @@
 
 package org.youngmonkeys.ezyrag.embbeding;
 
-import com.tvd12.ezyfox.bean.annotation.EzyAutoBind;
-import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.client.HttpClient;
 import com.tvd12.ezyhttp.client.request.PostRequest;
 import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
+import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.constant.EmbeddingServiceProvider;
 
 import java.util.List;
 import java.util.Map;
 
-@EzySingleton
+@AllArgsConstructor
 public class OpenAIEmbeddingService implements RagEmbeddingService {
 
-    @EzyAutoBind
-    protected HttpClient httpClient;
-
-    @Override
-    public String getServiceName() {
-        return EmbeddingServiceProvider.OPENAI.toString();
-    }
+    private final HttpClient httpClient;
 
     @Override
     public float[] embed(String apiKey, String text) throws Exception {
@@ -77,5 +70,10 @@ public class OpenAIEmbeddingService implements RagEmbeddingService {
             result[i] = embedding.get(i).floatValue();
         }
         return result;
+    }
+
+    @Override
+    public String getServiceName() {
+        return EmbeddingServiceProvider.OPENAI.toString();
     }
 }
