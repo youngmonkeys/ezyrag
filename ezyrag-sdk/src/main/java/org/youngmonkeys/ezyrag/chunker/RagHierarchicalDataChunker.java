@@ -188,15 +188,12 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         document
             .select("script, style")
             .remove();
-
         document
             .select("br")
             .append("\\n");
-
         document
             .select(BLOCK_TAGS_SELECTOR)
             .prepend("\\n\\n");
-
         return document
             .body()
             .text()
@@ -270,14 +267,13 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
                         sentenceBoundaryPattern
                     )
                 );
-
                 continue;
             }
             if (current.length() > 0
-                    && current.length()
-                    + paragraphSeparator.length()
-                    + paragraph.length()
-                    > maxChunkLength
+                && current.length()
+                + paragraphSeparator.length()
+                + paragraph.length()
+                > maxChunkLength
             ) {
                 current = flush(chunks, current);
             }
@@ -310,61 +306,29 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         String sentenceBoundaryPattern
     ) {
         List<String> chunks = new ArrayList<>();
-
-        StringBuilder current =
-            new StringBuilder();
-
-        for (
-            String sentence
-            : paragraph.split(sentenceBoundaryPattern)
-        ) {
+        StringBuilder current = new StringBuilder();
+        for (String sentence : paragraph.split(sentenceBoundaryPattern)) {
             sentence = sentence.trim();
-
             if (sentence.isEmpty()) {
                 continue;
             }
-
             if (sentence.length() > maxChunkLength) {
-                current = flush(
-                    chunks,
-                    current
-                );
-
-                chunks.addAll(
-                    hardSplit(
-                        sentence,
-                        maxChunkLength
-                    )
-                );
-
+                current = flush(chunks, current);
+                chunks.addAll(hardSplit(sentence, maxChunkLength));
                 continue;
             }
-
-            if (
-                current.length() > 0
-                    && current.length()
-                    + 1
-                    + sentence.length()
-                    > maxChunkLength
+            if (current.length() > 0
+                && current.length() + 1 + sentence.length()
+                > maxChunkLength
             ) {
-                current = flush(
-                    chunks,
-                    current
-                );
+                current = flush(chunks, current);
             }
-
             if (current.length() > 0) {
                 current.append(' ');
             }
-
             current.append(sentence);
         }
-
-        flush(
-            chunks,
-            current
-        );
-
+        flush(chunks, current);
         return chunks;
     }
 
@@ -385,14 +349,8 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         String text,
         int maxChunkLength
     ) {
-        List<String> chunks =
-            new ArrayList<>();
-
-        for (
-            int i = 0;
-            i < text.length();
-            i += maxChunkLength
-        ) {
+        List<String> chunks = new ArrayList<>();
+        for (int i = 0; i < text.length(); i += maxChunkLength) {
             chunks.add(
                 text.substring(
                     i,
@@ -403,7 +361,6 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
                 )
             );
         }
-
         return chunks;
     }
 
@@ -419,11 +376,8 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         StringBuilder current
     ) {
         if (current.length() > 0) {
-            chunks.add(
-                current.toString()
-            );
+            chunks.add(current.toString());
         }
-
         return new StringBuilder();
     }
 

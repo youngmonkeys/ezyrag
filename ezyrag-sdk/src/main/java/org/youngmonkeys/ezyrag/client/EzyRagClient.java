@@ -68,6 +68,7 @@ public class EzyRagClient {
     private final RagDataChunkMetaService dataChunkMetaService;
     private final EzyRagSettingService settingService;
 
+    @SuppressWarnings("MethodLength")
     public void storeData(
         RagDataSourceModel dataSource
     ) throws Exception {
