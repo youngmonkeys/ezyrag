@@ -74,49 +74,14 @@ public class EzyRagClient {
     ) throws Exception {
         String sourceType = dataSource.getSourceType();
         RagDataLoader dataLoader = dataLoaderManager
-            .getDataLoaderBySourceType(sourceType);
-        if (dataLoader == null) {
-            throw new IllegalArgumentException(
-                "There is no DataLoader mapping to source type: " +
-                    sourceType
-            );
-        }
+            .getDataLoaderBySourceTypeOrThrow(sourceType);
         RagEmbeddingService embeddingService = getEmbeddingService();
-        String vectorDatabaseServiceName = settingService
-            .getVectorDatabaseService();
-        if (isBlank(vectorDatabaseServiceName)) {
-            throw new IllegalStateException(
-                "Vector database service has not been set up"
-            );
-        }
         RagVectorDatabaseService vectorDatabaseService =
-            vectorDatabaseServiceManager
-                .getVectorDatabaseServiceByName(
-                    vectorDatabaseServiceName
-                );
-        if (vectorDatabaseService == null) {
-            throw new IllegalStateException(
-                "There is no vector database service: " +
-                    vectorDatabaseServiceName
-            );
-        }
-        String dataChunkerName = settingService
-            .getDataChunker();
-        if (isBlank(dataChunkerName)) {
-            throw new IllegalStateException(
-                "Data chunker has not been set up"
-            );
-        }
-        RagDataChunker chunker = dataChunkerManager
-            .getDataChunkerByName(dataChunkerName);
-        if (chunker == null) {
-            throw new IllegalStateException(
-                "There is no chunker: " +
-                    dataChunkerName
-            );
-        }
+            getVectorDatabaseService();
+        RagDataChunker chunker = getDataChunker();
         Iterator<RagInputData> iterator = dataLoader
             .load(dataSource);
+
         long sourceId = dataSource.getSourceId();
         int chunkIndex = 0;
         Map<String, Object> dataSourceMetadata = dataSource
@@ -207,28 +172,24 @@ public class EzyRagClient {
         int limit
     ) throws Exception {
         RagEmbeddingService embeddingService = getEmbeddingService();
+        RagVectorDatabaseService vectorDatabaseService =
+            getVectorDatabaseService();
         String processedQuery = queryProcessorManager
             .processQuery(query);
         float[] vector = embeddingService.embed(processedQuery);
-        RagVectorDatabaseService vectorDatabaseService =
-            vectorDatabaseServiceManager
-                .getVectorDatabaseServiceByName(
-                    settingService.getVectorDatabaseService()
-                );
-        return vectorDatabaseService
-            .search(vector, limit);
+        return vectorDatabaseService.search(vector, limit);
     }
 
     public List<KnowledgeData> getKnowledgeDataList(
         String query,
         int limit
     ) throws Exception {
+        RagDataRetriever retriever = dataRetrieverManager
+            .getDataRetrieverByName(settingService.getDataRetriever());
         List<RagVectorSearchResultModel> result = searchDataList(
             query,
             limit
         );
-        RagDataRetriever retriever = dataRetrieverManager
-            .getDataRetrieverByName(settingService.getDataRetriever());
         List<RagDocumentModel> documents = retriever
             .retrieve(result);
         RagKnowledgeDataBuilder knowledgeDataBuilder =
@@ -237,6 +198,25 @@ public class EzyRagClient {
                     settingService.getKnowledgeDataBuilder()
                 );
         return knowledgeDataBuilder.build(documents);
+    }
+
+    private RagDataChunker getDataChunker() {
+        String dataChunkerName = settingService
+            .getDataChunker();
+        if (isBlank(dataChunkerName)) {
+            throw new IllegalStateException(
+                "Data chunker has not been set up"
+            );
+        }
+        RagDataChunker chunker = dataChunkerManager
+            .getDataChunkerByName(dataChunkerName);
+        if (chunker == null) {
+            throw new IllegalStateException(
+                "There is no chunker: " +
+                    dataChunkerName
+            );
+        }
+        return chunker;
     }
 
     private RagEmbeddingService getEmbeddingService() {
@@ -258,5 +238,27 @@ public class EzyRagClient {
             );
         }
         return embeddingService;
+    }
+
+    private RagVectorDatabaseService getVectorDatabaseService() {
+        String vectorDatabaseServiceName = settingService
+            .getVectorDatabaseService();
+        if (isBlank(vectorDatabaseServiceName)) {
+            throw new IllegalStateException(
+                "Vector database service has not been set up"
+            );
+        }
+        RagVectorDatabaseService vectorDatabaseService =
+            vectorDatabaseServiceManager
+                .getVectorDatabaseServiceByName(
+                    vectorDatabaseServiceName
+                );
+        if (vectorDatabaseService == null) {
+            throw new IllegalStateException(
+                "There is no vector database service: " +
+                    vectorDatabaseServiceName
+            );
+        }
+        return vectorDatabaseService;
     }
 }

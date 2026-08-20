@@ -54,4 +54,17 @@ public class RagDataLoaderManager {
     ) {
         return dataLoaderBySourceType.get().get(sourceType);
     }
+
+    public RagDataLoader getDataLoaderBySourceTypeOrThrow(
+        String sourceType
+    ) {
+        RagDataLoader dataLoader = getDataLoaderBySourceType(sourceType);
+        if (dataLoader == null) {
+            throw new IllegalArgumentException(
+                "There is no DataLoader mapping to source type: " +
+                    sourceType
+            );
+        }
+        return dataLoader;
+    }
 }
