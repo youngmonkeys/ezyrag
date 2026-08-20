@@ -1,0 +1,66 @@
+<!--
+ ~ Copyright 2026 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        lang="en"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-12">
+        <table id="embeddingServiceList" class="table table-bordered table-hover bg-white align-middle-cells">
+            <thead>
+            <tr>
+                <th class="text-center pl-2p5">#</th>
+                <th>[[#{name}]]</th>
+                <th class="text-center">[[#{active}]]</th>
+                <th class="text-center">[[#{actions}]]</th>
+            </tr>
+            </thead>
+            <tbody id="embeddingServiceListBody">
+            <tr th:each="embeddingServiceName, iterator : ${embeddingServiceNames}">
+                <td class="text-center pl-2p5">[[${iterator.index + 1}]]</td>
+                <td>
+                    <a th:href="${'/ezyrag/embedding-services/' + embeddingServiceName}">
+                        [[${embeddingServiceName}]]
+                    </a>
+                </td>
+                <td class="text-center">
+                    <th:block th:if="${embeddingServiceName == defaultEmbeddingServiceName}">
+                        [[#{yes}]]
+                    </th:block>
+                </td>
+                <td class="text-center">
+                    <a th:href="${'/ezyrag/embedding-services/' + embeddingServiceName}">
+                        <i class="fas fa-eye text-info"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script layout:fragment="scripts">
+$(document).ready(() => {
+    ezyadmin.createDataTable('embeddingServiceList', 12);
+});
+</script>
+</body>
+</html>

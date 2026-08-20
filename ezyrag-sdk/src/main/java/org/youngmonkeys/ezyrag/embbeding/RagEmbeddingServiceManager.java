@@ -40,7 +40,8 @@ public class RagEmbeddingServiceManager {
                 .collect(
                     Collectors.toMap(
                         RagEmbeddingService::getServiceName,
-                        it -> it
+                        it -> it,
+                        (o, n) -> o
                     )
                 )
         );
@@ -50,5 +51,14 @@ public class RagEmbeddingServiceManager {
         String serviceName
     ) {
         return embeddingServiceByName.get().get(serviceName);
+    }
+
+    public List<String> getSortedEmbeddingServiceNames() {
+        return embeddingServiceByName
+            .get()
+            .keySet()
+            .stream()
+            .sorted()
+            .collect(Collectors.toList());
     }
 }
