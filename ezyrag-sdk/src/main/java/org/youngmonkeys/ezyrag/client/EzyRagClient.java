@@ -186,22 +186,42 @@ public class EzyRagClient {
     ) throws Exception {
         RagDataRetriever retriever = dataRetrieverManager
             .getDataRetrieverByName(settingService.getDataRetriever());
+        RagKnowledgeDataBuilder knowledgeDataBuilder =
+            getKnowledgeDataBuilder();
         List<RagVectorSearchResultModel> result = searchDataList(
             query,
             limit
         );
         List<RagDocumentModel> documents = retriever
             .retrieve(result);
+        return knowledgeDataBuilder.build(documents);
+    }
+
+    private RagKnowledgeDataBuilder getKnowledgeDataBuilder() {
+        String knowledgeDataBuilderName = settingService
+            .getKnowledgeDataBuilder();
+        if (isBlank(knowledgeDataBuilderName)) {
+            throw new IllegalStateException(
+                "Knowledge data builder has not been set up"
+            );
+        }
         RagKnowledgeDataBuilder knowledgeDataBuilder =
             knowledgeDataBuilderManager
                 .getKnowledgeDataBuilderByName(
-                    settingService.getKnowledgeDataBuilder()
+                    knowledgeDataBuilderName
                 );
-        return knowledgeDataBuilder.build(documents);
+        if (knowledgeDataBuilder == null) {
+            throw new IllegalStateException(
+                "There is no knowledge data builder: " +
+                    knowledgeDataBuilderName
+            );
+        }
+        return knowledgeDataBuilder;
     }
 
     private RagDataChunker getDataChunker() {
         String dataChunkerName = settingService
+
             .getDataChunker();
         if (isBlank(dataChunkerName)) {
             throw new IllegalStateException(
