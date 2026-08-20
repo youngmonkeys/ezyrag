@@ -19,6 +19,7 @@ package org.youngmonkeys.ezyrag.admin.controller.service;
 import com.tvd12.ezyhttp.server.core.annotation.Service;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.model.PaginationModel;
+import org.youngmonkeys.ezyrag.admin.controller.decorator.AdminRagDataChunkModelDecorator;
 import org.youngmonkeys.ezyrag.admin.pagination.AdminRagDataChunkPaginationParameterConverter;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
 import org.youngmonkeys.ezyrag.admin.service.AdminPaginationRagDataChunkService;
@@ -31,6 +32,7 @@ import static org.youngmonkeys.ezyplatform.pagination.PaginationModelFetchers.ge
 @AllArgsConstructor
 public class AdminRagDataChunkControllerService {
 
+    private final AdminRagDataChunkModelDecorator dataChunkModelDecorator;
     private final AdminPaginationRagDataChunkService paginationDataChunkService;
     private final AdminRagDataChunkPaginationParameterConverter
         paginationParameterConverter;
@@ -54,22 +56,8 @@ public class AdminRagDataChunkControllerService {
                 lastPage,
                 limit
             );
-        return pagination.map(this::toResponse);
-    }
-
-    private AdminRagDataChunkResponse toResponse(
-        RagDataChunkModel model
-    ) {
-        return AdminRagDataChunkResponse.builder()
-            .id(model.getId())
-            .sourceType(model.getSourceType())
-            .sourceId(model.getSourceId())
-            .chunkIndex(model.getChunkIndex())
-            .content(model.getContent())
-            .contentHash(model.getContentHash())
-            .hasEmbedding(model.getEmbedding() != null)
-            .createdAt(model.getCreatedAt())
-            .updatedAt(model.getUpdatedAt())
-            .build();
+        return dataChunkModelDecorator.decorateToDataChunkPaginationResponse(
+            pagination
+        );
     }
 }
