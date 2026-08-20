@@ -19,13 +19,18 @@ package org.youngmonkeys.ezyrag.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Getter
 @Builder
-public class RagInputData {
-    private Object data;
-    private String text;
-    private String dataType;
+public class RagChunkedResultModel {
+    private String content;
     private Map<String, Object> metadata;
+
+    public Map<String, Object> getMetadata() {
+        return metadata != null
+            ? metadata
+            : Collections.emptyMap();
+    }
 }

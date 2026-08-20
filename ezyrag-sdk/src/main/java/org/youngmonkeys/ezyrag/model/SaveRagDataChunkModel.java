@@ -19,13 +19,13 @@ package org.youngmonkeys.ezyrag.model;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Map;
-
 @Getter
 @Builder
-public class RagInputData {
-    private Object data;
-    private String text;
-    private String dataType;
-    private Map<String, Object> metadata;
+public class SaveRagDataChunkModel {
+    private String sourceType;
+    private long sourceId;
+    private long chunkIndex;
+    private String content;
+    private String contentHash;
+    private String metadata;
 }

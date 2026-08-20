@@ -16,13 +16,13 @@
 
 package org.youngmonkeys.ezyrag.chunker;
 
-import org.youngmonkeys.ezyrag.model.DataChunkModel;
+import org.youngmonkeys.ezyrag.model.RagChunkedResultModel;
 
 import java.util.List;
 
 public interface RagDataChunker {
 
-    List<DataChunkModel> chunk(String data);
+    List<RagChunkedResultModel> chunk(String data);
 
     String getName();
 }

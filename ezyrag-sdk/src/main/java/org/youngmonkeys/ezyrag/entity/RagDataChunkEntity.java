@@ -39,13 +39,25 @@ import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_DATA_CHUNK
 @Table(name = TABLE_DATA_CHUNK)
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataChunkEntity {
+public class RagDataChunkEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "source_type")
+    private String sourceType;
+
+    @Column(name = "source_id")
+    private long sourceId;
+
+    @Column(name = "chunk_index")
+    private long chunkIndex;
+
     @Column(name = "content")
     private String content;
+
+    @Column(name = "content_hash")
+    private String contentHash;
 
     private float[] embedding;
 

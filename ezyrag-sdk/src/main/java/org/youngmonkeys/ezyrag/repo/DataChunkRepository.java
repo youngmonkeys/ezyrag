@@ -17,8 +17,45 @@
 package org.youngmonkeys.ezyrag.repo;
 
 import com.tvd12.ezydata.database.EzyDatabaseRepository;
-import org.youngmonkeys.ezyrag.entity.DataChunkEntity;
+import com.tvd12.ezyfox.database.annotation.EzyQuery;
+import org.youngmonkeys.ezyrag.entity.RagDataChunkEntity;
+import org.youngmonkeys.ezyrag.result.RagDataChunkEmbeddingResult;
 
 public interface DataChunkRepository
-    extends EzyDatabaseRepository<Long, DataChunkEntity> {
+    extends EzyDatabaseRepository<Long, RagDataChunkEntity> {
+
+    @EzyQuery(
+        "UPDATE RagDataChunkEntity e " +
+            "SET e.embedding = ?1 " +
+            "WHERE e.id = ?0"
+    )
+    void updateEmbeddingById(
+        long chunkId,
+        float[] embedding
+    );
+
+    void deleteBySourceTypeAndSourceIdAndChunkIndexGt(
+        String sourceType,
+        long sourceId,
+        long chunkIndex
+    );
+
+    RagDataChunkEntity findBySourceTypeAndSourceIdAndChunkIndex(
+        String sourceType,
+        long sourceId,
+        long chunkIndex
+    );
+
+    @EzyQuery(
+        "SELECT e.id, e.contentHash, e.embedding FROM RagDataChunkEntity e " +
+            "WHERE e.sourceType = ?0 " +
+            "AND e.sourceId = ?1 " +
+            "AND e.chunkIndex = ?2"
+    )
+    @SuppressWarnings("LineLength")
+    RagDataChunkEmbeddingResult findIdAndContentHashAndEmbeddingBySourceTypeAndSourceIdAndChunkIndex(
+        String sourceType,
+        long sourceId,
+        long chunkIndex
+    );
 }

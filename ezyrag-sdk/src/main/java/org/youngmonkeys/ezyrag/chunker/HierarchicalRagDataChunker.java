@@ -19,9 +19,8 @@ package org.youngmonkeys.ezyrag.chunker;
 import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.youngmonkeys.ezyai.knowledge.KnowledgeData;
 import org.youngmonkeys.ezyrag.constant.RagDataChunkerName;
-import org.youngmonkeys.ezyrag.model.DataChunkModel;
+import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 /**
  * Strips HTML and compacts whitespace in a raw content string and, when the
  * compacted content is still longer than the configured max chunk length,
- * splits it into several smaller {@link DataChunkModel} chunks.
+ * splits it into several smaller {@link RagDataChunkModel} chunks.
  *
  * <p>The chunking algorithm prefers natural text boundaries in hierarchical
  * order:
@@ -139,7 +138,7 @@ public class HierarchicalRagDataChunker implements RagDataChunker {
      *         does not
      */
     @Override
-    public List<DataChunkModel> chunk(String data) {
+    public List<RagDataChunkModel> chunk(String data) {
         if (isBlank(data)) {
             return Collections.emptyList();
         }
@@ -162,7 +161,7 @@ public class HierarchicalRagDataChunker implements RagDataChunker {
                 .getKnowledgeChunkSentenceBoundaryPattern()
         );
 
-        List<DataChunkModel> result =
+        List<RagDataChunkModel> result =
             new ArrayList<>(parts.size());
         for (String part : parts) {
             result.add(toChunkData(part));
@@ -455,10 +454,10 @@ public class HierarchicalRagDataChunker implements RagDataChunker {
         return new StringBuilder();
     }
 
-    private DataChunkModel toChunkData(
+    private RagDataChunkModel toChunkData(
         String chunkContent
     ) {
-        return DataChunkModel.builder()
+        return RagDataChunkModel.builder()
             .content(chunkContent)
             .build();
     }

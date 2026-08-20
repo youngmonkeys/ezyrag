@@ -17,15 +17,80 @@
 package org.youngmonkeys.ezyrag.service;
 
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.model.SaveDataChunkModel;
+import org.youngmonkeys.ezyrag.converter.EzyRagEntityToModelConverter;
+import org.youngmonkeys.ezyrag.converter.EzyRagModelToEntityConverter;
+import org.youngmonkeys.ezyrag.converter.EzyRagResultToModelConverter;
+import org.youngmonkeys.ezyrag.entity.RagDataChunkEntity;
+import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
+import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
+import org.youngmonkeys.ezyrag.model.SaveRagDataChunkModel;
 import org.youngmonkeys.ezyrag.repo.DataChunkRepository;
 
 @AllArgsConstructor
 public class DataChunkService {
 
     private final DataChunkRepository dataChunkRepository;
+    private final EzyRagEntityToModelConverter entityToModelConverter;
+    private final EzyRagModelToEntityConverter modelToEntityConverter;
+    private final EzyRagResultToModelConverter resultToModelConverter;
 
-    public void save(SaveDataChunkModel model) {
-        
+    public long addDataChunk(
+        SaveRagDataChunkModel model
+    ) {
+        RagDataChunkEntity entity = modelToEntityConverter
+            .toEntity(model);
+        dataChunkRepository.save(entity);
+        return entity.getId();
+    }
+
+    public void updateEmbeddingById(
+        long chunkId,
+        float[] embedding
+    ) {
+        dataChunkRepository.updateEmbeddingById(
+            chunkId,
+            embedding
+        );
+    }
+
+    public void deleteDataChunkBySourceTypeAndSourceIdAndIndexGt(
+        String sourceType,
+        long sourceId,
+        long indexGt
+    ) {
+        dataChunkRepository.deleteBySourceTypeAndSourceIdAndChunkIndexGt(
+            sourceType,
+            sourceId,
+            indexGt
+        );
+    }
+
+    public RagDataChunkModel getDataChunkBySourceTypeAndSourceIdAndIndex(
+        String sourceType,
+        long sourceId,
+        long index
+    ) {
+        return entityToModelConverter.toModel(
+            dataChunkRepository.findBySourceTypeAndSourceIdAndChunkIndex(
+                sourceType,
+                sourceId,
+                index
+            )
+        );
+    }
+
+    public RagDataChunkEmbeddingModel getEmbeddingBySourceTypeAndSourceIdAndIndex(
+        String sourceType,
+        long sourceId,
+        long index
+    ) {
+        return resultToModelConverter.toModel(
+            dataChunkRepository
+                .findIdAndContentHashAndEmbeddingBySourceTypeAndSourceIdAndChunkIndex(
+                    sourceType,
+                    sourceId,
+                    index
+                )
+        );
     }
 }

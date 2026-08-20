@@ -16,6 +16,9 @@
 
 package org.youngmonkeys.ezyrag.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tvd12.ezyfox.security.EzySHA256;
+import com.tvd12.ezyfox.util.EzyMapBuilder;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyai.knowledge.KnowledgeData;
 import org.youngmonkeys.ezyrag.builder.RagKnowledgeDataBuilder;
@@ -27,10 +30,12 @@ import org.youngmonkeys.ezyrag.embbeding.RagEmbeddingService;
 import org.youngmonkeys.ezyrag.embbeding.RagEmbeddingServiceManager;
 import org.youngmonkeys.ezyrag.loader.RagDataLoader;
 import org.youngmonkeys.ezyrag.loader.RagDataLoaderManager;
-import org.youngmonkeys.ezyrag.model.DataChunkModel;
 import org.youngmonkeys.ezyrag.model.DataSourceModel;
+import org.youngmonkeys.ezyrag.model.RagChunkedResultModel;
+import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
 import org.youngmonkeys.ezyrag.model.RagDocumentModel;
 import org.youngmonkeys.ezyrag.model.RagInputData;
+import org.youngmonkeys.ezyrag.model.SaveRagDataChunkModel;
 import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
 import org.youngmonkeys.ezyrag.processor.RagQueryProcessorManager;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetriever;
@@ -42,10 +47,14 @@ import org.youngmonkeys.ezyrag.vd.VectorDatabaseServiceManager;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
 @AllArgsConstructor
 public class EzyRagClient {
 
+    private final ObjectMapper objectMapper;
     private final RagDataChunkerManager dataChunkerManager;
     private final RagDataLoaderManager dataLoaderManager;
     private final RagDataRetrieverManager dataRetrieverManager;
@@ -60,35 +69,135 @@ public class EzyRagClient {
     public void storeData(
         DataSourceModel dataSource
     ) throws Exception {
+        String sourceType = dataSource.getSourceType();
         RagDataLoader dataLoader = dataLoaderManager
-            .getDataLoaderBySourceType(dataSource.getSourceType());
-        Iterator<RagInputData> iterator = dataLoader
-            .load(dataSource);
-        RagEmbeddingService embeddingService = embeddingServiceManager
-            .getEmbeddingServiceByName(settingService.getEmbeddingService());
+            .getDataLoaderBySourceType(sourceType);
+        if (dataLoader == null) {
+            throw new IllegalArgumentException(
+                "There is no DataLoader mapping to source type: " +
+                    sourceType
+            );
+        }
+        String embeddingServiceName = settingService
+            .getEmbeddingService();
+        if (isBlank(embeddingServiceName)) {
+            throw new IllegalStateException(
+                "Embedding service has not been set up"
+            );
+        }
+        RagEmbeddingService embeddingService =
+            embeddingServiceManager.getEmbeddingServiceByName(
+                embeddingServiceName
+            );
+        if (embeddingService == null) {
+            throw new IllegalStateException(
+                "There is no embedding service: " +
+                    embeddingServiceName
+            );
+        }
+        String vectorDatabaseServiceName = settingService
+            .getVectorDatabaseService();
+        if (isBlank(vectorDatabaseServiceName)) {
+            throw new IllegalStateException(
+                "Vector database service has not been set up"
+            );
+        }
         VectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
                 .getEmbeddingServiceByName(
-                    settingService.getVectorDatabaseService()
+                    vectorDatabaseServiceName
                 );
+        if (vectorDatabaseService == null) {
+            throw new IllegalStateException(
+                "There is no vector database service: " +
+                    vectorDatabaseServiceName
+            );
+        }
+        String dataChunkerName = settingService
+            .getDataChunker();
+        if (isBlank(dataChunkerName)) {
+            throw new IllegalStateException(
+                "Data chunker has not been set up"
+            );
+        }
+        RagDataChunker chunker = dataChunkerManager
+            .getDataChunkerByName(dataChunkerName);
+        if (chunker == null) {
+            throw new IllegalStateException(
+                "There is no chunker: " +
+                    dataChunkerName
+            );
+        }
+        Iterator<RagInputData> iterator = dataLoader
+            .load(dataSource);
+        long sourceId = dataSource.getSourceId();
+        int chunkIndex = 0;
+        Map<String, Object> dataSourceMetadata = dataSource
+            .toMetadata();
         while (iterator.hasNext()) {
             RagInputData inputData = iterator.next();
             String text = textCleanerManager.cleanText(
                 (String) inputData.getData()
             );
-            RagDataChunker chunker = dataChunkerManager
-                .getDataChunkerByName(settingService.getDataChunker());
-            List<DataChunkModel> chunks = chunker.chunk(text);
-            for (DataChunkModel chunk : chunks) {
-                float[] vector = embeddingService
-                    .embed(chunk.getContent());
-                dataChunkService.save(chunk);
+            List<RagChunkedResultModel> chunkedResults =
+                chunker.chunk(text);
+            for (int i = 0; i < chunkedResults.size(); ++i) {
+                RagChunkedResultModel chunkedResult =
+                    chunkedResults.get(i);
+                RagDataChunkEmbeddingModel chunkEmbedding =
+                    dataChunkService
+                        .getEmbeddingBySourceTypeAndSourceIdAndIndex(
+                            sourceType,
+                            sourceId,
+                            chunkIndex
+                        );
+                String content = chunkedResult.getContent();
+                String contentHash = EzySHA256.cryptUtf(content);
+                Map<String, Object> metadata = EzyMapBuilder
+                    .mapBuilder()
+                    .putAll(dataSourceMetadata)
+                    .putAll(chunkedResult.getMetadata())
+                    .toMap();
+                String metadataText = objectMapper
+                    .writeValueAsString(metadata);
+                long chunkId;
+                String contentHashInDb = null;
+                float[] embedding = null;
+                if (chunkEmbedding != null) {
+                    chunkId = chunkEmbedding.getId();
+                    contentHashInDb = chunkEmbedding.getContentHash();
+                    embedding = chunkEmbedding.getEmbedding();
+                } else {
+                    chunkId = dataChunkService.addDataChunk(
+                        SaveRagDataChunkModel.builder()
+                            .sourceType(sourceType)
+                            .sourceId(sourceId)
+                            .chunkIndex(chunkIndex + 1)
+                            .content(content)
+                            .contentHash(contentHash)
+                            .metadata(metadataText)
+                            .build()
+                    );
+                }
+                boolean sameHash = contentHash.equals(contentHashInDb);
+                if (embedding == null || !sameHash) {
+                    embedding = embeddingService.embed(content);
+                    dataChunkService.updateEmbeddingById(
+                        chunkId,
+                        embedding
+                    );
+                }
                 vectorDatabaseService.upsert(
                     settingService.getQdrantCollectionName(),
-
+                    
                 );
             }
         }
+        dataChunkService.deleteDataChunkBySourceTypeAndSourceIdAndIndexGt(
+            sourceType,
+            sourceId,
+            chunkIndex
+        );
     }
 
     public List<KnowledgeData> getKnowledgeDataList(
