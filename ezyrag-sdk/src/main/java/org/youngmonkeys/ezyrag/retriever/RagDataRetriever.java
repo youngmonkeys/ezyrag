@@ -17,14 +17,14 @@
 package org.youngmonkeys.ezyrag.retriever;
 
 import org.youngmonkeys.ezyrag.model.RagDocumentModel;
-import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 
 import java.util.List;
 
 public interface RagDataRetriever {
 
     List<RagDocumentModel> retrieve(
-        List<VectorSearchResultModel> result
+        List<RagVectorSearchResultModel> result
     );
 
     String getName();

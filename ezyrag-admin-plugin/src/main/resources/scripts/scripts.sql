@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS `ezyrag_data_chunks` (
     `content` mediumtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
     `content_hash` char(128) NOT NULL,
     `embedding` mediumblob,
-    `metadata` mediumtext COLLATE utf8mb4_unicode_520_ci,
     `created_at` datetime NOT NULL,
     `updated_at` datetime NOT NULL,
     PRIMARY KEY (`id`),

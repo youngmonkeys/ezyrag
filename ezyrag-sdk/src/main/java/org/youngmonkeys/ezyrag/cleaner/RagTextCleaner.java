@@ -16,9 +16,9 @@
 
 package org.youngmonkeys.ezyrag.cleaner;
 
-import org.youngmonkeys.ezyrag.model.CleanTextModel;
+import org.youngmonkeys.ezyrag.model.RagCleanTextModel;
 
 public interface RagTextCleaner {
 
-    CleanTextModel cleanText(CleanTextModel text);
+    RagCleanTextModel cleanText(RagCleanTextModel text);
 }

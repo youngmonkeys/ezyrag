@@ -19,24 +19,18 @@ package org.youngmonkeys.ezyrag.model;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
-
 @Getter
 @Builder
-public class DataSourceModel {
-    private String sourceType;
-    private long sourceId;
-    private String content;
-    private String url;
+public class RagCleanTextModel {
+    private final String text;
+    private final int cleanTime;
 
-    public Map<String, Object> toMetadata() {
-        Map<String, Object> metadata = new HashMap<>();
-        if (isBlank(url)) {
-            metadata.put("dataSourceUrl", url);
-        }
-        return metadata;
+    public RagCleanTextModel toCleanedText(
+        String cleanedText
+    ) {
+        return new RagCleanTextModel(
+            cleanedText,
+            cleanTime + 1
+        );
     }
 }

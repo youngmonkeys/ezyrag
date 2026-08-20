@@ -23,8 +23,8 @@ import java.util.Map;
 
 @Getter
 @Builder
-public class VectorSearchResultModel {
-    private final String id;
+public class RagVectorSearchResultModel {
+    private final long chunkId;
     private final float score;
     private final Map<String, Object> payload;
 }

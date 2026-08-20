@@ -18,11 +18,11 @@ package org.youngmonkeys.ezyrag.repo;
 
 import com.tvd12.ezydata.database.EzyDatabaseRepository;
 import com.tvd12.ezyfox.database.annotation.EzyQuery;
-import org.youngmonkeys.ezyrag.entity.RagDataChunkEntity;
+import org.youngmonkeys.ezyrag.entity.RagDataChunk;
 import org.youngmonkeys.ezyrag.result.RagDataChunkEmbeddingResult;
 
 public interface DataChunkRepository
-    extends EzyDatabaseRepository<Long, RagDataChunkEntity> {
+    extends EzyDatabaseRepository<Long, RagDataChunk> {
 
     @EzyQuery(
         "UPDATE RagDataChunkEntity e " +
@@ -40,7 +40,7 @@ public interface DataChunkRepository
         long chunkIndex
     );
 
-    RagDataChunkEntity findBySourceTypeAndSourceIdAndChunkIndex(
+    RagDataChunk findBySourceTypeAndSourceIdAndChunkIndex(
         String sourceType,
         long sourceId,
         long chunkIndex

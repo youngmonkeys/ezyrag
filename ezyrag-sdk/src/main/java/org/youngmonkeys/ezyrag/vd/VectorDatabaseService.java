@@ -16,8 +16,8 @@
 
 package org.youngmonkeys.ezyrag.vd;
 
-import org.youngmonkeys.ezyrag.model.VectorPointModel;
-import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
+import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 
 import java.util.List;
 
@@ -32,10 +32,10 @@ public interface VectorDatabaseService {
 
     void upsert(
         String collectionName,
-        List<VectorPointModel> points
+        List<RagVectorPointModel> points
     ) throws Exception;
 
-    List<VectorSearchResultModel> search(
+    List<RagVectorSearchResultModel> search(
         String collectionName,
         float[] vector,
         int limit

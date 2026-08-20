@@ -2,18 +2,18 @@ package org.youngmonkeys.ezyrag.converter;
 
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.time.ClockProxy;
-import org.youngmonkeys.ezyrag.entity.RagDataChunkEntity;
-import org.youngmonkeys.ezyrag.model.SaveRagDataChunkModel;
+import org.youngmonkeys.ezyrag.entity.RagDataChunk;
+import org.youngmonkeys.ezyrag.model.RagSaveDataChunkModel;
 
 @AllArgsConstructor
 public class EzyRagModelToEntityConverter {
 
     private final ClockProxy clock;
 
-    public RagDataChunkEntity toEntity(
-        SaveRagDataChunkModel model
+    public RagDataChunk toEntity(
+        RagSaveDataChunkModel model
     ) {
-        RagDataChunkEntity entity = new RagDataChunkEntity();
+        RagDataChunk entity = new RagDataChunk();
         entity.setSourceType(model.getSourceType());
         entity.setSourceId(model.getSourceId());
         entity.setChunkIndex(model.getChunkIndex());
@@ -23,8 +23,8 @@ public class EzyRagModelToEntityConverter {
     };
 
     public void mergeToEntity(
-        SaveRagDataChunkModel model,
-        RagDataChunkEntity entity
+        RagSaveDataChunkModel model,
+        RagDataChunk entity
     ) {
         entity.setContent(model.getContent());
         entity.setContentHash(model.getContentHash());

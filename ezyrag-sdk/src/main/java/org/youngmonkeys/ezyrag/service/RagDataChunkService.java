@@ -17,17 +17,24 @@
 package org.youngmonkeys.ezyrag.service;
 
 import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyplatform.exception.ResourceNotFoundException;
 import org.youngmonkeys.ezyrag.converter.EzyRagEntityToModelConverter;
 import org.youngmonkeys.ezyrag.converter.EzyRagModelToEntityConverter;
 import org.youngmonkeys.ezyrag.converter.EzyRagResultToModelConverter;
-import org.youngmonkeys.ezyrag.entity.RagDataChunkEntity;
+import org.youngmonkeys.ezyrag.entity.RagDataChunk;
 import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
-import org.youngmonkeys.ezyrag.model.SaveRagDataChunkModel;
+import org.youngmonkeys.ezyrag.model.RagSaveDataChunkModel;
 import org.youngmonkeys.ezyrag.repo.DataChunkRepository;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static com.tvd12.ezyfox.io.EzyLists.newArrayList;
+
 @AllArgsConstructor
-public class DataChunkService {
+public class RagDataChunkService {
 
     private final DataChunkRepository dataChunkRepository;
     private final EzyRagEntityToModelConverter entityToModelConverter;
@@ -35,12 +42,21 @@ public class DataChunkService {
     private final EzyRagResultToModelConverter resultToModelConverter;
 
     public long addDataChunk(
-        SaveRagDataChunkModel model
+        RagSaveDataChunkModel model
     ) {
-        RagDataChunkEntity entity = modelToEntityConverter
+        RagDataChunk entity = modelToEntityConverter
             .toEntity(model);
         dataChunkRepository.save(entity);
         return entity.getId();
+    }
+
+    public void updateDataChunk(
+        long chunkId,
+        RagSaveDataChunkModel model
+    ) {
+        RagDataChunk entity = getDataChunkEntityByIdOrThrow(chunkId);
+        modelToEntityConverter.mergeToEntity(model, entity);
+        dataChunkRepository.save(entity);
     }
 
     public void updateEmbeddingById(
@@ -92,5 +108,28 @@ public class DataChunkService {
                     index
                 )
         );
+    }
+
+    public List<RagDataChunkModel> getDataChunksByIds(
+        Collection<Long> chunkIds
+    ) {
+        if (chunkIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return newArrayList(
+            dataChunkRepository.findListByIds(chunkIds),
+            entityToModelConverter::toModel
+        );
+    }
+
+    private RagDataChunk getDataChunkEntityByIdOrThrow(
+        long chunkId
+    ) {
+        RagDataChunk entity = dataChunkRepository
+            .findById(chunkId);
+        if (entity == null) {
+            throw new ResourceNotFoundException("dataChunk");
+        }
+        return entity;
     }
 }

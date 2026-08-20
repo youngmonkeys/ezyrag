@@ -26,8 +26,8 @@ import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import com.tvd12.ezyhttp.core.exception.HttpNotFoundException;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.constant.VectorDatabaseServiceName;
-import org.youngmonkeys.ezyrag.model.VectorPointModel;
-import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
+import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.ArrayList;
@@ -88,12 +88,12 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
     @Override
     public void upsert(
         String collectionName,
-        List<VectorPointModel> points
+        List<RagVectorPointModel> points
     ) throws Exception {
         String baseUrl = ezyRagSettingService.getQdrantBaseUrl();
         String apiKey = ezyRagSettingService.getQdrantApiKey();
         List<Map<String, Object>> requestPoints = new ArrayList<>(points.size());
-        for (VectorPointModel point : points) {
+        for (RagVectorPointModel point : points) {
             requestPoints.add(
                 EzyMapBuilder.mapBuilder()
                     .put("id", point.getId())
@@ -114,7 +114,7 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<VectorSearchResultModel> search(
+    public List<RagVectorSearchResultModel> search(
         String collectionName,
         float[] vector,
         int limit
@@ -133,10 +133,10 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
         );
         List<Map<String, Object>> result = (List<Map<String, Object>>) responseBody
             .get("result");
-        List<VectorSearchResultModel> searchResults = new ArrayList<>(result.size());
+        List<RagVectorSearchResultModel> searchResults = new ArrayList<>(result.size());
         for (Map<String, Object> point : result) {
             searchResults.add(
-                VectorSearchResultModel.builder()
+                RagVectorSearchResultModel.builder()
                     .id(String.valueOf(point.get("id")))
                     .score(((Number) point.get("score")).floatValue())
                     .payload((Map<String, Object>) point.get("payload"))

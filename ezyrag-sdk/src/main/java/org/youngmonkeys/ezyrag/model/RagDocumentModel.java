@@ -24,6 +24,8 @@ import java.util.Map;
 @Getter
 @Builder
 public class RagDocumentModel {
+    private String sourceType;
+    private long sourceId;
     private String content;
-    private Map<String, Object> metadata;
+    private Map<String, String> metadata;
 }

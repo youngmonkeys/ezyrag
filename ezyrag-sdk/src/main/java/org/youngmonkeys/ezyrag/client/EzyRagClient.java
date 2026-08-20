@@ -16,7 +16,6 @@
 
 package org.youngmonkeys.ezyrag.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tvd12.ezyfox.security.EzySHA256;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import lombok.AllArgsConstructor;
@@ -30,19 +29,20 @@ import org.youngmonkeys.ezyrag.embbeding.RagEmbeddingService;
 import org.youngmonkeys.ezyrag.embbeding.RagEmbeddingServiceManager;
 import org.youngmonkeys.ezyrag.loader.RagDataLoader;
 import org.youngmonkeys.ezyrag.loader.RagDataLoaderManager;
-import org.youngmonkeys.ezyrag.model.DataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagChunkedResultModel;
 import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
+import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagDocumentModel;
 import org.youngmonkeys.ezyrag.model.RagInputData;
-import org.youngmonkeys.ezyrag.model.SaveRagDataChunkModel;
-import org.youngmonkeys.ezyrag.model.VectorPointModel;
-import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.RagSaveDataChunkModel;
+import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
+import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 import org.youngmonkeys.ezyrag.processor.RagQueryProcessorManager;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetriever;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetrieverManager;
-import org.youngmonkeys.ezyrag.service.DataChunkService;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
+import org.youngmonkeys.ezyrag.service.RagDataChunkMetaService;
+import org.youngmonkeys.ezyrag.service.RagDataChunkService;
 import org.youngmonkeys.ezyrag.vd.VectorDatabaseService;
 import org.youngmonkeys.ezyrag.vd.VectorDatabaseServiceManager;
 
@@ -56,7 +56,6 @@ import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 @AllArgsConstructor
 public class EzyRagClient {
 
-    private final ObjectMapper objectMapper;
     private final RagDataChunkerManager dataChunkerManager;
     private final RagDataLoaderManager dataLoaderManager;
     private final RagDataRetrieverManager dataRetrieverManager;
@@ -65,11 +64,12 @@ public class EzyRagClient {
     private final RagQueryProcessorManager queryProcessorManager;
     private final RagTextCleanerManager textCleanerManager;
     private final VectorDatabaseServiceManager vectorDatabaseServiceManager;
-    private final DataChunkService dataChunkService;
+    private final RagDataChunkService dataChunkService;
+    private final RagDataChunkMetaService dataChunkMetaService;
     private final EzyRagSettingService settingService;
 
     public void storeData(
-        DataSourceModel dataSource
+        RagDataSourceModel dataSource
     ) throws Exception {
         String sourceType = dataSource.getSourceType();
         RagDataLoader dataLoader = dataLoaderManager
@@ -149,7 +149,7 @@ public class EzyRagClient {
                         .getEmbeddingBySourceTypeAndSourceIdAndIndex(
                             sourceType,
                             sourceId,
-                            chunkIndex
+                            chunkIndex + 1
                         );
                 String content = chunkedResult.getContent();
                 String contentHash = EzySHA256.cryptUtf(content);
@@ -158,27 +158,32 @@ public class EzyRagClient {
                     .putAll(dataSourceMetadata)
                     .putAll(chunkedResult.getMetadata())
                     .toMap();
-                String metadataText = objectMapper
-                    .writeValueAsString(metadata);
                 long chunkId;
                 String contentHashInDb = null;
                 float[] embedding = null;
-                if (chunkEmbedding != null) {
+                RagSaveDataChunkModel saveDataChunk = RagSaveDataChunkModel
+                    .builder()
+                    .sourceType(sourceType)
+                    .sourceId(sourceId)
+                    .chunkIndex(chunkIndex + 1)
+                    .content(content)
+                    .contentHash(contentHash)
+                    .build();
+                if (chunkEmbedding == null) {
+                    chunkId = dataChunkService.addDataChunk(saveDataChunk);
+                } else {
                     chunkId = chunkEmbedding.getId();
                     contentHashInDb = chunkEmbedding.getContentHash();
                     embedding = chunkEmbedding.getEmbedding();
-                } else {
-                    chunkId = dataChunkService.addDataChunk(
-                        SaveRagDataChunkModel.builder()
-                            .sourceType(sourceType)
-                            .sourceId(sourceId)
-                            .chunkIndex(chunkIndex + 1)
-                            .content(content)
-                            .contentHash(contentHash)
-                            .metadata(metadataText)
-                            .build()
+                    dataChunkService.updateDataChunk(
+                        chunkId,
+                        saveDataChunk
                     );
                 }
+                dataChunkMetaService.saveDataChunkMeta(
+                    chunkId,
+                    metadata
+                );
                 boolean sameHash = contentHash.equals(contentHashInDb);
                 if (embedding == null || !sameHash) {
                     embedding = embeddingService.embed(content);
@@ -189,8 +194,6 @@ public class EzyRagClient {
                 }
                 Map<String, Object> payload = EzyMapBuilder
                     .mapBuilder()
-                    .putAll(metadata)
-                    .put("content", content)
                     .put("sourceType", sourceType)
                     .put("sourceId", sourceId)
                     .put("chunkIndex", chunkIndex + 1)
@@ -198,8 +201,8 @@ public class EzyRagClient {
                 vectorDatabaseService.upsert(
                     settingService.getQdrantCollectionName(),
                     Collections.singletonList(
-                        VectorPointModel.builder()
-                            .id(String.valueOf(chunkId))
+                        RagVectorPointModel.builder()
+                            .id(chunkId)
                             .vector(embedding)
                             .payload(payload)
                             .build()
@@ -229,7 +232,7 @@ public class EzyRagClient {
                 .getEmbeddingServiceByName(
                     settingService.getVectorDatabaseService()
                 );
-        List<VectorSearchResultModel> result = vectorDatabaseService
+        List<RagVectorSearchResultModel> result = vectorDatabaseService
             .search(
                 settingService.getQdrantCollectionName(),
                 vector,

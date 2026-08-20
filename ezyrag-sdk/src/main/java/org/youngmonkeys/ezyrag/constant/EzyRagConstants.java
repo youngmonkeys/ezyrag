@@ -20,7 +20,6 @@ public final class EzyRagConstants {
 
     public static final String DEFAULT_QDRANT_BASE_URL = "http://localhost:6333";
     public static final String DEFAULT_QDRANT_COLLECTION_NAME = "ezyrag_data_chunks";
-    public static final int DEFAULT_EMBEDDING_VECTOR_SIZE = 1536;
     public static final String DEFAULT_VECTOR_DATABASE_SERVICE = "QDRANT";
     public static final String DEFAULT_EMBEDDING_SERVICE = "OPENAI";
     public static final String DEFAULT_DATA_CHUNKER = "HIERARCHICAL";
@@ -45,6 +44,8 @@ public final class EzyRagConstants {
         "ezyrag_data_retriever";
     public static final String SETTING_NAME_VECTOR_DATABASE_SERVICE =
         "ezyrag_vector_database_service";
+
+    public static final String META_KEY_DATA_TYPE = "data_type";
 
     private EzyRagConstants() {}
 }

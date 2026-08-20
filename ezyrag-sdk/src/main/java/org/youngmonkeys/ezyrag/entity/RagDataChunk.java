@@ -30,16 +30,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_DATA_CHUNK;
+import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_NAME_DATA_CHUNK;
 
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name = TABLE_DATA_CHUNK)
+@Table(name = TABLE_NAME_DATA_CHUNK)
 @AllArgsConstructor
 @NoArgsConstructor
-public class RagDataChunkEntity {
+public class RagDataChunk {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -60,8 +60,6 @@ public class RagDataChunkEntity {
     private String contentHash;
 
     private float[] embedding;
-
-    private String metadata;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

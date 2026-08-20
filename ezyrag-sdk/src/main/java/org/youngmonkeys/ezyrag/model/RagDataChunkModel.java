@@ -29,7 +29,6 @@ public class RagDataChunkModel {
     private String content;
     private String contentHash;
     private float[] embedding;
-    private String metadata;
     private long createdAt;
     private long updatedAt;
 }

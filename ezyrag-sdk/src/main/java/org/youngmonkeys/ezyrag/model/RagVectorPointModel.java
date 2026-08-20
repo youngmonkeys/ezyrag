@@ -19,18 +19,12 @@ package org.youngmonkeys.ezyrag.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @Builder
-public class CleanTextModel {
-    private final String text;
-    private final int cleanTime;
-
-    public CleanTextModel toCleanedText(
-        String cleanedText
-    ) {
-        return new CleanTextModel(
-            cleanedText,
-            cleanTime + 1
-        );
-    }
+public class RagVectorPointModel {
+    private final long id;
+    private final float[] vector;
+    private final Map<String, Object> payload;
 }

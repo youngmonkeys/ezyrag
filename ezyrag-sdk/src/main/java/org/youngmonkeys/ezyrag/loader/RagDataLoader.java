@@ -16,7 +16,7 @@
 
 package org.youngmonkeys.ezyrag.loader;
 
-import org.youngmonkeys.ezyrag.model.DataSourceModel;
+import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagInputData;
 
 import java.util.Iterator;
@@ -24,7 +24,7 @@ import java.util.Iterator;
 public interface RagDataLoader {
 
     Iterator<RagInputData> load(
-        DataSourceModel model
+        RagDataSourceModel model
     );
 
     String getDataSourceType();

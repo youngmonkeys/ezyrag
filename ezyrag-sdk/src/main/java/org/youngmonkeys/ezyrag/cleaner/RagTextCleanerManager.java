@@ -18,7 +18,7 @@ package org.youngmonkeys.ezyrag.cleaner;
 
 import com.tvd12.ezyfox.bean.EzySingletonFactory;
 import com.tvd12.ezyfox.concurrent.EzyLazyInitializer;
-import org.youngmonkeys.ezyrag.model.CleanTextModel;
+import org.youngmonkeys.ezyrag.model.RagCleanTextModel;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class RagTextCleanerManager {
     public String cleanText(
         String text
     ) {
-        CleanTextModel cleanTextModel = CleanTextModel.builder()
+        RagCleanTextModel cleanTextModel = RagCleanTextModel.builder()
             .text(text)
             .build();
         for (RagTextCleaner cleaner : knowledgeDataFetchers.get()) {
