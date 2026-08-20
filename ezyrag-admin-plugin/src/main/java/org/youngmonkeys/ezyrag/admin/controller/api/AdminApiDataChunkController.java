@@ -18,17 +18,23 @@ package org.youngmonkeys.ezyrag.admin.controller.api;
 
 import com.tvd12.ezyfox.annotation.EzyFeature;
 import com.tvd12.ezyhttp.core.annotation.Description;
+import com.tvd12.ezyhttp.core.response.ResponseEntity;
 import com.tvd12.ezyhttp.server.core.annotation.Api;
 import com.tvd12.ezyhttp.server.core.annotation.Authenticated;
 import com.tvd12.ezyhttp.server.core.annotation.Controller;
 import com.tvd12.ezyhttp.server.core.annotation.DoGet;
+import com.tvd12.ezyhttp.server.core.annotation.DoPost;
+import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import com.tvd12.ezyhttp.server.core.annotation.RequestParam;
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.admin.controller.service.AdminRagDataChunkControllerService;
-import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
-import org.youngmonkeys.ezyrag.pagination.DefaultRagDataChunkFilter;
 import org.youngmonkeys.ezyplatform.admin.validator.AdminCommonValidator;
 import org.youngmonkeys.ezyplatform.model.PaginationModel;
+import org.youngmonkeys.ezyrag.admin.client.AdminEzyRagClient;
+import org.youngmonkeys.ezyrag.admin.controller.service.AdminRagDataChunkControllerService;
+import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
+import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
+import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
+import org.youngmonkeys.ezyrag.pagination.DefaultRagDataChunkFilter;
 
 import static org.youngmonkeys.ezyplatform.util.StringConverters.trimOrNull;
 
@@ -39,8 +45,10 @@ import static org.youngmonkeys.ezyplatform.util.StringConverters.trimOrNull;
 @AllArgsConstructor
 public class AdminApiDataChunkController {
 
+    private final AdminEzyRagClient ragClient;
     private final AdminRagDataChunkControllerService dataChunkControllerService;
     private final AdminCommonValidator commonValidator;
+    private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
     @Description("Get the data chunks with pagination")
     @DoGet("/data-chunks")
@@ -67,5 +75,17 @@ public class AdminApiDataChunkController {
             lastPage,
             limit
         );
+    }
+
+    @DoPost("/chunk-data")
+    public ResponseEntity chunkPost(
+        @RequestBody AdminChunkDataRequest request
+    ) throws Exception {
+        ragClient.chunkData(
+            requestToModelConverter.toDataSourceModel(
+                request
+            )
+        );
+        return ResponseEntity.noContent();
     }
 }

@@ -14,27 +14,28 @@
  ~ limitations under the License.
 -->
 
-<!DOCTYPE html>
 <html
         lang="en"
         xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{ezyadmin}">
-<head>
-    <script>
-        const ezyrag = {};
-    </script>
-</head>
+        xmlns:th="http://www.thymeleaf.org">
 <body>
-<div layout:fragment="content" class="row">
-    <th:block th:replace="~{ezyrag/chunk/chunk-text-data :: content}" />
-    <th:block th:replace="~{ezyrag/chunk/chunk-list :: content}" />
-</div>
-<th:block layout:fragment="scripts">
-    <th:block th:replace="~{ezyrag/chunk/scripts :: chunk-data}" />
-    <th:block th:replace="~{ezyrag/chunk/chunk-text-data :: scripts}" />
-    <th:block th:replace="~{ezyrag/chunk/chunk-list :: scripts}" />
-</th:block>
+<script th:fragment="chunk-data">
+ezyrag.chunkData = function(formData) {
+    $.ajax({
+        type: 'POST',
+        url: '/ezyrag/api/v1/chunk-data',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function () {
+            ezyadmin.hideFormErrors(formData);
+            $('#chunkTextDataContent').val('');
+            ezyrag.fetchDataChunkList();
+        },
+        error: function (e) {
+            ezyadmin.processUpdateApiErrors(formData, e);
+        }
+    });
+}
+</script>
 </body>
 </html>

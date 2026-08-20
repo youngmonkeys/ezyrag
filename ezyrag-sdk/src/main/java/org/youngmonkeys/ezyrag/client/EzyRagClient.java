@@ -69,7 +69,7 @@ public class EzyRagClient {
     private final EzyRagSettingService settingService;
 
     @SuppressWarnings("MethodLength")
-    public void storeData(
+    public void chunkData(
         RagDataSourceModel dataSource
     ) throws Exception {
         String sourceType = dataSource.getSourceType();

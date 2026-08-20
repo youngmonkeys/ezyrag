@@ -14,19 +14,16 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.web.retriever;
+package org.youngmonkeys.ezyrag.admin.request;
 
-import com.tvd12.ezyfox.bean.EzySingletonFactory;
-import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyrag.retriever.RagDataRetrieverManager;
+import lombok.Getter;
+import lombok.Setter;
 
-@EzySingleton
-public class WebRagDataRetrieverManager
-    extends RagDataRetrieverManager {
-
-    public WebRagDataRetrieverManager(
-        EzySingletonFactory singletonFactory
-    ) {
-        super(singletonFactory);
-    }
+@Getter
+@Setter
+public class AdminChunkDataRequest {
+    private String sourceType;
+    private long sourceId;
+    private String content;
+    private String url;
 }
