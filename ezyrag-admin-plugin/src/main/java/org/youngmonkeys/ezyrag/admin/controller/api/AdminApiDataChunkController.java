@@ -34,8 +34,13 @@ import org.youngmonkeys.ezyrag.admin.controller.service.AdminRagDataChunkControl
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
 import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
+import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 import org.youngmonkeys.ezyrag.pagination.DefaultRagDataChunkFilter;
 
+import java.util.List;
+import java.util.Set;
+
+import static org.youngmonkeys.ezyplatform.util.CollectionFunctions.toNullIfEmpty;
 import static org.youngmonkeys.ezyplatform.util.StringConverters.trimOrNull;
 
 @Api
@@ -53,8 +58,9 @@ public class AdminApiDataChunkController {
     @Description("Get the data chunks with pagination")
     @DoGet("/data-chunks")
     public PaginationModel<AdminRagDataChunkResponse> dataChunksGet(
+        @RequestParam(value = "chunkIds") Set<Long> chunkIds,
         @RequestParam(value = "sourceType") String sourceType,
-        @RequestParam(value = "sourceId", defaultValue = "0") long sourceId,
+        @RequestParam(value = "sourceId") Long sourceId,
         @RequestParam(value = "keyword") String keyword,
         @RequestParam(value = "sortOrder") String sortOrder,
         @RequestParam(value = "nextPageToken") String nextPageToken,
@@ -65,8 +71,9 @@ public class AdminApiDataChunkController {
         commonValidator.validatePageSize(limit);
         return dataChunkControllerService.getDataChunks(
             DefaultRagDataChunkFilter.builder()
+                .chunkIds(toNullIfEmpty(chunkIds))
                 .sourceType(trimOrNull(sourceType))
-                .sourceId(sourceId > 0 ? sourceId : null)
+                .sourceId(sourceId)
                 .likeKeyword(trimOrNull(keyword))
                 .build(),
             sortOrder,
@@ -87,5 +94,16 @@ public class AdminApiDataChunkController {
             )
         );
         return ResponseEntity.noContent();
+    }
+
+    @DoPost("/chunk-data/search")
+    public List<RagVectorSearchResultModel> chunkDataSearchGet(
+        @RequestParam(value = "query") String query,
+        @RequestParam(value = "limit", defaultValue = "12") int limit
+    ) throws Exception {
+        return ragClient.searchDataList(
+            query,
+            limit
+        );
     }
 }

@@ -21,17 +21,20 @@
 <body>
 <script th:fragment="chunk-data">
 ezyrag.chunkData = function(formData) {
+    ezyadmin.showLoadingScreen();
     $.ajax({
         type: 'POST',
         url: '/ezyrag/api/v1/chunk-data',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function () {
+            ezyadmin.hideLoadingScreen();
             ezyadmin.hideFormErrors(formData);
             $('#chunkTextDataContent').val('');
             ezyrag.fetchDataChunkList();
         },
         error: function (e) {
+            ezyadmin.hideLoadingScreen();
             ezyadmin.processUpdateApiErrors(formData, e);
         }
     });

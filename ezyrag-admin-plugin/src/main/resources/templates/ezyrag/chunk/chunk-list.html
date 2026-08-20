@@ -26,17 +26,20 @@
             <div class="col-lg-3 col-md-4 page-search">
                 <label for="sourceTypeInput" class="text-nowrap">[[#{source_type}]]: </label>
                 <input type="text" id="sourceTypeInput" class="form-control"
-                       th:placeholder="#{source_type}">
+                       th:placeholder="#{source_type}"
+                       onchange="ezyrag.onDataChunkFilterChanged();">
             </div>
             <div class="col-lg-3 col-md-4 page-search">
                 <label for="sourceIdInput" class="text-nowrap">[[#{source_id}]]: </label>
                 <input type="number" id="sourceIdInput" class="form-control"
-                       th:placeholder="#{source_id}">
+                       th:placeholder="#{source_id}"
+                       onchange="ezyrag.onDataChunkFilterChanged();">
             </div>
             <div class="col-lg-3 col-md-4 page-search">
                 <label for="keywordInput" class="text-nowrap">[[#{keyword}]]: </label>
                 <input type="text" id="keywordInput" class="form-control"
-                       th:placeholder="#{keyword}">
+                       th:placeholder="#{keyword}"
+                       onkeydown="ezyrag.onKeydownToFetchDataChunkList(event);">
             </div>
         </div>
     </div>
@@ -50,6 +53,7 @@
                         <th>[[#{source_type}]]</th>
                         <th class="text-center">[[#{source_id}]]</th>
                         <th class="text-center">[[#{chunk_index}]]</th>
+                        <th class="text-center">[[#{score}]]</th>
                         <th>[[#{content}]]</th>
                         <th class="text-center">[[#{has_embedding}]]</th>
                         <th class="text-center">[[#{created_at}]]</th>
@@ -68,18 +72,22 @@
                 </span>
                 <ul class="pagination pagination-sm m-0 float-right">
                     <li class="page-item">
-                        <a class="page-link cursor-pointer" id="firstPageButton">
+                        <a class="page-link cursor-pointer" id="firstPageButton"
+                           onclick="ezyrag.fetchDataChunkList('first');">
                             <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
                         </a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link cursor-pointer" id="prevPageButton">[[#{prev}]]</a>
+                        <a class="page-link cursor-pointer" id="prevPageButton"
+                           onclick="ezyrag.fetchDataChunkList('prev');">[[#{prev}]]</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link cursor-pointer" id="nextPageButton">[[#{next}]]</a>
+                        <a class="page-link cursor-pointer" id="nextPageButton"
+                           onclick="ezyrag.fetchDataChunkList('next');">[[#{next}]]</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link cursor-pointer" id="lastPageButton">
+                        <a class="page-link cursor-pointer" id="lastPageButton"
+                           onclick="ezyrag.fetchDataChunkList('last');">
                             <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
                         </a>
                     </li>
@@ -90,41 +98,18 @@
 </th:block>
 <script th:fragment="scripts">
 ezyrag.lastDataChunkPageToken = {};
+ezyrag.dataChunkScoreById = {};
+ezyrag.searchDataChunkIds = [];
 
-$(document).ready(() => {
-    ezyrag.fillSearchInputsFromUrl();
-    ezyrag.fetchDataChunkList();
-});
-
-$('#searchButton').click(() => {
-    ezyrag.fetchDataChunkList();
-});
-
-$('#keywordInput').keydown((e) => {
-    if (e.key === 'Enter') {
-        ezyrag.fetchDataChunkList();
+ezyrag.onKeydownToFetchDataChunkList = function(event) {
+    if (event.key === 'Enter') {
+        ezyrag.fetchDataChunkList('first');
     }
-});
+}
 
-$('#sourceTypeInput, #sourceIdInput, #sortOrderSelect').change(() => {
-    ezyrag.fetchDataChunkList();
-});
-
-$('#firstPageButton').click(() => {
+ezyrag.onDataChunkFilterChanged = function() {
     ezyrag.fetchDataChunkList('first');
-});
-
-$('#lastPageButton').click(() => {
-    ezyrag.fetchDataChunkList('last');
-});
-
-$('#nextPageButton').click(() => {
-    ezyrag.fetchDataChunkList('next');
-});
-
-$('#prevPageButton').click(() => {
-    ezyrag.fetchDataChunkList('prev');
-});
+}
 
 ezyrag.changeBrowserUrl = function() {
     var url = location.pathname;
@@ -156,6 +141,23 @@ ezyrag.buildDataChunkFilterQueryString = function() {
     return queryString;
 }
 
+ezyrag.buildDataChunkApiFilterQueryString = function() {
+    var queryString = '';
+    var sourceType = $('#sourceTypeInput').val();
+    var sourceId = $('#sourceIdInput').val();
+    var sortOrder = $('#sortOrderSelect').val();
+    if (sourceType) {
+        queryString += '&sourceType=' + encodeURIComponent(sourceType);
+    }
+    if (sourceId) {
+        queryString += '&sourceId=' + encodeURIComponent(sourceId);
+    }
+    if (sortOrder) {
+        queryString += '&sortOrder=' + encodeURIComponent(sortOrder);
+    }
+    return queryString;
+}
+
 ezyrag.fillSearchInputsFromUrl = function() {
     var params = new URLSearchParams(location.search);
     $('#sourceTypeInput').val(params.get('sourceType') || '');
@@ -165,7 +167,60 @@ ezyrag.fillSearchInputsFromUrl = function() {
 }
 
 ezyrag.fetchDataChunkList = function(action) {
-    var queryString = ezyrag.buildDataChunkFilterQueryString();
+    var keyword = ($('#keywordInput').val() || '').trim();
+    if (keyword) {
+        ezyrag.searchDataChunks(action, keyword);
+        return;
+    }
+    ezyrag.dataChunkScoreById = {};
+    ezyrag.searchDataChunkIds = [];
+    ezyrag.fetchDataChunkListByFilter(action);
+}
+
+ezyrag.searchDataChunks = function(action, keyword) {
+    if (action !== 'first' && action) {
+        return;
+    }
+    ezyadmin.showLoadingScreen();
+    $.ajax({
+        url: '/ezyrag/api/v1/chunk-data/search?limit=12&query='
+            + encodeURIComponent(keyword),
+        type: 'POST',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        ezyadmin.hideLoadingScreen();
+        ezyrag.dataChunkScoreById = {};
+        ezyrag.searchDataChunkIds = [];
+        (data || []).forEach((item) => {
+            ezyrag.searchDataChunkIds.push(item.chunkId);
+            ezyrag.dataChunkScoreById[item.chunkId] = item.score;
+        });
+        if (ezyrag.searchDataChunkIds.length === 0) {
+            ezyrag.lastDataChunkPageToken = {};
+            $('#dataChunkCountText').text(0);
+            $('#totalDataChunkText').text(0);
+            $('#dataChunkListBody').html('');
+            ezyrag.decoratePaginationButtons({});
+            ezyrag.changeBrowserUrl();
+            return;
+        }
+        ezyrag.fetchDataChunkListByFilter('first');
+    })
+    .fail(function(e) {
+        ezyadmin.hideLoadingScreen();
+        ezyadmin.processUpdateApiErrors({}, e);
+    });
+}
+
+ezyrag.fetchDataChunkListByFilter = function(action) {
+    var queryString = ezyrag.searchDataChunkIds.length
+        ? ezyrag.buildDataChunkApiFilterQueryString()
+        : ezyrag.buildDataChunkFilterQueryString();
+    if (ezyrag.searchDataChunkIds.length) {
+        queryString += '&chunkIds='
+            + encodeURIComponent(ezyrag.searchDataChunkIds.join(','));
+    }
     if (action === 'next') {
         if (ezyrag.lastDataChunkPageToken.next) {
             queryString += '&nextPageToken='
@@ -192,13 +247,39 @@ ezyrag.fetchDataChunkList = function(action) {
         $('#dataChunkCountText').text(data.count);
         $('#totalDataChunkText').text(data.total);
         ezyrag.lastDataChunkPageToken = data.pageToken || {};
-        $('#dataChunkListBody').html(ezyrag.buildDataChunkListBodyHtml(data.items || []));
+        $('#dataChunkListBody').html(
+            ezyrag.buildDataChunkListBodyHtml(
+                ezyrag.sortDataChunksBySearchResult(data.items || [])
+            )
+        );
         ezyrag.decoratePaginationButtons(data);
         ezyrag.changeBrowserUrl();
     })
     .fail(function(e) {
         ezyadmin.processGetApiErrors(e);
     });
+}
+
+ezyrag.sortDataChunksBySearchResult = function(dataChunks) {
+    if (!ezyrag.searchDataChunkIds.length) {
+        return dataChunks;
+    }
+    var dataChunkById = {};
+    dataChunks.forEach((dataChunk) => {
+        dataChunkById[dataChunk.id] = dataChunk;
+    });
+    var answer = [];
+    ezyrag.searchDataChunkIds.forEach((id) => {
+        if (dataChunkById[id]) {
+            answer.push(dataChunkById[id]);
+        }
+    });
+    return answer;
+}
+
+ezyrag.formatDataChunkScore = function(dataChunkId) {
+    var score = ezyrag.dataChunkScoreById[dataChunkId];
+    return score == null ? '' : Number(score).toFixed(4);
 }
 
 ezyrag.decoratePaginationButtons = function(data) {
@@ -233,6 +314,7 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
             <td>${ezyadmin.escapeHtml(dataChunk.sourceType || '')}</td>
             <td class="text-center">${dataChunk.sourceId}</td>
             <td class="text-center">${dataChunk.chunkIndex}</td>
+            <td class="text-center">${ezyrag.formatDataChunkScore(dataChunk.id)}</td>
             <td class="text-wrap" style="min-width: 360px; max-width: 520px;">
                 ${ezyadmin.escapeHtml(ezyadmin.removeHtmlTagAndSub(dataChunk.content || '', 240))}
             </td>
@@ -242,6 +324,9 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
         </tr>
         `;
 }
+
+ezyrag.fillSearchInputsFromUrl();
+ezyrag.fetchDataChunkList();
 </script>
 </body>
 </html>

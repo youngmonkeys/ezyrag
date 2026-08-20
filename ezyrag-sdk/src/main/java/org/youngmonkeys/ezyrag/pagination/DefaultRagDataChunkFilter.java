@@ -25,6 +25,7 @@ import java.util.Collection;
 @Getter
 @Builder
 public class DefaultRagDataChunkFilter implements RagDataChunkFilter {
+    private final Collection<Long> chunkIds;
     private final String sourceType;
     private final Long sourceId;
     private final String likeKeyword;
@@ -43,6 +44,9 @@ public class DefaultRagDataChunkFilter implements RagDataChunkFilter {
     @Override
     public String matchingCondition() {
         EzyQueryConditionBuilder answer = new EzyQueryConditionBuilder();
+        if (chunkIds != null) {
+            answer.and("e.id IN :chunkIds");
+        }
         if (sourceType != null) {
             answer.and("e.sourceType = :sourceType");
         }
