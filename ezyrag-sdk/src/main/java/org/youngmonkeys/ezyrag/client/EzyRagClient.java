@@ -36,6 +36,7 @@ import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
 import org.youngmonkeys.ezyrag.model.RagDocumentModel;
 import org.youngmonkeys.ezyrag.model.RagInputData;
 import org.youngmonkeys.ezyrag.model.SaveRagDataChunkModel;
+import org.youngmonkeys.ezyrag.model.VectorPointModel;
 import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
 import org.youngmonkeys.ezyrag.processor.RagQueryProcessorManager;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetriever;
@@ -45,6 +46,7 @@ import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 import org.youngmonkeys.ezyrag.vd.VectorDatabaseService;
 import org.youngmonkeys.ezyrag.vd.VectorDatabaseServiceManager;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -141,9 +143,7 @@ public class EzyRagClient {
             );
             List<RagChunkedResultModel> chunkedResults =
                 chunker.chunk(text);
-            for (int i = 0; i < chunkedResults.size(); ++i) {
-                RagChunkedResultModel chunkedResult =
-                    chunkedResults.get(i);
+            for (RagChunkedResultModel chunkedResult : chunkedResults) {
                 RagDataChunkEmbeddingModel chunkEmbedding =
                     dataChunkService
                         .getEmbeddingBySourceTypeAndSourceIdAndIndex(
@@ -187,10 +187,25 @@ public class EzyRagClient {
                         embedding
                     );
                 }
+                Map<String, Object> payload = EzyMapBuilder
+                    .mapBuilder()
+                    .putAll(metadata)
+                    .put("content", content)
+                    .put("sourceType", sourceType)
+                    .put("sourceId", sourceId)
+                    .put("chunkIndex", chunkIndex + 1)
+                    .toMap();
                 vectorDatabaseService.upsert(
                     settingService.getQdrantCollectionName(),
-                    
+                    Collections.singletonList(
+                        VectorPointModel.builder()
+                            .id(String.valueOf(chunkId))
+                            .vector(embedding)
+                            .payload(payload)
+                            .build()
+                    )
                 );
+                ++chunkIndex;
             }
         }
         dataChunkService.deleteDataChunkBySourceTypeAndSourceIdAndIndexGt(
@@ -203,7 +218,7 @@ public class EzyRagClient {
     public List<KnowledgeData> getKnowledgeDataList(
         String query,
         int limit
-    ) {
+    ) throws Exception {
         String processedQuery = queryProcessorManager
             .processQuery(query);
         RagEmbeddingService embeddingService = embeddingServiceManager
@@ -214,7 +229,12 @@ public class EzyRagClient {
                 .getEmbeddingServiceByName(
                     settingService.getVectorDatabaseService()
                 );
-        List<VectorSearchResultModel> result = vectorDatabaseService.search(vector, limit);
+        List<VectorSearchResultModel> result = vectorDatabaseService
+            .search(
+                settingService.getQdrantCollectionName(),
+                vector,
+                limit
+            );
         RagDataRetriever retriever = dataRetrieverManager
             .getDataRetrieverByName(settingService.getDataRetriever());
         List<RagDocumentModel> documents = retriever
