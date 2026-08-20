@@ -19,6 +19,8 @@ package org.youngmonkeys.ezyrag.admin.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @Builder
 public class AdminRagDataChunkResponse {
@@ -29,6 +31,7 @@ public class AdminRagDataChunkResponse {
     private String content;
     private String contentHash;
     private boolean hasEmbedding;
+    private Map<String, String> metadata;
     private long createdAt;
     private long updatedAt;
 }

@@ -20,11 +20,14 @@ import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
 
+import java.util.Map;
+
 @EzySingleton
 public class AdminEzyRagModelToResponseConverter {
 
     public AdminRagDataChunkResponse toDataChunkResponse(
-        RagDataChunkModel model
+        RagDataChunkModel model,
+        Map<String, String> metadata
     ) {
         return AdminRagDataChunkResponse.builder()
             .id(model.getId())
@@ -34,6 +37,7 @@ public class AdminEzyRagModelToResponseConverter {
             .content(model.getContent())
             .contentHash(model.getContentHash())
             .hasEmbedding(model.getEmbedding() != null)
+            .metadata(metadata)
             .createdAt(model.getCreatedAt())
             .updatedAt(model.getUpdatedAt())
             .build();

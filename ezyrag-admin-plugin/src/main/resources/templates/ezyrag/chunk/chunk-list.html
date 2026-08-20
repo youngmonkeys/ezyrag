@@ -55,6 +55,7 @@
                         <th class="text-center">[[#{chunk_index}]]</th>
                         <th class="text-center data-chunk-score-column">[[#{score}]]</th>
                         <th>[[#{content}]]</th>
+                        <th>[[#{metadata}]]</th>
                         <th class="text-center">[[#{has_embedding}]]</th>
                         <th class="text-center">[[#{created_at}]]</th>
                         <th class="text-center">[[#{updated_at}]]</th>
@@ -294,6 +295,15 @@ ezyrag.formatDataChunkScore = function(dataChunkId) {
     return score == null ? '' : Number(score).toFixed(4);
 }
 
+ezyrag.formatDataChunkMetadata = function(metadata) {
+    if (!metadata) {
+        return '';
+    }
+    return Object.keys(metadata)
+        .map((key) => `${ezyadmin.escapeHtml(key)}: ${ezyadmin.escapeHtml(metadata[key])}`)
+        .join('<br/>');
+}
+
 ezyrag.decoratePaginationButtons = function(data) {
     if (data.continuation && data.continuation.hasNext) {
         $('#nextPageButton').removeClass('text-secondary');
@@ -332,6 +342,9 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
             ${scoreHtml}
             <td class="text-wrap" style="min-width: 360px; max-width: 520px;">
                 ${ezyadmin.escapeHtml(ezyadmin.removeHtmlTagAndSub(dataChunk.content || '', 240))}
+            </td>
+            <td class="text-wrap" style="min-width: 160px; max-width: 260px;">
+                ${ezyrag.formatDataChunkMetadata(dataChunk.metadata)}
             </td>
             <td class="text-center">${dataChunk.hasEmbedding ? '<i class="fas fa-check text-success"></i>' : ''}</td>
             <td class="text-center">${ezyadmin.formatTimeStamp(dataChunk.createdAt)}</td>

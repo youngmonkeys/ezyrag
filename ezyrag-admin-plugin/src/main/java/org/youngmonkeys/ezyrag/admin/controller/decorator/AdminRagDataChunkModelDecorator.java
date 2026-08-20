@@ -21,20 +21,36 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.model.PaginationModel;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagModelToResponseConverter;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
+import org.youngmonkeys.ezyrag.admin.service.AdminRagDataChunkMetaService;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @EzySingleton
 @AllArgsConstructor
 public class AdminRagDataChunkModelDecorator {
 
     private final AdminEzyRagModelToResponseConverter modelToResponseConverter;
+    private final AdminRagDataChunkMetaService dataChunkMetaService;
 
     public PaginationModel<AdminRagDataChunkResponse>
     decorateToDataChunkPaginationResponse(
         PaginationModel<RagDataChunkModel> pagination
     ) {
+        List<RagDataChunkModel> models = pagination.getItems();
+        Map<Long, Map<String, String>> metaMap = dataChunkMetaService
+            .getDataChunkMetaMapByIds(
+                models.stream()
+                    .map(RagDataChunkModel::getId)
+                    .collect(Collectors.toList())
+            );
         return pagination.map(
-            modelToResponseConverter::toDataChunkResponse
+            model -> modelToResponseConverter.toDataChunkResponse(
+                model,
+                metaMap.get(model.getId())
+            )
         );
     }
 }
