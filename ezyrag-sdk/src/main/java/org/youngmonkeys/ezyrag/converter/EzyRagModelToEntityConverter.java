@@ -36,7 +36,7 @@ public class EzyRagModelToEntityConverter {
         mergeToEntity(model, entity);
         entity.setCreatedAt(entity.getUpdatedAt());
         return entity;
-    };
+    }
 
     public void mergeToEntity(
         RagSaveDataChunkModel model,
@@ -44,8 +44,6 @@ public class EzyRagModelToEntityConverter {
     ) {
         entity.setContent(model.getContent());
         entity.setContentHash(model.getContentHash());
-        entity.setEmbedding(model.getEmbedding());
-        entity.setMetadata(model.getMetadata());
         entity.setUpdatedAt(clock.nowDateTime());
     }
 }

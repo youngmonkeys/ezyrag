@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.youngmonkeys.ezyrag.constant.RagDataChunkerName;
+import org.youngmonkeys.ezyrag.model.RagChunkedResultModel;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
@@ -138,7 +139,7 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
      *         does not
      */
     @Override
-    public List<RagDataChunkModel> chunk(String data) {
+    public List<RagChunkedResultModel> chunk(String data) {
         if (isBlank(data)) {
             return Collections.emptyList();
         }
@@ -148,7 +149,7 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
 
         if (content.length() <= maxChunkLength) {
             return Collections.singletonList(
-                toChunkData(content)
+                toChunkedResult(content)
             );
         }
 
@@ -161,10 +162,10 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
                 .getKnowledgeChunkSentenceBoundaryPattern()
         );
 
-        List<RagDataChunkModel> result =
+        List<RagChunkedResultModel> result =
             new ArrayList<>(parts.size());
         for (String part : parts) {
-            result.add(toChunkData(part));
+            result.add(toChunkedResult(part));
         }
         return result;
     }
@@ -183,9 +184,7 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         if (!HTML_TAG_PATTERN.matcher(content).find()) {
             return content;
         }
-
         Document document = Jsoup.parse(content);
-
         document
             .select("script, style")
             .remove();
@@ -256,26 +255,14 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         String sentenceBoundaryPattern
     ) {
         List<String> chunks = new ArrayList<>();
-
-        StringBuilder current =
-            new StringBuilder();
-
-        for (
-            String paragraph
-            : content.split(paragraphSeparator)
-        ) {
+        StringBuilder current = new StringBuilder();
+        for (String paragraph : content.split(paragraphSeparator)) {
             paragraph = paragraph.trim();
-
             if (paragraph.isEmpty()) {
                 continue;
             }
-
             if (paragraph.length() > maxChunkLength) {
-                current = flush(
-                    chunks,
-                    current
-                );
-
+                current = flush(chunks, current);
                 chunks.addAll(
                     splitLongParagraph(
                         paragraph,
@@ -286,34 +273,20 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
 
                 continue;
             }
-
-            if (
-                current.length() > 0
+            if (current.length() > 0
                     && current.length()
                     + paragraphSeparator.length()
                     + paragraph.length()
                     > maxChunkLength
             ) {
-                current = flush(
-                    chunks,
-                    current
-                );
+                current = flush(chunks, current);
             }
-
             if (current.length() > 0) {
-                current.append(
-                    paragraphSeparator
-                );
+                current.append(paragraphSeparator);
             }
-
             current.append(paragraph);
         }
-
-        flush(
-            chunks,
-            current
-        );
-
+        flush(chunks, current);
         return chunks;
     }
 
@@ -454,10 +427,10 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         return new StringBuilder();
     }
 
-    private RagDataChunkModel toChunkData(
+    private RagChunkedResultModel toChunkedResult(
         String chunkContent
     ) {
-        return RagDataChunkModel.builder()
+        return RagChunkedResultModel.builder()
             .content(chunkContent)
             .build();
     }

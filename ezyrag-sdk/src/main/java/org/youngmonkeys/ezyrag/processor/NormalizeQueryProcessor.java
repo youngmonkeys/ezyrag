@@ -16,13 +16,11 @@
 
 package org.youngmonkeys.ezyrag.processor;
 
-import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyrag.constant.RagQueryProcessorName;
 import org.youngmonkeys.ezyrag.model.RagQueryModel;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
-@EzySingleton
 public class NormalizeQueryProcessor implements RagQueryProcessor {
 
     @Override

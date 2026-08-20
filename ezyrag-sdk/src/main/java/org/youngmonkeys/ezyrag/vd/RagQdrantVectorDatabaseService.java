@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
+import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
 
 @AllArgsConstructor
 public class RagQdrantVectorDatabaseService implements RagVectorDatabaseService {
@@ -137,7 +138,7 @@ public class RagQdrantVectorDatabaseService implements RagVectorDatabaseService 
         for (Map<String, Object> point : result) {
             searchResults.add(
                 RagVectorSearchResultModel.builder()
-                    .id(String.valueOf(point.get("id")))
+                    .chunkId(toLongOrZeroFromObject(point.get("id")))
                     .score(((Number) point.get("score")).floatValue())
                     .payload((Map<String, Object>) point.get("payload"))
                     .build()
