@@ -32,7 +32,7 @@ import static org.youngmonkeys.ezyplatform.constant.CommonConstants.DEFAULT_HIDD
 @Authenticated
 @EzyFeature("settings_management")
 @AllArgsConstructor
-public class AdminSettingsController {
+public class AdminEzyRagSettingController {
 
     private final AdminEzyRagSettingService settingsService;
 

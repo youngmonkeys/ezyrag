@@ -16,9 +16,10 @@
 
 package org.youngmonkeys.ezyrag.web.vd;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyhttp.client.HttpClient;
-import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
+import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
 import org.youngmonkeys.ezyrag.vd.RagQdrantVectorDatabaseService;
 
 @EzySingleton
@@ -27,8 +28,13 @@ public class WebRagQdrantVectorDatabaseService
 
     public WebRagQdrantVectorDatabaseService(
         HttpClient httpClient,
-        EzyRagSettingService ezyRagSettingService
+        ObjectMapper objectMapper,
+        WebSettingService settingService
     ) {
-        super(httpClient, ezyRagSettingService);
+        super(
+            httpClient,
+            objectMapper,
+            settingService
+        );
     }
 }

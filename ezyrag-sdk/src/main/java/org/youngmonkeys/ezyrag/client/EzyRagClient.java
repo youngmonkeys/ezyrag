@@ -200,7 +200,6 @@ public class EzyRagClient {
                     .put("chunkIndex", chunkIndex + 1)
                     .toMap();
                 vectorDatabaseService.upsert(
-                    settingService.getQdrantCollectionName(),
                     Collections.singletonList(
                         RagVectorPointModel.builder()
                             .id(chunkId)
@@ -234,11 +233,7 @@ public class EzyRagClient {
                     settingService.getVectorDatabaseService()
                 );
         List<RagVectorSearchResultModel> result = vectorDatabaseService
-            .search(
-                settingService.getQdrantCollectionName(),
-                vector,
-                limit
-            );
+            .search(vector, limit);
         RagDataRetriever retriever = dataRetrieverManager
             .getDataRetrieverByName(settingService.getDataRetriever());
         List<RagDocumentModel> documents = retriever

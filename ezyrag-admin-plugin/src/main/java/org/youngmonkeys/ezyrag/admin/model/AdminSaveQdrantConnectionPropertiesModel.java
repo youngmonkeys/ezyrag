@@ -1,12 +1,12 @@
 /*
  * Copyright 2026 youngmonkeys.org
- * 
+ *
  * Licensed under the ezyplatform, Version 1.0.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,25 +14,15 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.vd;
+package org.youngmonkeys.ezyrag.admin.model;
 
-import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
-import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.List;
-
-public interface RagVectorDatabaseService {
-
-    String getProviderName();
-
-    void createCollectionIfAbsent() throws Exception;
-
-    void upsert(
-        List<RagVectorPointModel> points
-    ) throws Exception;
-
-    List<RagVectorSearchResultModel> search(
-        float[] vector,
-        int limit
-    ) throws Exception;
+@Getter
+@Builder
+public class AdminSaveQdrantConnectionPropertiesModel {
+    private String baseUrl;
+    private String apiKey;
+    private String collectionName;
 }

@@ -18,7 +18,7 @@ package org.youngmonkeys.ezyrag.admin.vd;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyhttp.client.HttpClient;
-import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
+import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
 import org.youngmonkeys.ezyrag.vd.RagQdrantVectorDatabaseService;
 
 @EzySingleton
@@ -27,8 +27,11 @@ public class AdminRagQdrantVectorDatabaseService
 
     public AdminRagQdrantVectorDatabaseService(
         HttpClient httpClient,
-        EzyRagSettingService ezyRagSettingService
+        AdminSettingService settingService
     ) {
-        super(httpClient, ezyRagSettingService);
+        super(
+            httpClient,
+            settingService
+        );
     }
 }

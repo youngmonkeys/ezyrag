@@ -19,12 +19,18 @@ package org.youngmonkeys.ezyrag.admin.controller.api;
 import com.tvd12.ezyfox.annotation.EzyFeature;
 import com.tvd12.ezyhttp.core.annotation.Description;
 import com.tvd12.ezyhttp.core.response.ResponseEntity;
-import com.tvd12.ezyhttp.server.core.annotation.*;
+import com.tvd12.ezyhttp.server.core.annotation.Api;
+import com.tvd12.ezyhttp.server.core.annotation.Authenticated;
+import com.tvd12.ezyhttp.server.core.annotation.Controller;
+import com.tvd12.ezyhttp.server.core.annotation.DoPut;
+import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
+import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.admin.request.AdminSaveVectorDatabaseServiceRequest;
+import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
-import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 
 @Api
 @Authenticated
@@ -33,23 +39,22 @@ import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 @AllArgsConstructor
 public class AdminApiVectorDatabaseServiceController {
 
-    private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagSettingService ezyRagSettingService;
+    private final AdminRagQdrantVectorDatabaseService qdrantVectorDatabaseService;
+    private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
+    private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
     @Description("Update a vector database service's connection settings")
-    @DoPut("/vector-database-services/{serviceName}")
+    @DoPut("/vector-database-services/QDRANT/connection-properties")
     public ResponseEntity vectorDatabaseServicesServiceNamePut(
         @PathVariable String serviceName,
-        @RequestBody AdminSaveVectorDatabaseServiceRequest request
-    ) {
+        @RequestBody AdminSaveQdrantConnectionPropertiesRequest request
+    ) throws Exception {
         vectorDatabaseServiceValidator.validateServiceName(serviceName);
-        if (RagVectorDatabaseServiceName.QDRANT.equalsValue(serviceName)) {
-            ezyRagSettingService.setQdrantBaseUrl(request.getBaseUrl());
-            ezyRagSettingService.setQdrantApiKey(request.getApiKey());
-            ezyRagSettingService.setQdrantCollectionName(
-                request.getCollectionName()
-            );
-        }
+        ezyRagSettingService.setQdrantConnectionProperties(
+            requestToModelConverter.toModel(request)
+        );
+        qdrantVectorDatabaseService.createCollectionIfAbsent();
         return ResponseEntity.noContent();
     }
 }

@@ -26,6 +26,7 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
+import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 
 import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
@@ -62,22 +63,20 @@ public class AdminVectorDatabaseServiceController {
         @PathVariable String serviceName
     ) {
         vectorDatabaseServiceValidator.validateServiceName(serviceName);
+        RagQdrantConnectionPropertiesModel qdrantConnectionProperties =
+            ezyRagSettingService.getConnectionPropertiesInDb();
         return newViewBuilder()
             .template("ezyrag/vector-database-service/details")
             .addVariable("vectorDatabaseServiceName", serviceName)
             .addVariable(
-                "qdrantBaseUrl",
-                ezyRagSettingService.getQdrantBaseUrl()
+                "qdrantConnection",
+                qdrantConnectionProperties
             )
             .addVariable(
                 "qdrantApiKeyValue",
-                isNotBlank(ezyRagSettingService.getQdrantApiKey())
+                isNotBlank(qdrantConnectionProperties.getApiKey())
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
-            )
-            .addVariable(
-                "qdrantCollectionName",
-                ezyRagSettingService.getQdrantCollectionName()
             )
             .build();
     }

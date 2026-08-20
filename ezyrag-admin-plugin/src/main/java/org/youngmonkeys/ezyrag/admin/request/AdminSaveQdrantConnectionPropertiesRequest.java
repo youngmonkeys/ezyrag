@@ -21,7 +21,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AdminSaveVectorDatabaseServiceRequest {
+public class AdminSaveQdrantConnectionPropertiesRequest {
     private String baseUrl;
     private String apiKey;
     private String collectionName;

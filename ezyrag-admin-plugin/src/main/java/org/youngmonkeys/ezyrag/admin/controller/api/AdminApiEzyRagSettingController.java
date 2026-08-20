@@ -29,7 +29,7 @@ import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 @Controller("/api/v1")
 @EzyFeature("settings_management")
 @AllArgsConstructor
-public class AdminApiSettingController {
+public class AdminApiEzyRagSettingController {
 
     private final AdminEzyRagSettingService ezyRagSettingService;
 

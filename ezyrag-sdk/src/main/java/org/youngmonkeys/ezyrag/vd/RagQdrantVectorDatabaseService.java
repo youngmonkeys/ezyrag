@@ -18,17 +18,15 @@ package org.youngmonkeys.ezyrag.vd;
 
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.client.HttpClient;
-import com.tvd12.ezyhttp.client.request.GetRequest;
 import com.tvd12.ezyhttp.client.request.PostRequest;
 import com.tvd12.ezyhttp.client.request.PutRequest;
 import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
-import com.tvd12.ezyhttp.core.exception.HttpNotFoundException;
-import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyplatform.service.MutableSettingService;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
-import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,63 +34,83 @@ import java.util.Map;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
 
-@AllArgsConstructor
-public class RagQdrantVectorDatabaseService implements RagVectorDatabaseService {
+public class RagQdrantVectorDatabaseService
+    implements RagVectorDatabaseService {
 
     private final HttpClient httpClient;
-    private final EzyRagSettingService ezyRagSettingService;
+    private final MutableSettingService settingService;
+
+    public RagQdrantVectorDatabaseService(
+        HttpClient httpClient,
+        MutableSettingService settingService
+    ) {
+        this.httpClient = httpClient;
+        this.settingService = settingService;
+        settingService.watchLastUpdatedTime(
+            SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+            () -> settingService.cacheValueIfNotNull(
+                SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+                readConnectionProperties()
+            )
+        );
+    }
+
+    private RagQdrantConnectionPropertiesModel readConnectionProperties() {
+        RagQdrantConnectionPropertiesModel model =
+            settingService
+                .getObjectValue(
+                    SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+                    RagQdrantConnectionPropertiesModel.class
+                );
+        if (model != null) {
+            model.setApiKey(
+                settingService.getPasswordValue(
+                    SETTING_NAME_QDRANT_CONNECTION_API_KEY
+                )
+            );
+        }
+        return model;
+    }
 
     @Override
-    public void createCollectionIfAbsent(
-        String collectionName,
-        int vectorSize
-    ) throws Exception {
-        String baseUrl = ezyRagSettingService.getQdrantBaseUrl();
-        String apiKey = ezyRagSettingService.getQdrantApiKey();
-        if (collectionExists(baseUrl, apiKey, collectionName)) {
-            return;
-        }
+    public void createCollectionIfAbsent() throws Exception {
+        RagQdrantConnectionPropertiesModel properties =
+            getConnectionProperties();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put(
                 "vectors",
                 EzyMapBuilder.mapBuilder()
-                    .put("size", vectorSize)
+                    .put("size", properties.getVectorSize())
                     .put("distance", "Cosine")
                     .toMap()
             )
             .toMap();
         httpClient.call(
             new PutRequest()
-                .setURL(getCollectionUrl(baseUrl, collectionName))
-                .setEntity(requestEntity(apiKey, requestBody))
+                .setURL(
+                    getCollectionUrl(
+                        properties.getBaseUrl(),
+                        properties.getCollectionName()
+                    )
+                )
+                .setEntity(
+                    requestEntity(
+                        properties.getApiKey(),
+                        requestBody
+                    )
+                )
         );
-    }
-
-    private boolean collectionExists(
-        String baseUrl,
-        String apiKey,
-        String collectionName
-    ) throws Exception {
-        try {
-            httpClient.call(
-                new GetRequest()
-                    .setURL(getCollectionUrl(baseUrl, collectionName))
-                    .setEntity(requestEntity(apiKey, null))
-            );
-            return true;
-        } catch (HttpNotFoundException e) {
-            return false;
-        }
     }
 
     @Override
     public void upsert(
-        String collectionName,
         List<RagVectorPointModel> points
     ) throws Exception {
-        String baseUrl = ezyRagSettingService.getQdrantBaseUrl();
-        String apiKey = ezyRagSettingService.getQdrantApiKey();
+        RagQdrantConnectionPropertiesModel properties =
+            getConnectionProperties();
         List<Map<String, Object>> requestPoints = new ArrayList<>(points.size());
         for (RagVectorPointModel point : points) {
             requestPoints.add(
@@ -108,20 +126,29 @@ public class RagQdrantVectorDatabaseService implements RagVectorDatabaseService 
             .toMap();
         httpClient.call(
             new PutRequest()
-                .setURL(getPointsUrl(baseUrl, collectionName) + "?wait=true")
-                .setEntity(requestEntity(apiKey, requestBody))
+                .setURL(
+                    getPointsUrl(
+                        properties.getBaseUrl(),
+                        properties.getCollectionName()
+                    ) + "?wait=true"
+                )
+                .setEntity(
+                    requestEntity(
+                        properties.getApiKey(),
+                        requestBody
+                    )
+                )
         );
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<RagVectorSearchResultModel> search(
-        String collectionName,
         float[] vector,
         int limit
     ) throws Exception {
-        String baseUrl = ezyRagSettingService.getQdrantBaseUrl();
-        String apiKey = ezyRagSettingService.getQdrantApiKey();
+        RagQdrantConnectionPropertiesModel properties =
+            getConnectionProperties();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put("vector", vector)
             .put("limit", limit)
@@ -129,12 +156,24 @@ public class RagQdrantVectorDatabaseService implements RagVectorDatabaseService 
             .toMap();
         Map<String, Object> responseBody = httpClient.call(
             new PostRequest()
-                .setURL(getPointsUrl(baseUrl, collectionName) + "/search")
-                .setEntity(requestEntity(apiKey, requestBody))
+                .setURL(
+                    getPointsUrl(
+                        properties.getBaseUrl(),
+                        properties.getCollectionName()
+                    ) + "/search"
+                )
+                .setEntity(
+                    requestEntity(
+                        properties.getApiKey(),
+                        requestBody
+                    )
+                )
         );
-        List<Map<String, Object>> result = (List<Map<String, Object>>) responseBody
-            .get("result");
-        List<RagVectorSearchResultModel> searchResults = new ArrayList<>(result.size());
+        List<Map<String, Object>> result =
+            (List<Map<String, Object>>) responseBody
+                .get("result");
+        List<RagVectorSearchResultModel> searchResults =
+            new ArrayList<>(result.size());
         for (Map<String, Object> point : result) {
             searchResults.add(
                 RagVectorSearchResultModel.builder()
@@ -162,12 +201,29 @@ public class RagQdrantVectorDatabaseService implements RagVectorDatabaseService 
         return builder.build();
     }
 
-    private String getCollectionUrl(String baseUrl, String collectionName) {
+    private String getCollectionUrl(
+        String baseUrl,
+        String collectionName
+    ) {
         return baseUrl + "/collections/" + collectionName;
     }
 
-    private String getPointsUrl(String baseUrl, String collectionName) {
+    private String getPointsUrl(
+        String baseUrl,
+        String collectionName
+    ) {
         return getCollectionUrl(baseUrl, collectionName) + "/points";
+    }
+
+    private RagQdrantConnectionPropertiesModel getConnectionProperties() {
+        RagQdrantConnectionPropertiesModel properties = settingService
+            .getCachedValue(SETTING_NAME_QDRANT_CONNECTION_PROPERTIES);
+        if (properties == null) {
+            throw new IllegalStateException(
+                "You need to setup Qdrant first"
+            );
+        }
+        return properties;
     }
 
     public String getProviderName() {

@@ -16,16 +16,17 @@
 
 package org.youngmonkeys.ezyrag.admin.service;
 
+import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.server.core.annotation.Service;
 import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
+import org.youngmonkeys.ezyrag.admin.model.AdminSaveQdrantConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
-import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDDEN_PASSWORD;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_API_KEY;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_BASE_URL;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_COLLECTION_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
 
 @Service
 public class AdminEzyRagSettingService extends EzyRagSettingService {
@@ -40,34 +41,49 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
     }
 
     public void setOpenAiApiKey(String apiKey) {
-        setPasswordValue(SETTING_NAME_OPENAI_API_KEY, apiKey);
-    }
-
-    public void setQdrantBaseUrl(String baseUrl) {
-        settingService.setTextValue(
-            SETTING_NAME_QDRANT_BASE_URL,
-            baseUrl
-        );
-    }
-
-    public void setQdrantApiKey(String apiKey) {
-        setPasswordValue(SETTING_NAME_QDRANT_API_KEY, apiKey);
-    }
-
-    public void setQdrantCollectionName(String collectionName) {
-        settingService.setTextValue(
-            SETTING_NAME_QDRANT_COLLECTION_NAME,
-            collectionName
-        );
-    }
-
-    private void setPasswordValue(String settingName, String value) {
-        if (isBlank(value)) {
-            settingService.removeSetting(settingName);
-            return;
+        if (!apiKey.matches(PATTERN_HIDDEN_PASSWORD)) {
+            settingService.setPasswordValue(
+                SETTING_NAME_OPENAI_API_KEY,
+                apiKey
+            );
         }
-        if (!value.matches(PATTERN_HIDDEN_PASSWORD)) {
-            settingService.setPasswordValue(settingName, value);
+    }
+
+    public void setQdrantConnectionProperties(
+        AdminSaveQdrantConnectionPropertiesModel model
+    ) {
+        settingService.setObjectValue(
+            SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+            EzyMapBuilder.mapBuilder()
+                .put("baseUrl", model.getBaseUrl())
+                .put("collectionName", model.getCollectionName())
+                .toMap()
+        );
+        String apiKey = model.getApiKey();
+        if (!apiKey.matches(PATTERN_HIDDEN_PASSWORD)) {
+            settingService.setPasswordValue(
+                SETTING_NAME_QDRANT_CONNECTION_API_KEY,
+                apiKey
+            );
         }
+    }
+
+    public RagQdrantConnectionPropertiesModel getConnectionPropertiesInDb() {
+        RagQdrantConnectionPropertiesModel model =
+            settingService
+                .getObjectValue(
+                    SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+                    RagQdrantConnectionPropertiesModel.class
+                );
+        if (model != null) {
+            model.setApiKey(
+                settingService.getPasswordValue(
+                    SETTING_NAME_QDRANT_CONNECTION_API_KEY
+                )
+            );
+        }
+        return model != null
+            ? model
+            : new RagQdrantConnectionPropertiesModel();
     }
 }

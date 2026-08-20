@@ -19,6 +19,7 @@ package org.youngmonkeys.ezyrag.admin.validator;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyhttp.core.exception.HttpBadRequestException;
 import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
 
 import static java.util.Collections.singletonMap;
@@ -38,5 +39,11 @@ public class AdminRagVectorDatabaseServiceValidator {
                 singletonMap("serviceName", "invalid")
             );
         }
+    }
+
+    public void validate(
+        AdminSaveQdrantConnectionPropertiesRequest request
+    ) {
+
     }
 }
