@@ -43,8 +43,8 @@ import org.youngmonkeys.ezyrag.retriever.RagDataRetrieverManager;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 import org.youngmonkeys.ezyrag.service.RagDataChunkMetaService;
 import org.youngmonkeys.ezyrag.service.RagDataChunkService;
-import org.youngmonkeys.ezyrag.vd.VectorDatabaseService;
-import org.youngmonkeys.ezyrag.vd.VectorDatabaseServiceManager;
+import org.youngmonkeys.ezyrag.vd.RagVectorDatabaseService;
+import org.youngmonkeys.ezyrag.vd.RagVectorDatabaseServiceManager;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -63,7 +63,7 @@ public class EzyRagClient {
     private final RagKnowledgeDataBuilderManager knowledgeDataBuilderManager;
     private final RagQueryProcessorManager queryProcessorManager;
     private final RagTextCleanerManager textCleanerManager;
-    private final VectorDatabaseServiceManager vectorDatabaseServiceManager;
+    private final RagVectorDatabaseServiceManager vectorDatabaseServiceManager;
     private final RagDataChunkService dataChunkService;
     private final RagDataChunkMetaService dataChunkMetaService;
     private final EzyRagSettingService settingService;
@@ -104,7 +104,7 @@ public class EzyRagClient {
                 "Vector database service has not been set up"
             );
         }
-        VectorDatabaseService vectorDatabaseService =
+        RagVectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
                 .getEmbeddingServiceByName(
                     vectorDatabaseServiceName
@@ -227,7 +227,7 @@ public class EzyRagClient {
         RagEmbeddingService embeddingService = embeddingServiceManager
             .getEmbeddingServiceByName(settingService.getEmbeddingService());
         float[] vector = embeddingService.embed(processedQuery);
-        VectorDatabaseService vectorDatabaseService =
+        RagVectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
                 .getEmbeddingServiceByName(
                     settingService.getVectorDatabaseService()

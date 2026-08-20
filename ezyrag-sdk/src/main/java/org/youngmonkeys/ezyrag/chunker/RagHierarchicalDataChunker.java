@@ -112,7 +112,7 @@ import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
  * }</pre>
  */
 @AllArgsConstructor
-public class HierarchicalRagDataChunker implements RagDataChunker {
+public class RagHierarchicalDataChunker implements RagDataChunker {
 
     private static final Pattern HTML_TAG_PATTERN =
         Pattern.compile("<[a-zA-Z/][^>]*>");

@@ -25,7 +25,7 @@ import org.youngmonkeys.ezyrag.entity.RagDataChunk;
 import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
 import org.youngmonkeys.ezyrag.model.RagSaveDataChunkModel;
-import org.youngmonkeys.ezyrag.repo.DataChunkRepository;
+import org.youngmonkeys.ezyrag.repo.RagDataChunkRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +36,7 @@ import static com.tvd12.ezyfox.io.EzyLists.newArrayList;
 @AllArgsConstructor
 public class RagDataChunkService {
 
-    private final DataChunkRepository dataChunkRepository;
+    private final RagDataChunkRepository dataChunkRepository;
     private final EzyRagEntityToModelConverter entityToModelConverter;
     private final EzyRagModelToEntityConverter modelToEntityConverter;
     private final EzyRagResultToModelConverter resultToModelConverter;

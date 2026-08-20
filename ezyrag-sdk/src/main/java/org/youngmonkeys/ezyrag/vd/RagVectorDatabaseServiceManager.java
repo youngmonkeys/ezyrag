@@ -23,23 +23,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class VectorDatabaseServiceManager {
+public class RagVectorDatabaseServiceManager {
 
-    private final EzyLazyInitializer<Map<String, VectorDatabaseService>>
+    private final EzyLazyInitializer<Map<String, RagVectorDatabaseService>>
         dataRetrieverBySourceType;
 
     @SuppressWarnings("unchecked")
-    public VectorDatabaseServiceManager(
+    public RagVectorDatabaseServiceManager(
         EzySingletonFactory singletonFactory
     ) {
         this.dataRetrieverBySourceType = new EzyLazyInitializer<>(() ->
-            ((List<VectorDatabaseService>) singletonFactory
-                .getSingletonsOf(VectorDatabaseService.class)
+            ((List<RagVectorDatabaseService>) singletonFactory
+                .getSingletonsOf(RagVectorDatabaseService.class)
             )
                 .stream()
                 .collect(
                     Collectors.toMap(
-                        VectorDatabaseService::getProviderName,
+                        RagVectorDatabaseService::getProviderName,
                         it -> it,
                         (o, n) -> o
                     )
@@ -47,7 +47,7 @@ public class VectorDatabaseServiceManager {
         );
     }
 
-    public VectorDatabaseService getEmbeddingServiceByName(
+    public RagVectorDatabaseService getEmbeddingServiceByName(
         String serviceName
     ) {
         return dataRetrieverBySourceType.get().get(serviceName);

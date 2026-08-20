@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
-public class OpenAIEmbeddingService implements RagEmbeddingService {
+public class RagOpenAIEmbeddingService implements RagEmbeddingService {
 
     private final HttpClient httpClient;
     private final EzyRagSettingService ezyRagSettingService;

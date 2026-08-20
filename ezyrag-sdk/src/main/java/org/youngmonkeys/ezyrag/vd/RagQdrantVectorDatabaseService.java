@@ -25,7 +25,7 @@ import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import com.tvd12.ezyhttp.core.exception.HttpNotFoundException;
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.constant.VectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
@@ -37,7 +37,7 @@ import java.util.Map;
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
 @AllArgsConstructor
-public class QdrantVectorDatabaseService implements VectorDatabaseService {
+public class RagQdrantVectorDatabaseService implements RagVectorDatabaseService {
 
     private final HttpClient httpClient;
     private final EzyRagSettingService ezyRagSettingService;
@@ -170,6 +170,6 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
     }
 
     public String getProviderName() {
-        return VectorDatabaseServiceName.QDRANT.toString();
+        return RagVectorDatabaseServiceName.QDRANT.toString();
     }
 }

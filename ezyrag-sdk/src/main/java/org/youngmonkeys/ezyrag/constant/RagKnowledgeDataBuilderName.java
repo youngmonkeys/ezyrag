@@ -16,8 +16,8 @@
 
 package org.youngmonkeys.ezyrag.constant;
 
-public enum DataSourceType {
-    TEXT;
+public enum RagKnowledgeDataBuilderName {
+    DEFAULT;
 
     public boolean equalsValue(String value) {
         return toString().equals(value);

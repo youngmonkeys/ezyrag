@@ -16,7 +16,7 @@
 
 package org.youngmonkeys.ezyrag.constant;
 
-public enum VectorDatabaseServiceName {
+public enum RagVectorDatabaseServiceName {
     QDRANT;
 
     public boolean equalsValue(String value) {

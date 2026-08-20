@@ -14,30 +14,26 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.vd;
+package org.youngmonkeys.ezyrag.builder;
 
-import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
-import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
+import org.youngmonkeys.ezyai.knowledge.KnowledgeData;
+import org.youngmonkeys.ezyrag.constant.RagKnowledgeDataBuilderName;
+import org.youngmonkeys.ezyrag.model.RagDocumentModel;
 
 import java.util.List;
 
-public interface VectorDatabaseService {
+public class RagDefaultKnowledgeDataBuilder
+    implements RagKnowledgeDataBuilder {
 
-    String getProviderName();
+    @Override
+    public List<KnowledgeData> build(
+        List<RagDocumentModel> documents
+    ) {
+        
+    }
 
-    void createCollectionIfAbsent(
-        String collectionName,
-        int vectorSize
-    ) throws Exception;
-
-    void upsert(
-        String collectionName,
-        List<RagVectorPointModel> points
-    ) throws Exception;
-
-    List<RagVectorSearchResultModel> search(
-        String collectionName,
-        float[] vector,
-        int limit
-    ) throws Exception;
+    @Override
+    public String getName() {
+        return RagKnowledgeDataBuilderName.DEFAULT.toString();
+    }
 }

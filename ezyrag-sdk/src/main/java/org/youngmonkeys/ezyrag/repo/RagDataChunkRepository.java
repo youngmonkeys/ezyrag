@@ -21,7 +21,7 @@ import com.tvd12.ezyfox.database.annotation.EzyQuery;
 import org.youngmonkeys.ezyrag.entity.RagDataChunk;
 import org.youngmonkeys.ezyrag.result.RagDataChunkEmbeddingResult;
 
-public interface DataChunkRepository
+public interface RagDataChunkRepository
     extends EzyDatabaseRepository<Long, RagDataChunk> {
 
     @EzyQuery(
