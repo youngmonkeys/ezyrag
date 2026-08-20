@@ -23,6 +23,7 @@ import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDDEN_PASSWORD;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
@@ -47,6 +48,17 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
                 apiKey
             );
         }
+    }
+
+    public void setOpenAiEmbeddingModel(String model) {
+        settingService.setTextValue(
+            SETTING_NAME_OPENAI_EMBEDDING_MODEL,
+            model
+        );
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_OPENAI_EMBEDDING_MODEL,
+            model
+        );
     }
 
     public void setQdrantConnectionProperties(

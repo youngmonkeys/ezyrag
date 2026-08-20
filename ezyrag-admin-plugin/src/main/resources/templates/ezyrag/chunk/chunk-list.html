@@ -51,7 +51,6 @@
                         <th class="text-center">[[#{source_id}]]</th>
                         <th class="text-center">[[#{chunk_index}]]</th>
                         <th>[[#{content}]]</th>
-                        <th>[[#{content_hash}]]</th>
                         <th class="text-center">[[#{has_embedding}]]</th>
                         <th class="text-center">[[#{created_at}]]</th>
                         <th class="text-center">[[#{updated_at}]]</th>
@@ -237,7 +236,6 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
             <td class="text-wrap" style="min-width: 360px; max-width: 520px;">
                 ${ezyadmin.escapeHtml(ezyadmin.removeHtmlTagAndSub(dataChunk.content || '', 240))}
             </td>
-            <td>${ezyadmin.escapeHtml(dataChunk.contentHash || '')}</td>
             <td class="text-center">${dataChunk.hasEmbedding ? '<i class="fas fa-check text-success"></i>' : ''}</td>
             <td class="text-center">${ezyadmin.formatTimeStamp(dataChunk.createdAt)}</td>
             <td class="text-center">${ezyadmin.formatTimeStamp(dataChunk.updatedAt)}</td>

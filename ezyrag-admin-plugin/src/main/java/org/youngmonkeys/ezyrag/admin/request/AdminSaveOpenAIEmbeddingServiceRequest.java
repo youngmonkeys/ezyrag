@@ -23,4 +23,5 @@ import lombok.Setter;
 @Setter
 public class AdminSaveOpenAIEmbeddingServiceRequest {
     private String apiKey;
+    private String model;
 }

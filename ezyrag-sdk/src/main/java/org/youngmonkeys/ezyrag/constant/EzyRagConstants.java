@@ -18,10 +18,14 @@ package org.youngmonkeys.ezyrag.constant;
 
 public final class EzyRagConstants {
 
+    public static final String DEFAULT_OPENAI_EMBEDDING_MODEL =
+        "text-embedding-3-small";
     public static final int DEFAULT_QDRANT_VECTOR_SIZE = 384;
 
     public static final String SETTING_NAME_OPENAI_API_KEY =
         "ezyrag_openai_api_key";
+    public static final String SETTING_NAME_OPENAI_EMBEDDING_MODEL =
+        "ezyrag_openai_embedding_model";
     public static final String SETTING_NAME_QDRANT_CONNECTION_PROPERTIES =
         "ezyrag_qdrant_connection_properties";
     public static final String SETTING_NAME_QDRANT_CONNECTION_API_KEY =

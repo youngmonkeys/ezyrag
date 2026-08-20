@@ -62,7 +62,7 @@ public class RagOpenAIEmbeddingService implements RagEmbeddingService {
     }
 
     protected String getEmbeddingModel() {
-        return "text-embedding-3-small";
+        return ezyRagSettingService.getOpenAiEmbeddingModel();
     }
 
     protected String getEmbeddingApiUrl() {

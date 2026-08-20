@@ -31,12 +31,14 @@ import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLE
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
 import static org.youngmonkeys.ezyplatform.util.Numbers.toIntOrZero;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_QDRANT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
 
@@ -62,11 +64,28 @@ public class EzyRagSettingService {
         settingService.scheduleCacheValue(
             SETTING_NAME_QDRANT_VECTOR_SIZE
         );
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_OPENAI_EMBEDDING_MODEL,
+            settingService.getTextValue(
+                SETTING_NAME_OPENAI_EMBEDDING_MODEL,
+                DEFAULT_OPENAI_EMBEDDING_MODEL
+            )
+        );
+        settingService.scheduleCacheValue(
+            SETTING_NAME_OPENAI_EMBEDDING_MODEL
+        );
     }
 
     public String getOpenAiApiKey() {
         return settingService.getPasswordValue(
             SETTING_NAME_OPENAI_API_KEY
+        );
+    }
+
+    public String getOpenAiEmbeddingModel() {
+        return settingService.getCachedValue(
+            SETTING_NAME_OPENAI_EMBEDDING_MODEL,
+            DEFAULT_OPENAI_EMBEDDING_MODEL
         );
     }
 

@@ -57,6 +57,9 @@ public class AdminRagEmbeddingServiceValidator {
         if (isBlank(request.getApiKey())) {
             errors.put("apiKey", "required");
         }
+        if (isBlank(request.getModel())) {
+            errors.put("model", "required");
+        }
         if (!errors.isEmpty()) {
             throw new HttpBadRequestException(errors);
         }

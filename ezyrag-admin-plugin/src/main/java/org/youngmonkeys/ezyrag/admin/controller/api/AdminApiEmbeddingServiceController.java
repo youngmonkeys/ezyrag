@@ -49,6 +49,7 @@ public class AdminApiEmbeddingServiceController {
         embeddingServiceValidator.validateServiceName(serviceName);
         embeddingServiceValidator.validate(request);
         ezyRagSettingService.setOpenAiApiKey(request.getApiKey());
+        ezyRagSettingService.setOpenAiEmbeddingModel(request.getModel());
         return ResponseEntity.noContent();
     }
 }

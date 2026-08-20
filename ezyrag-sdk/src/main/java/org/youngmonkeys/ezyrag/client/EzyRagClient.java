@@ -97,14 +97,18 @@ public class EzyRagClient {
                 chunker.chunk(text);
             for (RagChunkedResultModel chunkedResult : chunkedResults) {
                 RagDataChunkEmbeddingModel chunkEmbedding =
-                    dataChunkService
-                        .getEmbeddingBySourceTypeAndSourceIdAndIndex(
-                            sourceType,
-                            sourceId,
-                            chunkIndex + 1
-                        );
+                    CommonContentType
+                        .TEXT
+                        .toString()
+                        .equalsIgnoreCase(sourceType)
+                    ? null
+                    : dataChunkService.getEmbeddingBySourceTypeAndSourceIdAndIndex(
+                        sourceType,
+                        sourceId,
+                        chunkIndex + 1
+                    );
                 String content = chunkedResult.getContent();
-                String contentHash = EzySHA256.cryptUtf(content);
+                String contentHash = EzySHA256.cryptUtfToLowercase(content);
                 Map<String, Object> metadata = EzyMapBuilder
                     .mapBuilder()
                     .putAll(dataSourceMetadata)

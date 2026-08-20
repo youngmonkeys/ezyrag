@@ -70,6 +70,10 @@ public class AdminEmbeddingServiceController {
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
             )
+            .addVariable(
+                "openAiEmbeddingModel",
+                ezyRagSettingService.getOpenAiEmbeddingModel()
+            )
             .build();
     }
 

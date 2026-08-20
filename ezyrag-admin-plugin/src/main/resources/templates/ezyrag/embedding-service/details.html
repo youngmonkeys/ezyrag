@@ -41,6 +41,20 @@
     <div class="col-12">
         <form id="updateEmbeddingServiceForm" onsubmit="return false;">
             <div class="form-group row">
+                <label for="model" class="col-md-3 col-form-label">
+                    [[#{open_ai_embedding_model}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="model" id="model"
+                           class="form-control" th:placeholder="#{open_ai_embedding_model}"
+                           th:value="${openAiEmbeddingModel}">
+                </div>
+                <label id="modelErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="model">
+                    <i class="far fa-times-circle"></i> <span id="modelError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
                 <label for="apiKey" class="col-md-3 col-form-label">
                     [[#{open_ai_api_key}]] (<span class="text-danger">*</span>)
                 </label>

@@ -16,22 +16,32 @@
 
 package org.youngmonkeys.ezyrag.loader;
 
+import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagInputData;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
-import static org.youngmonkeys.ezyplatform.constant.CommonConstants.ZERO;
+public class RagTextDataLoader
+    implements RagDataLoader {
 
-public interface RagDataLoader {
-
-    Iterator<RagInputData> load(
+    @Override
+    public Iterator<RagInputData> load(
         RagDataSourceModel model
-    );
+    ) {
+        return Stream
+            .of(model)
+            .map(it ->
+                RagInputData.builder()
+                    .text(it.getContent())
+                    .build()
+            )
+            .iterator();
+    }
 
-    String getDataSourceType();
-
-    default int getPriority() {
-        return ZERO;
+    @Override
+    public String getDataSourceType() {
+        return CommonContentType.TEXT.toString();
     }
 }
