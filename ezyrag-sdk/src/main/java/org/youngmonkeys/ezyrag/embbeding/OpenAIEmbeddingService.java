@@ -23,6 +23,7 @@ import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.constant.EmbeddingServiceProvider;
+import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,11 @@ import java.util.Map;
 public class OpenAIEmbeddingService implements RagEmbeddingService {
 
     private final HttpClient httpClient;
+    private final EzyRagSettingService ezyRagSettingService;
 
     @Override
-    public float[] embed(String apiKey, String text) throws Exception {
+    public float[] embed(String text) throws Exception {
+        String apiKey = ezyRagSettingService.getOpenAiApiKey();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put("model", getEmbeddingModel())
             .put("input", text)

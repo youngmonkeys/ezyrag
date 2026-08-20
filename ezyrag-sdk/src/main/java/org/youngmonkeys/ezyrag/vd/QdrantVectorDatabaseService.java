@@ -28,6 +28,7 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.constant.VectorDatabaseServiceName;
 import org.youngmonkeys.ezyrag.model.VectorPointModel;
 import org.youngmonkeys.ezyrag.model.VectorSearchResultModel;
+import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,15 +39,16 @@ import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 @AllArgsConstructor
 public class QdrantVectorDatabaseService implements VectorDatabaseService {
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
+    private final EzyRagSettingService ezyRagSettingService;
 
     @Override
     public void createCollectionIfAbsent(
-        String baseUrl,
-        String apiKey,
         String collectionName,
         int vectorSize
     ) throws Exception {
+        String baseUrl = ezyRagSettingService.getQdrantBaseUrl();
+        String apiKey = ezyRagSettingService.getQdrantApiKey();
         if (collectionExists(baseUrl, apiKey, collectionName)) {
             return;
         }
@@ -85,11 +87,11 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
 
     @Override
     public void upsert(
-        String baseUrl,
-        String apiKey,
         String collectionName,
         List<VectorPointModel> points
     ) throws Exception {
+        String baseUrl = ezyRagSettingService.getQdrantBaseUrl();
+        String apiKey = ezyRagSettingService.getQdrantApiKey();
         List<Map<String, Object>> requestPoints = new ArrayList<>(points.size());
         for (VectorPointModel point : points) {
             requestPoints.add(
@@ -113,12 +115,12 @@ public class QdrantVectorDatabaseService implements VectorDatabaseService {
     @Override
     @SuppressWarnings("unchecked")
     public List<VectorSearchResultModel> search(
-        String baseUrl,
-        String apiKey,
         String collectionName,
         float[] vector,
         int limit
     ) throws Exception {
+        String baseUrl = ezyRagSettingService.getQdrantBaseUrl();
+        String apiKey = ezyRagSettingService.getQdrantApiKey();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put("vector", vector)
             .put("limit", limit)

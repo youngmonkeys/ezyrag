@@ -82,10 +82,11 @@ public class EzyRagClient {
             for (DataChunkModel chunk : chunks) {
                 float[] vector = embeddingService
                     .embed(chunk.getContent());
-                vectorDatabaseService.upsert(
-                    ""
-                );
                 dataChunkService.save(chunk);
+                vectorDatabaseService.upsert(
+                    settingService.getQdrantCollectionName(),
+
+                );
             }
         }
     }

@@ -40,7 +40,6 @@ import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_DATA_CHUNK
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataChunkEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -49,6 +48,8 @@ public class DataChunkEntity {
     private String content;
 
     private float[] embedding;
+
+    private String metadata;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

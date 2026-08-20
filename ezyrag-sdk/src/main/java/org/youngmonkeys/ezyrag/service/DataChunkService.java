@@ -17,7 +17,7 @@
 package org.youngmonkeys.ezyrag.service;
 
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.model.DataChunkModel;
+import org.youngmonkeys.ezyrag.model.SaveDataChunkModel;
 import org.youngmonkeys.ezyrag.repo.DataChunkRepository;
 
 @AllArgsConstructor
@@ -25,7 +25,7 @@ public class DataChunkService {
 
     private final DataChunkRepository dataChunkRepository;
 
-    public void save(DataChunkModel model) {
-
+    public void save(SaveDataChunkModel model) {
+        
     }
 }

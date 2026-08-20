@@ -21,8 +21,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class DataChunkModel {
-    private long id;
+public class SaveDataChunkModel {
     private String content;
     private float[] embedding;
     private String metadata;

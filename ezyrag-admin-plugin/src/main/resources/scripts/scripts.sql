@@ -17,6 +17,8 @@
 CREATE TABLE IF NOT EXISTS `ezyrag_data_chunks` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `content` mediumtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
+    `embedding` mediumblob,
+    `metadata` mediumtext COLLATE utf8mb4_unicode_520_ci,
     `created_at` datetime NOT NULL,
     `updated_at` datetime NOT NULL,
     PRIMARY KEY (`id`),
