@@ -81,7 +81,6 @@ public class EzyRagClient {
         RagDataChunker chunker = getDataChunker();
         Iterator<RagInputData> iterator = dataLoader
             .load(dataSource);
-
         long sourceId = dataSource.getSourceId();
         int chunkIndex = 0;
         Map<String, Object> dataSourceMetadata = dataSource
@@ -184,8 +183,7 @@ public class EzyRagClient {
         String query,
         int limit
     ) throws Exception {
-        RagDataRetriever retriever = dataRetrieverManager
-            .getDataRetrieverByName(settingService.getDataRetriever());
+        RagDataRetriever retriever = getDataRetriever();
         RagKnowledgeDataBuilder knowledgeDataBuilder =
             getKnowledgeDataBuilder();
         List<RagVectorSearchResultModel> result = searchDataList(
@@ -219,10 +217,29 @@ public class EzyRagClient {
         return knowledgeDataBuilder;
     }
 
+    private RagDataRetriever getDataRetriever() {
+        String dataRetrieverName = settingService
+            .getDataRetriever();
+        if (isBlank(dataRetrieverName)) {
+            throw new IllegalStateException(
+                "Data retriever has not been set up"
+            );
+        }
+        RagDataRetriever dataRetriever = dataRetrieverManager
+            .getDataRetrieverByName(dataRetrieverName);
+        if (dataRetriever == null) {
+            throw new IllegalStateException(
+                "There is no data retriever: " +
+                    dataRetrieverName
+            );
+        }
+        return dataRetriever;
+    }
+
     private RagDataChunker getDataChunker() {
         String dataChunkerName = settingService
-
             .getDataChunker();
+
         if (isBlank(dataChunkerName)) {
             throw new IllegalStateException(
                 "Data chunker has not been set up"
