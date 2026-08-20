@@ -46,6 +46,14 @@ public final class EzyRagConstants {
         "ezyrag_vector_database_service";
 
     public static final String META_KEY_DATA_TYPE = "data_type";
+    public static final String META_KEY_TITLE = "title";
+    public static final String META_KEY_SLUG = "slug";
+    public static final String META_KEY_EXCERPT = "excerpt";
+    public static final String META_KEY_DATA_URL = "dataUrl";
+    public static final String META_KEY_PRODUCT_CODE = "productCode";
+    public static final String META_KEY_PRICE = "price";
+    public static final String META_KEY_CURRENCY_ISO_CODE = "currencyIsoCode";
 
     private EzyRagConstants() {}
+
 }

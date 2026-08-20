@@ -21,6 +21,16 @@ import org.youngmonkeys.ezyrag.constant.RagKnowledgeDataBuilderName;
 import org.youngmonkeys.ezyrag.model.RagDocumentModel;
 
 import java.util.List;
+import java.util.Map;
+
+import static com.tvd12.ezyfox.io.EzyLists.newArrayList;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_CURRENCY_ISO_CODE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_DATA_URL;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_EXCERPT;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_PRICE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_PRODUCT_CODE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_SLUG;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_TITLE;
 
 public class RagDefaultKnowledgeDataBuilder
     implements RagKnowledgeDataBuilder {
@@ -29,7 +39,26 @@ public class RagDefaultKnowledgeDataBuilder
     public List<KnowledgeData> build(
         List<RagDocumentModel> documents
     ) {
-        
+        return newArrayList(documents, this::toKnowledgeData);
+    }
+
+    private KnowledgeData toKnowledgeData(
+        RagDocumentModel document
+    ) {
+        Map<String, String> metadata = document.getMetadata();
+        return KnowledgeData.builder()
+            .id(document.getSourceId())
+            .type(document.getSourceType())
+            .title(metadata.get(META_KEY_TITLE))
+            .slug(metadata.get(META_KEY_SLUG))
+            .content(document.getContent())
+            .excerpt(metadata.get(META_KEY_EXCERPT))
+            .chunked(true)
+            .dataUrl(metadata.get(META_KEY_DATA_URL))
+            .productCode(metadata.get(META_KEY_PRODUCT_CODE))
+            .price(metadata.get(META_KEY_PRICE))
+            .currencyIsoCode(metadata.get(META_KEY_CURRENCY_ISO_CODE))
+            .build();
     }
 
     @Override
