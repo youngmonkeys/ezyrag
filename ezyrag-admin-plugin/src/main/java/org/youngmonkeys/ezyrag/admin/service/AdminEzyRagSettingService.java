@@ -75,6 +75,9 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
             model
         );
+        settingService.setLastUpdateTime(
+            SETTING_NAME_QDRANT_CONNECTION_PROPERTIES
+        );
     }
 
     public RagQdrantConnectionPropertiesModel getConnectionPropertiesInDb() {

@@ -88,7 +88,7 @@ public class EzyRagClient {
         while (iterator.hasNext()) {
             RagInputData inputData = iterator.next();
             String text = textCleanerManager.cleanText(
-                (String) inputData.getData()
+                inputData.getText()
             );
             List<RagChunkedResultModel> chunkedResults =
                 chunker.chunk(text);

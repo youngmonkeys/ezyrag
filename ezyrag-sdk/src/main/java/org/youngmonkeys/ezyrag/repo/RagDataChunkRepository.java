@@ -25,7 +25,7 @@ public interface RagDataChunkRepository
     extends EzyDatabaseRepository<Long, RagDataChunk> {
 
     @EzyQuery(
-        "UPDATE RagDataChunkEntity e " +
+        "UPDATE RagDataChunk e " +
             "SET e.embedding = ?1 " +
             "WHERE e.id = ?0"
     )
@@ -47,7 +47,7 @@ public interface RagDataChunkRepository
     );
 
     @EzyQuery(
-        "SELECT e.id, e.contentHash, e.embedding FROM RagDataChunkEntity e " +
+        "SELECT e.id, e.contentHash, e.embedding FROM RagDataChunk e " +
             "WHERE e.sourceType = ?0 " +
             "AND e.sourceId = ?1 " +
             "AND e.chunkIndex = ?2"

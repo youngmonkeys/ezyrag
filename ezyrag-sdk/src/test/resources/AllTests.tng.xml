@@ -20,6 +20,7 @@
     <test name="All">
         <packages>
             <package name="org.youngmonkeys.ezyrag.test" />
+            <package name="org.youngmonkeys.ezyrag.test.chunker" />
         </packages>
     </test>
 </suite>
