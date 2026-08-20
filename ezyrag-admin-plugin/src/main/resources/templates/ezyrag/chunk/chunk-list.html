@@ -14,3 +14,244 @@
  ~ limitations under the License.
 -->
 
+<html
+        lang="en"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th::fragment="content">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-3">
+                        <input type="text" id="sourceTypeInput" class="form-control"
+                               th:placeholder="#{source_type}">
+                    </div>
+                    <div class="col-md-2 mt-2 mt-md-0">
+                        <input type="number" id="sourceIdInput" class="form-control"
+                               th:placeholder="#{source_id}">
+                    </div>
+                    <div class="col-md-3 mt-2 mt-md-0">
+                        <input type="text" id="keywordInput" class="form-control"
+                               th:placeholder="#{keyword}">
+                    </div>
+                    <div class="col-md-2 mt-2 mt-md-0">
+                        <select id="sortOrderSelect" class="form-control">
+                            <option value="ID_DESC">ID DESC</option>
+                            <option value="ID_ASC">ID ASC</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mt-2 mt-md-0">
+                        <button type="button" id="searchButton" class="btn btn-primary btn-block">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-bordered table-hover text-nowrap align-middle-cells">
+                    <thead>
+                    <tr>
+                        <th class="text-center">[[#{id}]]</th>
+                        <th>[[#{source_type}]]</th>
+                        <th class="text-center">[[#{source_id}]]</th>
+                        <th class="text-center">[[#{chunk_index}]]</th>
+                        <th>[[#{content}]]</th>
+                        <th>[[#{content_hash}]]</th>
+                        <th class="text-center">[[#{has_embedding}]]</th>
+                        <th class="text-center">[[#{created_at}]]</th>
+                        <th class="text-center">[[#{updated_at}]]</th>
+                    </tr>
+                    </thead>
+                    <tbody id="dataChunkListBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer clearfix">
+                <span><span id="dataChunkCountText">0</span>
+                    [[${#strings.toLowerCase(#messages.msg('of'))}]]
+                    <span id="totalDataChunkText">0</span>
+                    [[${#strings.toLowerCase(#messages.msg('data_chunks'))}]]
+                </span>
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="firstPageButton">
+                            <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="prevPageButton">[[#{prev}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="nextPageButton">[[#{next}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="lastPageButton">
+                            <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</th:block>
+<script th:fragment="scripts">
+ezyrag.lastDataChunkPageToken = {};
+
+$(document).ready(() => {
+    ezyrag.fillSearchInputsFromUrl();
+    ezyrag.fetchDataChunkList();
+});
+
+$('#searchButton').click(() => {
+    ezyrag.fetchDataChunkList();
+});
+
+$('#keywordInput').keydown((e) => {
+    if (e.key === 'Enter') {
+        ezyrag.fetchDataChunkList();
+    }
+});
+
+$('#sourceTypeInput, #sourceIdInput, #sortOrderSelect').change(() => {
+    ezyrag.fetchDataChunkList();
+});
+
+$('#firstPageButton').click(() => {
+    ezyrag.fetchDataChunkList('first');
+});
+
+$('#lastPageButton').click(() => {
+    ezyrag.fetchDataChunkList('last');
+});
+
+$('#nextPageButton').click(() => {
+    ezyrag.fetchDataChunkList('next');
+});
+
+$('#prevPageButton').click(() => {
+    ezyrag.fetchDataChunkList('prev');
+});
+
+ezyrag.changeBrowserUrl = function() {
+    var url = location.pathname;
+    var queryString = ezyrag.buildDataChunkFilterQueryString();
+    if (queryString) {
+        url += '?' + queryString.substring(1);
+    }
+    window.history.pushState({}, '', url);
+}
+
+ezyrag.buildDataChunkFilterQueryString = function() {
+    var queryString = '';
+    var sourceType = $('#sourceTypeInput').val();
+    var sourceId = $('#sourceIdInput').val();
+    var keyword = $('#keywordInput').val();
+    var sortOrder = $('#sortOrderSelect').val();
+    if (sourceType) {
+        queryString += '&sourceType=' + encodeURIComponent(sourceType);
+    }
+    if (sourceId) {
+        queryString += '&sourceId=' + encodeURIComponent(sourceId);
+    }
+    if (keyword) {
+        queryString += '&keyword=' + encodeURIComponent(keyword);
+    }
+    if (sortOrder) {
+        queryString += '&sortOrder=' + encodeURIComponent(sortOrder);
+    }
+    return queryString;
+}
+
+ezyrag.fillSearchInputsFromUrl = function() {
+    var params = new URLSearchParams(location.search);
+    $('#sourceTypeInput').val(params.get('sourceType') || '');
+    $('#sourceIdInput').val(params.get('sourceId') || '');
+    $('#keywordInput').val(params.get('keyword') || '');
+    $('#sortOrderSelect').val(params.get('sortOrder') || 'ID_DESC');
+}
+
+ezyrag.fetchDataChunkList = function(action) {
+    var queryString = ezyrag.buildDataChunkFilterQueryString();
+    if (action === 'next') {
+        if (ezyrag.lastDataChunkPageToken.next) {
+            queryString += '&nextPageToken='
+                + encodeURIComponent(ezyrag.lastDataChunkPageToken.next);
+        } else {
+            return;
+        }
+    } else if (action === 'prev') {
+        if (ezyrag.lastDataChunkPageToken.prev) {
+            queryString += '&prevPageToken='
+                + encodeURIComponent(ezyrag.lastDataChunkPageToken.prev);
+        } else {
+            return;
+        }
+    } else if (action === 'last') {
+        queryString += '&lastPage=true';
+    }
+    $.ajax({
+        url: '/ezyrag/api/v1/data-chunks?limit=12' + queryString,
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#dataChunkCountText').text(data.count);
+        $('#totalDataChunkText').text(data.total);
+        ezyrag.lastDataChunkPageToken = data.pageToken || {};
+        $('#dataChunkListBody').html(ezyrag.buildDataChunkListBodyHtml(data.items || []));
+        ezyrag.decoratePaginationButtons(data);
+        ezyrag.changeBrowserUrl();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyrag.decoratePaginationButtons = function(data) {
+    if (data.continuation && data.continuation.hasNext) {
+        $('#nextPageButton').removeClass('text-secondary');
+        $('#lastPageButton').removeClass('text-secondary');
+    } else {
+        $('#nextPageButton').addClass('text-secondary');
+        $('#lastPageButton').addClass('text-secondary');
+    }
+    if (data.continuation && data.continuation.hasPrevious) {
+        $('#prevPageButton').removeClass('text-secondary');
+        $('#firstPageButton').removeClass('text-secondary');
+    } else {
+        $('#prevPageButton').addClass('text-secondary');
+        $('#firstPageButton').addClass('text-secondary');
+    }
+}
+
+ezyrag.buildDataChunkListBodyHtml = function(dataChunks) {
+    var html = '';
+    dataChunks.forEach((dataChunk) => {
+        html += ezyrag.buildDataChunkListItemHtml(dataChunk);
+    });
+    return html;
+}
+
+ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
+    return `
+        <tr>
+            <td class="text-center">${dataChunk.id}</td>
+            <td>${ezyadmin.escapeHtml(dataChunk.sourceType || '')}</td>
+            <td class="text-center">${dataChunk.sourceId}</td>
+            <td class="text-center">${dataChunk.chunkIndex}</td>
+            <td class="text-wrap" style="min-width: 360px; max-width: 520px;">
+                ${ezyadmin.escapeHtml(ezyadmin.removeHtmlTagAndSub(dataChunk.content || '', 240))}
+            </td>
+            <td>${ezyadmin.escapeHtml(dataChunk.contentHash || '')}</td>
+            <td class="text-center">${dataChunk.hasEmbedding ? '<i class="fas fa-check text-success"></i>' : ''}</td>
+            <td class="text-center">${ezyadmin.formatTimeStamp(dataChunk.createdAt)}</td>
+            <td class="text-center">${ezyadmin.formatTimeStamp(dataChunk.updatedAt)}</td>
+        </tr>
+        `;
+}
+</script>
+</body>
+</html>
+
