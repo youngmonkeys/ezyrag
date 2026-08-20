@@ -14,27 +14,14 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.vd;
+package org.youngmonkeys.ezyrag.model;
 
-import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
-import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.List;
-
-public interface RagVectorDatabaseService {
-
-    void createCollectionIfAbsent() throws Exception;
-
-    void upsert(
-        List<RagVectorPointModel> points
-    ) throws Exception;
-
-    List<RagVectorSearchResultModel> search(
-        float[] vector,
-        int limit
-    ) throws Exception;
-
-    int getVectorSize();
-
-    String getProviderName();
+@Getter
+@Builder
+public class RagEmbeddingData {
+    private Object data;
+    private String dataType;
 }

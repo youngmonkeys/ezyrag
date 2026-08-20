@@ -20,6 +20,7 @@ import com.tvd12.ezyfox.security.EzySHA256;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyai.knowledge.KnowledgeData;
+import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyrag.builder.RagKnowledgeDataBuilder;
 import org.youngmonkeys.ezyrag.builder.RagKnowledgeDataBuilderManager;
 import org.youngmonkeys.ezyrag.chunker.RagDataChunker;
@@ -33,6 +34,7 @@ import org.youngmonkeys.ezyrag.model.RagChunkedResultModel;
 import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagDocumentModel;
+import org.youngmonkeys.ezyrag.model.RagEmbeddingData;
 import org.youngmonkeys.ezyrag.model.RagInputData;
 import org.youngmonkeys.ezyrag.model.RagSaveDataChunkModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
@@ -78,7 +80,7 @@ public class EzyRagClient {
         RagEmbeddingService embeddingService = getEmbeddingService();
         RagVectorDatabaseService vectorDatabaseService =
             getVectorDatabaseService();
-        int vectorSize = settingService.getQdrantVectorSize();
+        int vectorSize = vectorDatabaseService.getVectorSize();
         RagDataChunker chunker = getDataChunker();
         Iterator<RagInputData> iterator = dataLoader
             .load(dataSource);
@@ -137,7 +139,10 @@ public class EzyRagClient {
                 boolean sameHash = contentHash.equals(contentHashInDb);
                 if (embedding == null || !sameHash) {
                     embedding = embeddingService.embed(
-                        content,
+                        RagEmbeddingData.builder()
+                            .data(content)
+                            .dataType(CommonContentType.TEXT.toString())
+                            .build(),
                         vectorSize
                     );
                     dataChunkService.updateEmbeddingById(
@@ -179,10 +184,12 @@ public class EzyRagClient {
             getVectorDatabaseService();
         String processedQuery = queryProcessorManager
             .processQuery(query);
-        int vectorSize = settingService.getQdrantVectorSize();
         float[] vector = embeddingService.embed(
-            processedQuery,
-            vectorSize
+            RagEmbeddingData.builder()
+                .data(processedQuery)
+                .dataType(CommonContentType.TEXT.toString())
+                .build(),
+            vectorDatabaseService.getVectorSize()
         );
         return vectorDatabaseService.search(vector, limit);
     }

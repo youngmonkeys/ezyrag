@@ -16,9 +16,14 @@
 
 package org.youngmonkeys.ezyrag.embbeding;
 
+import org.youngmonkeys.ezyrag.model.RagEmbeddingData;
+
 public interface RagEmbeddingService {
 
     String getServiceName();
 
-    float[] embed(String text, int vectorSize) throws Exception;
+    float[] embed(
+        RagEmbeddingData data,
+        int vectorSize
+    ) throws Exception;
 }

@@ -22,7 +22,9 @@ import com.tvd12.ezyhttp.client.request.PostRequest;
 import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyrag.constant.EmbeddingServiceName;
+import org.youngmonkeys.ezyrag.model.RagEmbeddingData;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.List;
@@ -36,13 +38,13 @@ public class RagOpenAIEmbeddingService implements RagEmbeddingService {
 
     @Override
     public float[] embed(
-        String text,
+        RagEmbeddingData data,
         int vectorSize
     ) throws Exception {
         String apiKey = ezyRagSettingService.getOpenAiApiKey();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put("model", getEmbeddingModel())
-            .put("input", text)
+            .put("input", getEmbeddingInput(data))
             .put("dimensions", vectorSize)
             .toMap();
         Map<String, Object> responseBody = httpClient.call(
@@ -65,6 +67,22 @@ public class RagOpenAIEmbeddingService implements RagEmbeddingService {
 
     protected String getEmbeddingApiUrl() {
         return "https://api.openai.com/v1/embeddings";
+    }
+
+    protected Object getEmbeddingInput(RagEmbeddingData data) {
+        String dataType = data.getDataType();
+        if (!CommonContentType.TEXT.toString().equals(dataType)) {
+            throw new IllegalArgumentException(
+                "Unsupported embedding data type: " + dataType
+            );
+        }
+        Object input = data.getData();
+        if (!(input instanceof String)) {
+            throw new IllegalArgumentException(
+                "Embedding data must be a string"
+            );
+        }
+        return input;
     }
 
     @SuppressWarnings("unchecked")

@@ -18,8 +18,6 @@ package org.youngmonkeys.ezyrag.constant;
 
 public final class EzyRagConstants {
 
-    public static final String DEFAULT_QDRANT_BASE_URL = "http://localhost:6333";
-    public static final String DEFAULT_QDRANT_COLLECTION_NAME = "ezyrag_data_chunks";
     public static final int DEFAULT_QDRANT_VECTOR_SIZE = 384;
 
     public static final String SETTING_NAME_OPENAI_API_KEY =

@@ -317,6 +317,14 @@ public class RagQdrantVectorDatabaseService
         return properties;
     }
 
+    @Override
+    public int getVectorSize() {
+        return settingService.getCachedValue(
+            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            DEFAULT_QDRANT_VECTOR_SIZE
+        );
+    }
+
     public String getProviderName() {
         return RagVectorDatabaseServiceName.QDRANT.toString();
     }
