@@ -20,5 +20,5 @@ public interface RagEmbeddingService {
 
     String getServiceName();
 
-    float[] embed(String text) throws Exception;
+    float[] embed(String text, int vectorSize) throws Exception;
 }

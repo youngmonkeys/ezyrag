@@ -79,6 +79,10 @@ public class AdminVectorDatabaseServiceController {
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
             )
+            .addVariable(
+                "qdrantVectorSize",
+                ezyRagSettingService.getQdrantVectorSize()
+            )
             .addVariable("minVectorSize", MIN_VECTOR_SIZE)
             .build();
     }

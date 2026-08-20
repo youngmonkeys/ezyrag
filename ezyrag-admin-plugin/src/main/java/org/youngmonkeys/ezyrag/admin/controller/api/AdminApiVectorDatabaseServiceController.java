@@ -52,6 +52,9 @@ public class AdminApiVectorDatabaseServiceController {
         ezyRagSettingService.setQdrantConnectionProperties(
             requestToModelConverter.toModel(request)
         );
+        ezyRagSettingService.setQdrantVectorSize(
+            request.getVectorSize()
+        );
         qdrantVectorDatabaseService.createCollectionIfAbsent();
         return ResponseEntity.noContent();
     }

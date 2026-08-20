@@ -33,7 +33,6 @@ public class AdminEzyRagRequestToModelConverter {
             .baseUrl(request.getBaseUrl())
             .apiKey(request.getApiKey())
             .collectionName(request.getCollectionName())
-            .vectorSize(request.getVectorSize())
             .build();
     }
 

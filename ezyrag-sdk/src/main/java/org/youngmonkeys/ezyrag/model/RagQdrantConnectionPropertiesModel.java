@@ -16,6 +16,7 @@
 
 package org.youngmonkeys.ezyrag.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,9 +28,9 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RagQdrantConnectionPropertiesModel {
     private String baseUrl;
     private String apiKey;
     private String collectionName;
-    private int vectorSize;
 }

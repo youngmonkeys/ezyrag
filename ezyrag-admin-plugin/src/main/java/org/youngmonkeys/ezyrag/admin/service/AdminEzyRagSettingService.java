@@ -26,6 +26,7 @@ import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDD
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
 
 @Service
 public class AdminEzyRagSettingService extends EzyRagSettingService {
@@ -56,7 +57,6 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             EzyMapBuilder.mapBuilder()
                 .put("baseUrl", model.getBaseUrl())
                 .put("collectionName", model.getCollectionName())
-                .put("vectorSize", model.getVectorSize())
                 .toMap()
         );
         String apiKey = model.getApiKey();
@@ -77,6 +77,17 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         );
         settingService.setLastUpdateTime(
             SETTING_NAME_QDRANT_CONNECTION_PROPERTIES
+        );
+    }
+
+    public void setQdrantVectorSize(int vectorSize) {
+        settingService.setIntValue(
+            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            vectorSize
+        );
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            vectorSize
         );
     }
 

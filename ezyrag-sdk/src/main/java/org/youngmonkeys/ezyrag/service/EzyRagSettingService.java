@@ -30,11 +30,14 @@ import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLE
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
+import static org.youngmonkeys.ezyplatform.util.Numbers.toIntOrZero;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_QDRANT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
 
 public class EzyRagSettingService {
@@ -45,6 +48,20 @@ public class EzyRagSettingService {
         DefaultSettingService settingService
     ) {
         this.settingService = settingService;
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            settingService.getIntValue(
+                SETTING_NAME_QDRANT_VECTOR_SIZE,
+                DEFAULT_QDRANT_VECTOR_SIZE
+            )
+        );
+        settingService.addValueConverter(
+            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            it -> toIntOrZero(it)
+        );
+        settingService.scheduleCacheValue(
+            SETTING_NAME_QDRANT_VECTOR_SIZE
+        );
     }
 
     public String getOpenAiApiKey() {
@@ -112,6 +129,13 @@ public class EzyRagSettingService {
         return settingService.getTextValue(
             SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
             RagVectorDatabaseServiceName.QDRANT.toString()
+        );
+    }
+
+    public int getQdrantVectorSize() {
+        return settingService.getCachedValue(
+            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            DEFAULT_QDRANT_VECTOR_SIZE
         );
     }
 }

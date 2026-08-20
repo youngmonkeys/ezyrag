@@ -35,11 +35,15 @@ public class RagOpenAIEmbeddingService implements RagEmbeddingService {
     private final EzyRagSettingService ezyRagSettingService;
 
     @Override
-    public float[] embed(String text) throws Exception {
+    public float[] embed(
+        String text,
+        int vectorSize
+    ) throws Exception {
         String apiKey = ezyRagSettingService.getOpenAiApiKey();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put("model", getEmbeddingModel())
             .put("input", text)
+            .put("dimensions", vectorSize)
             .toMap();
         Map<String, Object> responseBody = httpClient.call(
             new PostRequest()

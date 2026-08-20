@@ -78,6 +78,7 @@ public class EzyRagClient {
         RagEmbeddingService embeddingService = getEmbeddingService();
         RagVectorDatabaseService vectorDatabaseService =
             getVectorDatabaseService();
+        int vectorSize = settingService.getQdrantVectorSize();
         RagDataChunker chunker = getDataChunker();
         Iterator<RagInputData> iterator = dataLoader
             .load(dataSource);
@@ -135,7 +136,10 @@ public class EzyRagClient {
                 );
                 boolean sameHash = contentHash.equals(contentHashInDb);
                 if (embedding == null || !sameHash) {
-                    embedding = embeddingService.embed(content);
+                    embedding = embeddingService.embed(
+                        content,
+                        vectorSize
+                    );
                     dataChunkService.updateEmbeddingById(
                         chunkId,
                         embedding
@@ -175,7 +179,11 @@ public class EzyRagClient {
             getVectorDatabaseService();
         String processedQuery = queryProcessorManager
             .processQuery(query);
-        float[] vector = embeddingService.embed(processedQuery);
+        int vectorSize = settingService.getQdrantVectorSize();
+        float[] vector = embeddingService.embed(
+            processedQuery,
+            vectorSize
+        );
         return vectorDatabaseService.search(vector, limit);
     }
 
