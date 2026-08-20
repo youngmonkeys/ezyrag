@@ -14,24 +14,19 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.admin.converter;
+package org.youngmonkeys.ezyrag.admin.pagination;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
-import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.pagination.RagDataChunkPaginationParameterConverter;
+import org.youngmonkeys.ezyplatform.admin.pagination.AdminPaginationParameterConverter;
 
 @EzySingleton
-public class AdminEzyRagRequestToModelConverter {
+public class AdminRagDataChunkPaginationParameterConverter
+    extends RagDataChunkPaginationParameterConverter {
 
-    public RagQdrantConnectionPropertiesModel toModel(
-        AdminSaveQdrantConnectionPropertiesRequest request
+    public AdminRagDataChunkPaginationParameterConverter(
+        AdminPaginationParameterConverter converter
     ) {
-        return RagQdrantConnectionPropertiesModel
-            .builder()
-            .baseUrl(request.getBaseUrl())
-            .apiKey(request.getApiKey())
-            .collectionName(request.getCollectionName())
-            .vectorSize(request.getVectorSize())
-            .build();
+        super(converter);
     }
 }

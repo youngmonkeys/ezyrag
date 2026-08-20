@@ -17,14 +17,16 @@
 package org.youngmonkeys.ezyrag.test;
 
 import com.tvd12.ezyfox.tool.EzySameObjectScriptCreator;
+import org.youngmonkeys.ezyrag.entity.RagDataChunk;
+import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
 
 public class ConvertScriptGenerator {
 
     public static void main(String[] args) {
         String script = new EzySameObjectScriptCreator()
-            .originClass(Object.class)
+            .originClass(RagDataChunk.class)
             .originObjectName("entity")
-            .targetClass(Object.class)
+            .targetClass(RagDataChunkModel.class)
             .targetObjectName("model")
             .generateBuildFuncScript();
         System.out.println(script);

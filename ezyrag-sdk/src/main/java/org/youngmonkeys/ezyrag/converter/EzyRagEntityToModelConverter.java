@@ -33,7 +33,15 @@ public class EzyRagEntityToModelConverter {
             return null;
         }
         return RagDataChunkModel.builder()
+            .id(entity.getId())
+            .sourceType(entity.getSourceType())
+            .sourceId(entity.getSourceId())
+            .chunkIndex(entity.getChunkIndex())
+            .content(entity.getContent())
+            .contentHash(entity.getContentHash())
+            .embedding(entity.getEmbedding())
             .createdAt(clock.toTimestamp(entity.getCreatedAt()))
+            .updatedAt(clock.toTimestamp(entity.getUpdatedAt()))
             .build();
     }
 }

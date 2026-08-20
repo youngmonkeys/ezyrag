@@ -14,24 +14,18 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.admin.converter;
+package org.youngmonkeys.ezyrag.admin.loader;
 
+import com.tvd12.ezyfox.bean.EzySingletonFactory;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
-import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.loader.RagDataLoaderManager;
 
 @EzySingleton
-public class AdminEzyRagRequestToModelConverter {
+public class AdminRagDataLoaderManager extends RagDataLoaderManager {
 
-    public RagQdrantConnectionPropertiesModel toModel(
-        AdminSaveQdrantConnectionPropertiesRequest request
+    public AdminRagDataLoaderManager(
+        EzySingletonFactory singletonFactory
     ) {
-        return RagQdrantConnectionPropertiesModel
-            .builder()
-            .baseUrl(request.getBaseUrl())
-            .apiKey(request.getApiKey())
-            .collectionName(request.getCollectionName())
-            .vectorSize(request.getVectorSize())
-            .build();
+        super(singletonFactory);
     }
 }

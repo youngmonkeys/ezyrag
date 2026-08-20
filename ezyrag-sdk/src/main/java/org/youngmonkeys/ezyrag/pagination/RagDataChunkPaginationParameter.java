@@ -14,15 +14,9 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.test;
+package org.youngmonkeys.ezyrag.pagination;
 
-import org.youngmonkeys.devtools.pagination.PaginationClassesGenerator;
-import org.youngmonkeys.ezyrag.entity.RagDataChunk;
+import org.youngmonkeys.ezyplatform.pagination.CommonPaginationParameter;
 
-public class EzyRagPaginationClassesGenerator {
-
-    public static void main(String[] args) throws Exception {
-        new PaginationClassesGenerator(RagDataChunk.class)
-            .generate();
-    }
-}
+public interface RagDataChunkPaginationParameter
+    extends CommonPaginationParameter {}

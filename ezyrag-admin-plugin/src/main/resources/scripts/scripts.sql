@@ -25,5 +25,5 @@ CREATE TABLE IF NOT EXISTS `ezyrag_data_chunks` (
     `created_at` datetime NOT NULL,
     `updated_at` datetime NOT NULL,
     PRIMARY KEY (`id`),
-    INDEX `index_source_pagination` (`source_type`, `source_key`, `chunk_index`, `content_hash`, `id`)
+    INDEX `index_source_pagination` (`source_type`, `source_id`, `chunk_index`, `content_hash`, `id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
