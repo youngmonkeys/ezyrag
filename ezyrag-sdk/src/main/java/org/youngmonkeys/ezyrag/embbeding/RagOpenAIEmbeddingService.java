@@ -22,7 +22,7 @@ import com.tvd12.ezyhttp.client.request.PostRequest;
 import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.constant.EmbeddingServiceProvider;
+import org.youngmonkeys.ezyrag.constant.EmbeddingServiceName;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.List;
@@ -77,6 +77,6 @@ public class RagOpenAIEmbeddingService implements RagEmbeddingService {
 
     @Override
     public String getServiceName() {
-        return EmbeddingServiceProvider.OPENAI.toString();
+        return EmbeddingServiceName.OPENAI.toString();
     }
 }

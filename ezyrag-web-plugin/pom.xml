@@ -13,8 +13,7 @@
  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>ezyrag</artifactId>
         <groupId>org.youngmonkeys</groupId>
@@ -242,6 +241,21 @@
                     </resource>
                 <resource>
                         <directory>${ezyplatform.home}/web/plugins/ezyai/resources</directory>
+                    </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/web/plugins/ezyarticle/resources</directory>
+                    </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/web/plugins/ezychat/resources</directory>
+                    </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/web/plugins/graphql/resources</directory>
+                    </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/web/plugins/ecommerce/resources</directory>
+                    </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/web/plugins/ezymail/resources</directory>
                     </resource>
                 </resources>
             </build>

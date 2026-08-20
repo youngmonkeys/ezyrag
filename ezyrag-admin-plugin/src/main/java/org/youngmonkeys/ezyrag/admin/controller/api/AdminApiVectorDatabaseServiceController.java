@@ -21,26 +21,35 @@ import com.tvd12.ezyhttp.core.annotation.Description;
 import com.tvd12.ezyhttp.core.response.ResponseEntity;
 import com.tvd12.ezyhttp.server.core.annotation.*;
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyRagSettingsRequest;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveVectorDatabaseServiceRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
+import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
+import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 
 @Api
 @Authenticated
 @Controller("/api/v1")
-@EzyFeature("settings_management")
+@EzyFeature("rag")
 @AllArgsConstructor
-public class AdminApiSettingController {
+public class AdminApiVectorDatabaseServiceController {
 
+    private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagSettingService ezyRagSettingService;
 
-    @Description("Update ezyrag settings")
-    @DoPut("/settings")
-    public ResponseEntity settingsPut(
-        @RequestBody AdminSaveEzyRagSettingsRequest request
+    @Description("Update a vector database service's connection settings")
+    @DoPut("/vector-database-services/{serviceName}")
+    public ResponseEntity vectorDatabaseServicesServiceNamePut(
+        @PathVariable String serviceName,
+        @RequestBody AdminSaveVectorDatabaseServiceRequest request
     ) {
-        ezyRagSettingService.setOpenAiApiKey(
-            request.getOpenAiApiKey()
-        );
+        vectorDatabaseServiceValidator.validateServiceName(serviceName);
+        if (RagVectorDatabaseServiceName.QDRANT.equalsValue(serviceName)) {
+            ezyRagSettingService.setQdrantBaseUrl(request.getBaseUrl());
+            ezyRagSettingService.setQdrantApiKey(request.getApiKey());
+            ezyRagSettingService.setQdrantCollectionName(
+                request.getCollectionName()
+            );
+        }
         return ResponseEntity.noContent();
     }
 }

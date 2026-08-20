@@ -17,6 +17,10 @@
 package org.youngmonkeys.ezyrag.service;
 
 import org.youngmonkeys.ezyplatform.service.DefaultSettingService;
+import org.youngmonkeys.ezyrag.constant.EmbeddingServiceName;
+import org.youngmonkeys.ezyrag.constant.RagDataChunkerName;
+import org.youngmonkeys.ezyrag.constant.RagDataRetrieverName;
+import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_EXCERPT_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH;
@@ -26,21 +30,17 @@ import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLE
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_DATA_CHUNKER;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_EMBEDDING_SERVICE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_QDRANT_BASE_URL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_QDRANT_COLLECTION_NAME;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_DATABASE_SERVICE;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_LOADER;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_BASE_URL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_COLLECTION_NAME;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
 
 public class EzyRagSettingService {
 
@@ -106,40 +106,35 @@ public class EzyRagSettingService {
 
     public String getKnowledgeDataBuilder() {
         return settingService.getTextValue(
-            SETTING_NAME_KNOWLEDGE_DATA_BUILDER
+            SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME
         );
     }
 
     public String getDataChunker() {
         return settingService.getTextValue(
-            SETTING_NAME_DATA_CHUNKER,
-            DEFAULT_DATA_CHUNKER
+            SETTING_NAME_DATA_CHUNKER_NAME,
+            RagDataChunkerName.HIERARCHICAL.toString()
         );
     }
 
     public String getEmbeddingService() {
         return settingService.getTextValue(
-            SETTING_NAME_EMBEDDING_SERVICE,
-            DEFAULT_EMBEDDING_SERVICE
-        );
-    }
-
-    public String getDataLoader() {
-        return settingService.getTextValue(
-            SETTING_NAME_DATA_LOADER
+            SETTING_NAME_EMBEDDING_SERVICE_NAME,
+            EmbeddingServiceName.OPENAI.toString()
         );
     }
 
     public String getDataRetriever() {
         return settingService.getTextValue(
-            SETTING_NAME_DATA_RETRIEVER
+            SETTING_NAME_DATA_RETRIEVER_NAME,
+            RagDataRetrieverName.DATABASE.toString()
         );
     }
 
     public String getVectorDatabaseService() {
         return settingService.getTextValue(
-            SETTING_NAME_VECTOR_DATABASE_SERVICE,
-            DEFAULT_VECTOR_DATABASE_SERVICE
+            SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
+            RagVectorDatabaseServiceName.QDRANT.toString()
         );
     }
 }

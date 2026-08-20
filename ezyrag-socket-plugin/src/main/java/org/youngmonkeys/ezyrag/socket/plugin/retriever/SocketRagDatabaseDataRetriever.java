@@ -17,20 +17,24 @@
 package org.youngmonkeys.ezyrag.socket.plugin.retriever;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyrag.converter.EzyRagModelToModelConverter;
 import org.youngmonkeys.ezyrag.retriever.RagDatabaseDataRetriever;
-import org.youngmonkeys.ezyrag.service.RagDataChunkMetaService;
-import org.youngmonkeys.ezyrag.service.RagDataChunkService;
+import org.youngmonkeys.ezyrag.socket.plugin.converter.SocketEzyRagModelToModelConverter;
+import org.youngmonkeys.ezyrag.socket.plugin.service.SocketRagDataChunkMetaService;
+import org.youngmonkeys.ezyrag.socket.plugin.service.SocketRagDataChunkService;
 
 @EzySingleton
 public class SocketRagDatabaseDataRetriever
     extends RagDatabaseDataRetriever {
 
     public SocketRagDatabaseDataRetriever(
-        RagDataChunkService dataChunkService,
-        RagDataChunkMetaService dataChunkMetaService,
-        EzyRagModelToModelConverter modelToModelConverter
+        SocketRagDataChunkService dataChunkService,
+        SocketRagDataChunkMetaService dataChunkMetaService,
+        SocketEzyRagModelToModelConverter modelToModelConverter
     ) {
-        super(dataChunkService, dataChunkMetaService, modelToModelConverter);
+        super(
+            dataChunkService,
+            dataChunkMetaService,
+            modelToModelConverter
+        );
     }
 }

@@ -52,4 +52,13 @@ public class RagVectorDatabaseServiceManager {
     ) {
         return dataRetrieverBySourceType.get().get(serviceName);
     }
+
+    public List<String> getSortedVectorDatabaseServiceNames() {
+        return dataRetrieverBySourceType
+            .get()
+            .keySet()
+            .stream()
+            .sorted()
+            .collect(Collectors.toList());
+    }
 }

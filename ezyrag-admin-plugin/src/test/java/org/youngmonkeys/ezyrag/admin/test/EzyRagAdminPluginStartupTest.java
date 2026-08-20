@@ -27,7 +27,12 @@ import com.tvd12.ezyhttp.server.core.annotation.PropertiesSources;
 @ComponentsScan({
     "org.youngmonkeys.ezyplatform",
     "org.youngmonkeys.ezyrag",
-    "org.youngmonkeys.ezyai"
+    "org.youngmonkeys.ezyai",
+    "org.youngmonkeys.ezyarticle",
+    "org.youngmonkeys.ezychat",
+    "org.youngmonkeys.graphql",
+    "org.youngmonkeys.ecommerce",
+    "org.youngmonkeys.ezymail"
 })
 public class EzyRagAdminPluginStartupTest {
 

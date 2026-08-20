@@ -14,12 +14,14 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.admin.repo;
 
-public enum EmbeddingServiceProvider {
-    OPENAI;
+import com.tvd12.ezydata.database.EzyDatabaseRepository;
+import com.tvd12.ezyfox.database.annotation.EzyRepository;
+import org.youngmonkeys.ezyrag.entity.RagDataChunk;
+import org.youngmonkeys.ezyrag.repo.RagDataChunkRepository;
 
-    public boolean equalsValue(String value) {
-        return toString().equals(value);
-    }
-}
+@EzyRepository
+public interface AdminRagDataChunkRepository extends
+    RagDataChunkRepository,
+    EzyDatabaseRepository<Long, RagDataChunk> {}
