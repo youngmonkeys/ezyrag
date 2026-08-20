@@ -21,34 +21,27 @@
 <body>
 <th:block th:fragment="content">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-md-3">
-                        <input type="text" id="sourceTypeInput" class="form-control"
-                               th:placeholder="#{source_type}">
-                    </div>
-                    <div class="col-md-2 mt-2 mt-md-0">
-                        <input type="number" id="sourceIdInput" class="form-control"
-                               th:placeholder="#{source_id}">
-                    </div>
-                    <div class="col-md-3 mt-2 mt-md-0">
-                        <input type="text" id="keywordInput" class="form-control"
-                               th:placeholder="#{keyword}">
-                    </div>
-                    <div class="col-md-2 mt-2 mt-md-0">
-                        <select id="sortOrderSelect" class="form-control">
-                            <option value="ID_DESC">ID DESC</option>
-                            <option value="ID_ASC">ID ASC</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 mt-2 mt-md-0">
-                        <button type="button" id="searchButton" class="btn btn-primary btn-block">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-3 col-md-4 page-search">
+                <label for="sourceTypeInput" class="text-nowrap">[[#{source_type}]]: </label>
+                <input type="text" id="sourceTypeInput" class="form-control"
+                       th:placeholder="#{source_type}">
             </div>
+            <div class="col-lg-3 col-md-4 page-search">
+                <label for="sourceIdInput" class="text-nowrap">[[#{source_id}]]: </label>
+                <input type="number" id="sourceIdInput" class="form-control"
+                       th:placeholder="#{source_id}">
+            </div>
+            <div class="col-lg-3 col-md-4 page-search">
+                <label for="keywordInput" class="text-nowrap">[[#{keyword}]]: </label>
+                <input type="text" id="keywordInput" class="form-control"
+                       th:placeholder="#{keyword}">
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
             <div class="card-body table-responsive p-0">
                 <table class="table table-bordered table-hover text-nowrap align-middle-cells">
                     <thead>
@@ -254,4 +247,3 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
 </script>
 </body>
 </html>
-
