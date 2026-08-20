@@ -53,7 +53,7 @@
                         <th>[[#{source_type}]]</th>
                         <th class="text-center">[[#{source_id}]]</th>
                         <th class="text-center">[[#{chunk_index}]]</th>
-                        <th class="text-center">[[#{score}]]</th>
+                        <th class="text-center data-chunk-score-column">[[#{score}]]</th>
                         <th>[[#{content}]]</th>
                         <th class="text-center">[[#{has_embedding}]]</th>
                         <th class="text-center">[[#{created_at}]]</th>
@@ -166,8 +166,20 @@ ezyrag.fillSearchInputsFromUrl = function() {
     $('#sortOrderSelect').val(params.get('sortOrder') || 'ID_DESC');
 }
 
+ezyrag.isDataChunkKeywordEntered = function() {
+    return !!($('#keywordInput').val() || '').trim();
+}
+
+ezyrag.decorateDataChunkScoreColumn = function() {
+    $('.data-chunk-score-column').toggleClass(
+        'd-none',
+        !ezyrag.isDataChunkKeywordEntered()
+    );
+}
+
 ezyrag.fetchDataChunkList = function(action) {
     var keyword = ($('#keywordInput').val() || '').trim();
+    ezyrag.decorateDataChunkScoreColumn();
     if (keyword) {
         ezyrag.searchDataChunks(action, keyword);
         return;
@@ -308,13 +320,16 @@ ezyrag.buildDataChunkListBodyHtml = function(dataChunks) {
 }
 
 ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
+    var scoreHtml = ezyrag.isDataChunkKeywordEntered()
+        ? `<td class="text-center data-chunk-score-column">${ezyrag.formatDataChunkScore(dataChunk.id)}</td>`
+        : '';
     return `
         <tr>
             <td class="text-center">${dataChunk.id}</td>
             <td>${ezyadmin.escapeHtml(dataChunk.sourceType || '')}</td>
             <td class="text-center">${dataChunk.sourceId}</td>
             <td class="text-center">${dataChunk.chunkIndex}</td>
-            <td class="text-center">${ezyrag.formatDataChunkScore(dataChunk.id)}</td>
+            ${scoreHtml}
             <td class="text-wrap" style="min-width: 360px; max-width: 520px;">
                 ${ezyadmin.escapeHtml(ezyadmin.removeHtmlTagAndSub(dataChunk.content || '', 240))}
             </td>
