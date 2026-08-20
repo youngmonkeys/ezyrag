@@ -81,23 +81,7 @@ public class EzyRagClient {
                     sourceType
             );
         }
-        String embeddingServiceName = settingService
-            .getEmbeddingService();
-        if (isBlank(embeddingServiceName)) {
-            throw new IllegalStateException(
-                "Embedding service has not been set up"
-            );
-        }
-        RagEmbeddingService embeddingService =
-            embeddingServiceManager.getEmbeddingServiceByName(
-                embeddingServiceName
-            );
-        if (embeddingService == null) {
-            throw new IllegalStateException(
-                "There is no embedding service: " +
-                    embeddingServiceName
-            );
-        }
+        RagEmbeddingService embeddingService = getEmbeddingService();
         String vectorDatabaseServiceName = settingService
             .getVectorDatabaseService();
         if (isBlank(vectorDatabaseServiceName)) {
@@ -218,22 +202,31 @@ public class EzyRagClient {
         );
     }
 
-    public List<KnowledgeData> getKnowledgeDataList(
+    public List<RagVectorSearchResultModel> searchDataList(
         String query,
         int limit
     ) throws Exception {
+        RagEmbeddingService embeddingService = getEmbeddingService();
         String processedQuery = queryProcessorManager
             .processQuery(query);
-        RagEmbeddingService embeddingService = embeddingServiceManager
-            .getEmbeddingServiceByName(settingService.getEmbeddingService());
         float[] vector = embeddingService.embed(processedQuery);
         RagVectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
                 .getVectorDatabaseServiceByName(
                     settingService.getVectorDatabaseService()
                 );
-        List<RagVectorSearchResultModel> result = vectorDatabaseService
+        return vectorDatabaseService
             .search(vector, limit);
+    }
+
+    public List<KnowledgeData> getKnowledgeDataList(
+        String query,
+        int limit
+    ) throws Exception {
+        List<RagVectorSearchResultModel> result = searchDataList(
+            query,
+            limit
+        );
         RagDataRetriever retriever = dataRetrieverManager
             .getDataRetrieverByName(settingService.getDataRetriever());
         List<RagDocumentModel> documents = retriever
@@ -244,5 +237,26 @@ public class EzyRagClient {
                     settingService.getKnowledgeDataBuilder()
                 );
         return knowledgeDataBuilder.build(documents);
+    }
+
+    private RagEmbeddingService getEmbeddingService() {
+        String embeddingServiceName = settingService
+            .getEmbeddingService();
+        if (isBlank(embeddingServiceName)) {
+            throw new IllegalStateException(
+                "Embedding service has not been set up"
+            );
+        }
+        RagEmbeddingService embeddingService =
+            embeddingServiceManager.getEmbeddingServiceByName(
+                embeddingServiceName
+            );
+        if (embeddingService == null) {
+            throw new IllegalStateException(
+                "There is no embedding service: " +
+                    embeddingServiceName
+            );
+        }
+        return embeddingService;
     }
 }
