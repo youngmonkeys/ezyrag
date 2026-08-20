@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 public class RagVectorDatabaseServiceManager {
 
     private final EzyLazyInitializer<Map<String, RagVectorDatabaseService>>
-        dataRetrieverBySourceType;
+        vectorDatabaseServiceByName;
 
     @SuppressWarnings("unchecked")
     public RagVectorDatabaseServiceManager(
         EzySingletonFactory singletonFactory
     ) {
-        this.dataRetrieverBySourceType = new EzyLazyInitializer<>(() ->
+        this.vectorDatabaseServiceByName = new EzyLazyInitializer<>(() ->
             ((List<RagVectorDatabaseService>) singletonFactory
                 .getSingletonsOf(RagVectorDatabaseService.class)
             )
@@ -47,14 +47,14 @@ public class RagVectorDatabaseServiceManager {
         );
     }
 
-    public RagVectorDatabaseService getEmbeddingServiceByName(
+    public RagVectorDatabaseService getVectorDatabaseServiceByName(
         String serviceName
     ) {
-        return dataRetrieverBySourceType.get().get(serviceName);
+        return vectorDatabaseServiceByName.get().get(serviceName);
     }
 
     public List<String> getSortedVectorDatabaseServiceNames() {
-        return dataRetrieverBySourceType
+        return vectorDatabaseServiceByName
             .get()
             .keySet()
             .stream()

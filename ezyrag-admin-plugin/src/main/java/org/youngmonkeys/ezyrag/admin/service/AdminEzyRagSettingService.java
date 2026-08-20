@@ -19,7 +19,6 @@ package org.youngmonkeys.ezyrag.admin.service;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.server.core.annotation.Service;
 import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
-import org.youngmonkeys.ezyrag.admin.model.AdminSaveQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
@@ -50,22 +49,32 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
     }
 
     public void setQdrantConnectionProperties(
-        AdminSaveQdrantConnectionPropertiesModel model
+        RagQdrantConnectionPropertiesModel model
     ) {
         settingService.setObjectValue(
             SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
             EzyMapBuilder.mapBuilder()
                 .put("baseUrl", model.getBaseUrl())
                 .put("collectionName", model.getCollectionName())
+                .put("vectorSize", model.getVectorSize())
                 .toMap()
         );
         String apiKey = model.getApiKey();
-        if (!apiKey.matches(PATTERN_HIDDEN_PASSWORD)) {
+        if (apiKey.matches(PATTERN_HIDDEN_PASSWORD)) {
+            apiKey = settingService.getPasswordValue(
+                SETTING_NAME_QDRANT_CONNECTION_API_KEY
+            );
+        } else {
             settingService.setPasswordValue(
                 SETTING_NAME_QDRANT_CONNECTION_API_KEY,
                 apiKey
             );
         }
+        model.setApiKey(apiKey);
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+            model
+        );
     }
 
     public RagQdrantConnectionPropertiesModel getConnectionPropertiesInDb() {

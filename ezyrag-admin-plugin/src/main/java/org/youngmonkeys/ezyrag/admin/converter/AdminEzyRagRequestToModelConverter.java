@@ -1,20 +1,21 @@
 package org.youngmonkeys.ezyrag.admin.converter;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyrag.admin.model.AdminSaveQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
+import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 
 @EzySingleton
 public class AdminEzyRagRequestToModelConverter {
 
-    public AdminSaveQdrantConnectionPropertiesModel toModel(
+    public RagQdrantConnectionPropertiesModel toModel(
         AdminSaveQdrantConnectionPropertiesRequest request
     ) {
-        return AdminSaveQdrantConnectionPropertiesModel
+        return RagQdrantConnectionPropertiesModel
             .builder()
             .baseUrl(request.getBaseUrl())
             .apiKey(request.getApiKey())
             .collectionName(request.getCollectionName())
+            .vectorSize(request.getVectorSize())
             .build();
     }
 }

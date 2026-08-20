@@ -31,6 +31,7 @@ import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.DEFAULT_HIDDEN_PASSWORD;
+import static org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator.MIN_VECTOR_SIZE;
 
 @Controller
 @Authenticated
@@ -78,6 +79,7 @@ public class AdminVectorDatabaseServiceController {
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
             )
+            .addVariable("minVectorSize", MIN_VECTOR_SIZE)
             .build();
     }
 

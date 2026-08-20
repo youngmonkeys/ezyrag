@@ -42,12 +42,12 @@
         <form id="updateVectorDatabaseServiceForm" onsubmit="return false;">
             <div class="form-group row">
                 <label for="baseUrl" class="col-md-3 col-form-label">
-                    [[#{qdrant_base_url}]]
+                    [[#{qdrant_base_url}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="baseUrl" id="baseUrl"
                            class="form-control" th:placeholder="#{qdrant_base_url}"
-                           th:value="${qdrantConnection.baseUrl}">
+                           th:value="${#strings.isEmpty(qdrantConnection.baseUrl) ? 'http://localhost:6333' : qdrantConnection.baseUrl}">
                     <small class="form-text text-muted">
                         [[#{qdrant_base_url_hint}]]
                     </small>
@@ -59,7 +59,7 @@
             </div>
             <div class="form-group row">
                 <label for="apiKey" class="col-md-3 col-form-label">
-                    [[#{qdrant_api_key}]]
+                    [[#{qdrant_api_key}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
                     <input type="password" name="apiKey" id="apiKey"
@@ -77,12 +77,12 @@
             </div>
             <div class="form-group row">
                 <label for="collectionName" class="col-md-3 col-form-label">
-                    [[#{qdrant_collection_name}]]
+                    [[#{qdrant_collection_name}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="collectionName" id="collectionName"
                            class="form-control" th:placeholder="#{qdrant_collection_name}"
-                           th:value="${qdrantConnection.collectionName}">
+                           th:value="${#strings.isEmpty(qdrantConnection.collectionName) ? 'ezyrag_vector_collection' : qdrantConnection.collectionName}">
                     <small class="form-text text-muted">
                         [[#{qdrant_collection_name_hint}]]
                     </small>
@@ -90,6 +90,24 @@
                 <label id="collectionNameErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
                        for="collectionName">
                     <i class="far fa-times-circle"></i> <span id="collectionNameError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="vectorSize" class="col-md-3 col-form-label">
+                    [[#{qdrant_vector_size}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="number" name="vectorSize" id="vectorSize"
+                           class="form-control" th:placeholder="#{qdrant_vector_size}"
+                           th:min="${minVectorSize}"
+                           th:value="${qdrantConnection.vectorSize == 0 ? 384 : qdrantConnection.vectorSize}">
+                    <small class="form-text text-muted">
+                        [[#{qdrant_vector_size_hint}]]
+                    </small>
+                </div>
+                <label id="vectorSizeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="vectorSize">
+                    <i class="far fa-times-circle"></i> <span id="vectorSizeError">[[#{invalid}]]</span>
                 </label>
             </div>
             <div class="row">
@@ -114,7 +132,7 @@ ezyrag.saveVectorDatabaseService = function() {
     var formData = ezyadmin.formDataToObject('updateVectorDatabaseServiceForm');
     $.ajax({
         type: 'PUT',
-        url: `/ezyrag/api/v1/vector-database-services/${ezyrag.vectorDatabaseServiceName}`,
+        url: `/ezyrag/api/v1/vector-database-services/${ezyrag.vectorDatabaseServiceName}/connection-properties`,
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function () {

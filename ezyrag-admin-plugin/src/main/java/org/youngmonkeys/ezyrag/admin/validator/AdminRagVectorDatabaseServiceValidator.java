@@ -22,18 +22,24 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static java.util.Collections.singletonMap;
 
 @EzySingleton
 @AllArgsConstructor
 public class AdminRagVectorDatabaseServiceValidator {
 
+    public static final int MIN_VECTOR_SIZE = 1;
+
     private final AdminRagVectorDatabaseServiceManager vectorDatabaseServiceManager;
 
     public void validateServiceName(String serviceName) {
         if (
             vectorDatabaseServiceManager
-                .getEmbeddingServiceByName(serviceName) == null
+                .getVectorDatabaseServiceByName(serviceName) == null
         ) {
             throw new HttpBadRequestException(
                 singletonMap("serviceName", "invalid")
@@ -44,6 +50,26 @@ public class AdminRagVectorDatabaseServiceValidator {
     public void validate(
         AdminSaveQdrantConnectionPropertiesRequest request
     ) {
-
+        Map<String, String> errors = new HashMap<>();
+        if (request == null) {
+            throw new HttpBadRequestException(
+                singletonMap("request", "required")
+            );
+        }
+        if (isBlank(request.getBaseUrl())) {
+            errors.put("baseUrl", "required");
+        }
+        if (isBlank(request.getApiKey())) {
+            errors.put("apiKey", "required");
+        }
+        if (isBlank(request.getCollectionName())) {
+            errors.put("collectionName", "required");
+        }
+        if (request.getVectorSize() < MIN_VECTOR_SIZE) {
+            errors.put("vectorSize", "invalid");
+        }
+        if (!errors.isEmpty()) {
+            throw new HttpBadRequestException(errors);
+        }
     }
 }

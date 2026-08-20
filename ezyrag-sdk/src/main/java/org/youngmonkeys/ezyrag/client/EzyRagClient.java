@@ -107,7 +107,7 @@ public class EzyRagClient {
         }
         RagVectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
-                .getEmbeddingServiceByName(
+                .getVectorDatabaseServiceByName(
                     vectorDatabaseServiceName
                 );
         if (vectorDatabaseService == null) {
@@ -229,7 +229,7 @@ public class EzyRagClient {
         float[] vector = embeddingService.embed(processedQuery);
         RagVectorDatabaseService vectorDatabaseService =
             vectorDatabaseServiceManager
-                .getEmbeddingServiceByName(
+                .getVectorDatabaseServiceByName(
                     settingService.getVectorDatabaseService()
                 );
         List<RagVectorSearchResultModel> result = vectorDatabaseService

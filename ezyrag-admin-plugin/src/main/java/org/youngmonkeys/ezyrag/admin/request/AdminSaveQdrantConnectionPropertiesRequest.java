@@ -25,4 +25,5 @@ public class AdminSaveQdrantConnectionPropertiesRequest {
     private String baseUrl;
     private String apiKey;
     private String collectionName;
+    private int vectorSize;
 }
