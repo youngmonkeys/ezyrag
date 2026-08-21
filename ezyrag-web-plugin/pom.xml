@@ -39,6 +39,11 @@
         </dependency>
         <!-- end add sdk dependency -->
         <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezyplatform-common</artifactId>
             <version>${ezy.platform.version}</version>

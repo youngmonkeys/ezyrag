@@ -28,6 +28,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezyplatform-common-sdk</artifactId>
             <version>${ezy.platform.version}</version>
