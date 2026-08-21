@@ -75,6 +75,7 @@ public class HnswIndex {
         this.levelMultiplier = 1.0 / Math.log(maxM);
     }
 
+    @SuppressWarnings("MethodLength")
     public void insert(long id, float[] vector) {
         validateVector(vector);
         float[] normalized = normalize(vector);

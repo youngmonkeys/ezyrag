@@ -281,8 +281,8 @@ public class EzyVectorFileStorage {
     ) {
         float score = 0f;
         for (int i = 0; i < vectorSize; ++i) {
-            score += normalizedQuery[i] *
-                buffer.getFloat(offset + i * Float.BYTES);
+            score += normalizedQuery[i]
+                * buffer.getFloat(offset + i * Float.BYTES);
         }
         return score;
     }

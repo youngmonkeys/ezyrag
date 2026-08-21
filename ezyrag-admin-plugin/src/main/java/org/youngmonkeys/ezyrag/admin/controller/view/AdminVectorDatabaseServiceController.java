@@ -61,7 +61,7 @@ public class AdminVectorDatabaseServiceController {
             .build();
     }
 
-    @DoGet("/vector-database-services/QDRANT")
+    @DoGet("/vector-database-services/{serviceName}")
     public View vectorDatabaseServiceDetailsGet(
         @PathVariable String serviceName
     ) {
@@ -84,7 +84,10 @@ public class AdminVectorDatabaseServiceController {
         RagQdrantConnectionPropertiesModel qdrantConnectionProperties =
             ezyRagSettingService.getConnectionPropertiesInDb();
         return newViewBuilder()
-            .template("ezyrag/vector-database-service/details")
+            .template(
+                "ezyrag/vector-database-service/" +
+                    serviceName.toLowerCase()
+            )
             .addVariable("vectorDatabaseServiceName", serviceName)
             .addVariable(
                 "qdrantConnection",

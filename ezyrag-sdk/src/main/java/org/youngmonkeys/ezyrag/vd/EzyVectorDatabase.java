@@ -275,13 +275,13 @@ public class EzyVectorDatabase extends EzyLoggable
         if (segment != null) {
             return;
         }
-        LocalDateTime now = LocalDateTime.now();
         segment = new RagCollectionSegment();
         segment.setCollectionId(collection.getId());
         segment.setSegmentNo(1L);
         segment.setSegmentType("MUTABLE");
         segment.setStatus("ACTIVE");
         segment.setIndexVersion(1L);
+        LocalDateTime now = LocalDateTime.now();
         segment.setCreatedAt(now);
         segment.setUpdatedAt(now);
         collectionSegmentRepository.save(segment);
