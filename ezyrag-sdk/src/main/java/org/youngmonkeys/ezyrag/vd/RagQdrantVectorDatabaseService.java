@@ -296,6 +296,14 @@ public class RagQdrantVectorDatabaseService
         return 0;
     }
 
+    @Override
+    public int getVectorSize() {
+        return settingService.getCachedValue(
+            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            DEFAULT_QDRANT_VECTOR_SIZE
+        );
+    }
+
     private int getConfiguredQdrantVectorSize() {
         return settingService.getCachedValue(
             SETTING_NAME_QDRANT_VECTOR_SIZE,
@@ -315,14 +323,6 @@ public class RagQdrantVectorDatabaseService
             );
         }
         return properties;
-    }
-
-    @Override
-    public int getVectorSize() {
-        return settingService.getCachedValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            DEFAULT_QDRANT_VECTOR_SIZE
-        );
     }
 
     public String getProviderName() {

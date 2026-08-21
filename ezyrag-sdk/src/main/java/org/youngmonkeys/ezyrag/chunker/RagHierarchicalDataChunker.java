@@ -146,6 +146,7 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
         String content = compact(stripHtml(data));
         int maxChunkLength = ezyRagSettingService
             .getKnowledgeChunkMaxLength();
+        validateMaxChunkLength(maxChunkLength);
 
         if (content.length() <= maxChunkLength) {
             return Collections.singletonList(
@@ -379,6 +380,14 @@ public class RagHierarchicalDataChunker implements RagDataChunker {
             chunks.add(current.toString());
         }
         return new StringBuilder();
+    }
+
+    private void validateMaxChunkLength(int maxChunkLength) {
+        if (maxChunkLength <= 0) {
+            throw new IllegalArgumentException(
+                "maxChunkLength must be positive"
+            );
+        }
     }
 
     private RagChunkedResultModel toChunkedResult(

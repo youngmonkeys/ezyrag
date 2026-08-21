@@ -117,6 +117,7 @@ public class RagMediaTextTextReader
                 try {
                     reader.close();
                 } catch (IOException ignored) {
+                    // do nothing
                 }
             }
         }

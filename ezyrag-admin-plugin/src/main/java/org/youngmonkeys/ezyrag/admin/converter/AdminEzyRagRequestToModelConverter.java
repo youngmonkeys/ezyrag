@@ -43,8 +43,7 @@ public class AdminEzyRagRequestToModelConverter {
             .builder()
             .sourceType(request.getSourceType())
             .sourceId(request.getSourceId())
-            .content(request.getContent())
-            .url(request.getUrl())
+            .data(request.getData())
             .build();
     }
 }

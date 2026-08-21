@@ -43,6 +43,7 @@ public class RagMediaDataLoader implements RagDataLoader {
     private final FileSystemManager fileSystemManager;
     private final MediaRepository mediaRepository;
 
+    @SuppressWarnings("MethodLength")
     @Override
     public Iterator<RagInputData> load(
         RagDataSourceModel model

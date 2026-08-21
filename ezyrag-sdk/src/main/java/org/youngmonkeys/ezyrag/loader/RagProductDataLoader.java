@@ -42,6 +42,7 @@ public class RagProductDataLoader implements RagDataLoader {
     private final ProductDescriptionRepository productDescriptionRepository;
     private final ProductDescriptionI18nRepository productDescriptionI18nRepository;
 
+    @SuppressWarnings("MethodLength")
     @Override
     public Iterator<RagInputData> load(RagDataSourceModel model) {
         long productId = model.getSourceId();

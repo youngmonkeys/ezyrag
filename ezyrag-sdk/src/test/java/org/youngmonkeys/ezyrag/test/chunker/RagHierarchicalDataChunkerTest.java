@@ -17,7 +17,6 @@
 package org.youngmonkeys.ezyrag.test.chunker;
 
 import com.tvd12.test.assertion.Asserts;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -39,12 +38,12 @@ public class RagHierarchicalDataChunkerTest {
     @Mock
     private EzyRagSettingService ezyRagSettingService;
 
-    @InjectMocks
     private RagHierarchicalDataChunker sut;
 
     @BeforeMethod
     public void init() {
         MockitoAnnotations.initMocks(this);
+        sut = new RagHierarchicalDataChunker(ezyRagSettingService);
     }
 
     @Test
@@ -176,6 +175,14 @@ public class RagHierarchicalDataChunkerTest {
         Asserts.assertEquals(actual.size(), 2);
         Asserts.assertEquals(actual.get(0).getContent(), "ABCDE");
         Asserts.assertEquals(actual.get(1).getContent(), "FGHIJ");
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void chunkWithInvalidMaxLengthThrowsException() {
+        when(ezyRagSettingService.getKnowledgeChunkMaxLength())
+            .thenReturn(0);
+
+        sut.chunk("Hello world");
     }
 
     @Test
