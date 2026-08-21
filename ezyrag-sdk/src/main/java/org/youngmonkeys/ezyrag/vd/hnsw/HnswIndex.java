@@ -40,12 +40,23 @@ public class HnswIndex {
 
     private volatile Node entryPoint;
     private volatile int maxLevel = -1;
+    private volatile int vectorSize = -1;
 
     public HnswIndex() {
         this(16, 200);
     }
 
     public HnswIndex(int maxM, int efConstruction) {
+        if (maxM <= 1) {
+            throw new IllegalArgumentException(
+                "maxM must be greater than 1"
+            );
+        }
+        if (efConstruction <= 0) {
+            throw new IllegalArgumentException(
+                "efConstruction must be positive"
+            );
+        }
         this.maxM = maxM;
         this.maxM0 = maxM * 2;
         this.efConstruction = efConstruction;
@@ -53,9 +64,12 @@ public class HnswIndex {
     }
 
     public void insert(long id, float[] vector) {
+        validateVector(vector);
         float[] normalized = normalize(vector);
         lock.writeLock().lock();
         try {
+            validateVectorSize(vector);
+            removeNode(id);
             int level = randomLevel();
             Node node = new Node(id, normalized, level);
             if (entryPoint == null) {
@@ -123,6 +137,10 @@ public class HnswIndex {
             Node node = nodesById.get(id);
             if (node != null) {
                 node.deleted = true;
+                if (entryPoint != null && entryPoint.id == id) {
+                    entryPoint = findActiveEntryPoint();
+                    maxLevel = getMaxActiveLevel();
+                }
             }
         } finally {
             lock.writeLock().unlock();
@@ -130,13 +148,21 @@ public class HnswIndex {
     }
 
     public List<SearchResult> search(float[] queryVector, int k, int ef) {
+        validateVector(queryVector);
+        if (k <= 0) {
+            return Collections.emptyList();
+        }
         float[] normalized = normalize(queryVector);
         lock.readLock().lock();
         try {
-            if (entryPoint == null) {
+            validateSearchVectorSize(queryVector);
+            Node start = entryPoint == null || entryPoint.deleted
+                ? findActiveEntryPoint()
+                : entryPoint;
+            if (start == null) {
                 return Collections.emptyList();
             }
-            Node curr = entryPoint;
+            Node curr = start;
             float currDist = distance(normalized, curr.vector);
             for (int lc = maxLevel; lc > 0; --lc) {
                 boolean changed = true;
@@ -178,6 +204,43 @@ public class HnswIndex {
             }
         }
         return count;
+    }
+
+    private void removeNode(long id) {
+        Node removed = nodesById.remove(id);
+        if (removed == null) {
+            return;
+        }
+        for (Node node : nodesById.values()) {
+            for (List<Long> neighbors : node.neighborsByLevel) {
+                neighbors.remove(id);
+            }
+        }
+        if (entryPoint != null && entryPoint.id == id) {
+            entryPoint = findActiveEntryPoint();
+            maxLevel = getMaxActiveLevel();
+        }
+    }
+
+    private Node findActiveEntryPoint() {
+        Node answer = null;
+        for (Node node : nodesById.values()) {
+            if (!node.deleted
+                && (answer == null || node.level > answer.level)) {
+                answer = node;
+            }
+        }
+        return answer;
+    }
+
+    private int getMaxActiveLevel() {
+        int answer = -1;
+        for (Node node : nodesById.values()) {
+            if (!node.deleted && node.level > answer) {
+                answer = node.level;
+            }
+        }
+        return answer;
     }
 
     private List<Candidate> searchLayer(
@@ -249,7 +312,10 @@ public class HnswIndex {
             Node neighbor = nodesById.get(neighborId);
             if (neighbor != null) {
                 candidates.add(
-                    new Candidate(neighborId, distance(node.vector, neighbor.vector))
+                    new Candidate(
+                        neighborId,
+                        distance(node.vector, neighbor.vector)
+                    )
                 );
             }
         }
@@ -262,7 +328,10 @@ public class HnswIndex {
     }
 
     private int randomLevel() {
-        double r = ThreadLocalRandom.current().nextDouble();
+        double r = Math.max(
+            ThreadLocalRandom.current().nextDouble(),
+            Double.MIN_VALUE
+        );
         return (int) Math.floor(-Math.log(r) * levelMultiplier);
     }
 
@@ -290,6 +359,38 @@ public class HnswIndex {
         return 1f - dot;
     }
 
+    private static void validateVector(float[] vector) {
+        if (vector == null || vector.length == 0) {
+            throw new IllegalArgumentException(
+                "vector must not be empty"
+            );
+        }
+    }
+
+    private void validateVectorSize(float[] vector) {
+        if (vectorSize < 0) {
+            vectorSize = vector.length;
+        } else if (vector.length != vectorSize) {
+            throw new IllegalArgumentException(
+                "Vector dimension mismatch: expected " +
+                    vectorSize +
+                    ", actual " +
+                    vector.length
+            );
+        }
+    }
+
+    private void validateSearchVectorSize(float[] vector) {
+        if (vectorSize >= 0 && vector.length != vectorSize) {
+            throw new IllegalArgumentException(
+                "Vector dimension mismatch: expected " +
+                    vectorSize +
+                    ", actual " +
+                    vector.length
+            );
+        }
+    }
+
     private static final class Node {
         final long id;
         final float[] vector;
@@ -314,6 +415,9 @@ public class HnswIndex {
         }
 
         void connect(int layer, long neighborId) {
+            if (id == neighborId) {
+                return;
+            }
             List<Long> list = neighbors(layer);
             if (layer < neighborsByLevel.size() && !list.contains(neighborId)) {
                 list.add(neighborId);
