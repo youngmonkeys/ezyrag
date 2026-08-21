@@ -14,19 +14,19 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.socket.plugin.loader;
+package org.youngmonkeys.ezyrag.web.loader;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyarticle.sdk.repo.PostRepository;
-import org.youngmonkeys.ezyrag.loader.RagPostDataLoader;
+import org.youngmonkeys.ezyplatform.web.repo.WebMediaRepository;
+import org.youngmonkeys.ezyrag.loader.RagMediaDataLoader;
 
 @EzySingleton
-public class SocketRagPostDataLoader
-    extends RagPostDataLoader {
+public class WebRagMediaDataLoader
+    extends RagMediaDataLoader {
 
-    public SocketRagPostDataLoader(
-        PostRepository postRepository
+    public WebRagMediaDataLoader(
+        WebMediaRepository mediaRepository
     ) {
-        super(postRepository);
+        super(mediaRepository);
     }
 }

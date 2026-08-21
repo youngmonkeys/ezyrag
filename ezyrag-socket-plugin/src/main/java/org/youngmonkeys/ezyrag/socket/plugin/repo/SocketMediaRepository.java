@@ -14,11 +14,14 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.socket.plugin.loader;
+package org.youngmonkeys.ezyrag.socket.plugin.repo;
 
-import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyrag.loader.RagTextDataLoader;
+import com.tvd12.ezydata.database.EzyDatabaseRepository;
+import com.tvd12.ezyfox.database.annotation.EzyRepository;
+import org.youngmonkeys.ezyplatform.entity.Media;
+import org.youngmonkeys.ezyplatform.repo.MediaRepository;
 
-@EzySingleton
-public class SocketRagTextDataLoader
-    extends RagTextDataLoader {}
+@EzyRepository
+public interface SocketMediaRepository extends
+    MediaRepository,
+    EzyDatabaseRepository<Long, Media> {}
