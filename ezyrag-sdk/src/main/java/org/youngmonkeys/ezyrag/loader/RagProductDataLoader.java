@@ -29,8 +29,7 @@ import org.youngmonkeys.ezyrag.model.RagInputData;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.NoSuchElementException;
 
 import static com.tvd12.ezyfox.io.EzyLists.first;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
@@ -50,67 +49,66 @@ public class RagProductDataLoader implements RagDataLoader {
         if (product == null) {
             return Collections.emptyIterator();
         }
-        StringBuilder builder = new StringBuilder()
-            .append(product.getProductName())
-            .append("\n\n")
-            .append(product.getProductCode());
-        String secondaryCode = product.getSecondaryCode();
-        if (isNotBlank(secondaryCode)) {
-            builder.append("\n\n").append(secondaryCode);
-        }
+        StringBuilder builder = new StringBuilder();
+        appendContent(builder, product.getProductName());
+        appendContent(builder, product.getProductCode());
+        appendContent(builder, product.getSecondaryCode());
         ProductDescription productDescription = productDescriptionRepository
             .findById(productId);
         if (productDescription != null) {
-            String description = productDescription.getDescription();
-            if (isNotBlank(description)) {
-                builder.append("\n\n").append(description);
-            }
+            appendContent(builder, productDescription.getDescription());
         }
-        AtomicReference<String> ref = new AtomicReference<>(
-            builder.toString()
-        );
-        AtomicInteger skip = new AtomicInteger();
+        String firstData = builder.length() > 0
+            ? builder.toString()
+            : null;
         return new Iterator<RagInputData>() {
+            private String nextData = firstData;
+            private int skip;
+            private boolean completed;
+
             @Override
             public boolean hasNext() {
-                return ref.get() != null;
+                if (nextData == null && !completed) {
+                    nextData = loadNextI18nData();
+                }
+                return nextData != null;
             }
 
             @Override
             public RagInputData next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 RagInputData inputData = RagInputData
                     .builder()
-                    .data(ref.get())
+                    .data(nextData)
                     .dataType(CommonContentType.TEXT.toString())
                     .build();
-                ProductDescriptionI18n i18n = first(
-                    productDescriptionI18nRepository.findListByField(
-                        "productId",
-                        productId,
-                        skip.getAndIncrement(),
-                        1
-                    )
-                );
-                if (i18n == null) {
-                    ref.set(null);
-                } else {
-                    builder.setLength(0);
-                    String name = i18n.getProductName();
-                    String des = i18n.getDescription();
-                    boolean isNotBlankName = isNotBlank(name);
-                    boolean isNotBlankDes = isNotBlank(des);
-                    if (isNotBlankName) {
-                        builder.append(name);
-                    }
-                    if (isNotBlankName && isNotBlankDes) {
-                        builder.append("\n\n");
-                    }
-                    if (isNotBlankDes) {
-                        builder.append(des);
-                    }
-                    ref.set(builder.toString());
-                }
+                nextData = null;
                 return inputData;
+            }
+
+            private String loadNextI18nData() {
+                while (true) {
+                    ProductDescriptionI18n i18n = first(
+                        productDescriptionI18nRepository.findListByField(
+                            "productId",
+                            productId,
+                            skip++,
+                            1
+                        )
+                    );
+                    if (i18n == null) {
+                        completed = true;
+                        return null;
+                    }
+                    builder.setLength(0);
+                    appendContent(builder, i18n.getProductName());
+                    appendContent(builder, i18n.getDescription());
+                    if (builder.length() > 0) {
+                        return builder.toString();
+                    }
+                }
             }
         };
     }
@@ -118,5 +116,17 @@ public class RagProductDataLoader implements RagDataLoader {
     @Override
     public String getDataSourceType() {
         return TABLE_NAME_PRODUCT;
+    }
+
+    private static void appendContent(
+        StringBuilder builder,
+        String content
+    ) {
+        if (isNotBlank(content)) {
+            if (builder.length() > 0) {
+                builder.append("\n\n");
+            }
+            builder.append(content);
+        }
     }
 }
