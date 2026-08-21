@@ -14,15 +14,14 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.admin.repo;
 
-public final class EzyRagTableNames {
+import com.tvd12.ezydata.database.EzyDatabaseRepository;
+import com.tvd12.ezyfox.database.annotation.EzyRepository;
+import org.youngmonkeys.ezyrag.entity.RagCollectionSegment;
+import org.youngmonkeys.ezyrag.repo.RagCollectionSegmentRepository;
 
-    public static final String TABLE_NAME_DATA_CHUNK = "ezyrag_data_chunks";
-    public static final String TABLE_NAME_COLLECTION = "ezyrag_collections";
-    public static final String TABLE_NAME_COLLECTION_POINT = "ezyrag_collection_points";
-    public static final String TABLE_NAME_COLLECTION_SEGMENT =
-        "ezyrag_collection_segments";
-
-    private EzyRagTableNames() {}
-}
+@EzyRepository
+public interface AdminRagCollectionSegmentRepository extends
+    RagCollectionSegmentRepository,
+    EzyDatabaseRepository<Long, RagCollectionSegment> {}

@@ -53,6 +53,18 @@ public class RagCollection {
     @Column(name = "distance")
     private String distance;
 
+    @Column(name = "index_type")
+    private String indexType;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "points_count")
+    private long pointsCount;
+
+    @Column(name = "config")
+    private String config;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

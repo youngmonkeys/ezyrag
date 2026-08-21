@@ -23,6 +23,7 @@ public final class EzyRagConstants {
     public static final int DEFAULT_QDRANT_VECTOR_SIZE = 384;
     public static final int DEFAULT_MYSQL_VECTOR_SIZE = 384;
     public static final String DEFAULT_MYSQL_COLLECTION_NAME = "default";
+    public static final String DEFAULT_VECTOR_DATA_DIR = "data/ezyvector";
 
     public static final String SETTING_NAME_OPENAI_API_KEY =
         "ezyrag_openai_api_key";
@@ -50,6 +51,8 @@ public final class EzyRagConstants {
         "ezyrag_mysql_vector_size";
     public static final String SETTING_NAME_MYSQL_CONNECTION_PROPERTIES =
         "ezyrag_mysql_connection_properties";
+    public static final String SETTING_NAME_VECTOR_DATA_DIR =
+        "ezyrag_vector_data_dir";
 
     public static final String META_KEY_TITLE = "title";
     public static final String META_KEY_SLUG = "slug";

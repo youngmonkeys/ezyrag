@@ -21,6 +21,7 @@ import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
 import org.youngmonkeys.ezyrag.admin.repo.AdminRagCollectionPointRepository;
 import org.youngmonkeys.ezyrag.admin.repo.AdminRagCollectionRepository;
+import org.youngmonkeys.ezyrag.admin.repo.AdminRagCollectionSegmentRepository;
 import org.youngmonkeys.ezyrag.vd.EzyVectorDatabase;
 
 @EzySingleton
@@ -31,12 +32,14 @@ public class AdminRagMySqlVectorDatabaseService
         AdminSettingService settingService,
         AdminRagCollectionRepository collectionRepository,
         AdminRagCollectionPointRepository collectionPointRepository,
+        AdminRagCollectionSegmentRepository collectionSegmentRepository,
         ObjectMapper objectMapper
     ) {
         super(
             settingService,
             collectionRepository,
             collectionPointRepository,
+            collectionSegmentRepository,
             objectMapper
         );
     }

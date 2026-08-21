@@ -33,10 +33,15 @@ CREATE TABLE IF NOT EXISTS `ezyrag_collections` (
     `name` varchar(120) NOT NULL,
     `vector_size` int unsigned NOT NULL,
     `distance` varchar(32) NOT NULL,
+    `index_type` varchar(32) NOT NULL DEFAULT 'EXACT',
+    `status` varchar(32) NOT NULL DEFAULT 'ACTIVE',
+    `points_count` bigint unsigned NOT NULL DEFAULT 0,
+    `config` text COLLATE utf8mb4_unicode_520_ci,
     `created_at` datetime NOT NULL,
     `updated_at` datetime NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `index_name` (`name`)
+    UNIQUE INDEX `index_name` (`name`),
+    INDEX `index_status` (`status`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 CREATE TABLE IF NOT EXISTS `ezyrag_collection_points` (
@@ -45,8 +50,29 @@ CREATE TABLE IF NOT EXISTS `ezyrag_collection_points` (
     `point_id` bigint unsigned NOT NULL,
     `vector` mediumblob NOT NULL,
     `payload` mediumtext COLLATE utf8mb4_unicode_520_ci,
+    `status` varchar(32) NOT NULL DEFAULT 'ACTIVE',
+    `version` bigint unsigned NOT NULL DEFAULT 1,
     `created_at` datetime NOT NULL,
     `updated_at` datetime NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `index_collection_point` (`collection_id`, `point_id`)
+    UNIQUE INDEX `index_collection_point` (`collection_id`, `point_id`),
+    INDEX `index_collection_status` (`collection_id`, `status`),
+    INDEX `index_updated_at` (`updated_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+CREATE TABLE IF NOT EXISTS `ezyrag_collection_segments` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `collection_id` bigint unsigned NOT NULL,
+    `segment_no` bigint unsigned NOT NULL,
+    `segment_type` varchar(32) NOT NULL,
+    `status` varchar(32) NOT NULL,
+    `points_count` bigint unsigned NOT NULL DEFAULT 0,
+    `min_point_id` bigint unsigned,
+    `max_point_id` bigint unsigned,
+    `index_version` bigint unsigned NOT NULL DEFAULT 1,
+    `created_at` datetime NOT NULL,
+    `updated_at` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `index_collection_segment` (`collection_id`, `segment_no`),
+    INDEX `index_collection_status` (`collection_id`, `status`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;

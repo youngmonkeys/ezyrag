@@ -22,6 +22,7 @@ import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
 import org.youngmonkeys.ezyrag.vd.EzyVectorDatabase;
 import org.youngmonkeys.ezyrag.web.repo.WebRagCollectionPointRepository;
 import org.youngmonkeys.ezyrag.web.repo.WebRagCollectionRepository;
+import org.youngmonkeys.ezyrag.web.repo.WebRagCollectionSegmentRepository;
 
 @EzySingleton
 public class WebEzyVectorDatabase
@@ -31,12 +32,14 @@ public class WebEzyVectorDatabase
         WebSettingService settingService,
         WebRagCollectionRepository collectionRepository,
         WebRagCollectionPointRepository collectionPointRepository,
+        WebRagCollectionSegmentRepository collectionSegmentRepository,
         ObjectMapper objectMapper
     ) {
         super(
             settingService,
             collectionRepository,
             collectionPointRepository,
+            collectionSegmentRepository,
             objectMapper
         );
     }
