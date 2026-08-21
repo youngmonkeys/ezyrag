@@ -18,6 +18,7 @@ package org.youngmonkeys.ezyrag.embbeding;
 
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.client.HttpClient;
+import com.tvd12.ezyhttp.client.request.GetRequest;
 import com.tvd12.ezyhttp.client.request.PostRequest;
 import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
@@ -27,8 +28,11 @@ import org.youngmonkeys.ezyrag.constant.EmbeddingServiceName;
 import org.youngmonkeys.ezyrag.model.RagEmbeddingData;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+
 
 @AllArgsConstructor
 public class RagOpenAIEmbeddingService implements RagEmbeddingService {
@@ -101,4 +105,42 @@ public class RagOpenAIEmbeddingService implements RagEmbeddingService {
     public String getServiceName() {
         return EmbeddingServiceName.OPENAI.toString();
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<String> getModelNames() {
+        try {
+            String apiKey = ezyRagSettingService.getOpenAiApiKey();
+            Map<String, Object> responseBody = httpClient.call(
+                new GetRequest()
+                    .setURL(getModelsApiUrl())
+                    .setEntity(
+                        RequestEntity.builder()
+                            .header("Authorization", "Bearer " + apiKey)
+                            .build()
+                    )
+            );
+            List<Map<String, Object>> data =
+                (List<Map<String, Object>>) responseBody.get("data");
+            List<String> modelNames = new ArrayList<>();
+            for (Map<String, Object> model : data) {
+                String modelId = (String) model.get("id");
+                if (modelId != null && modelId.contains("embedding")) {
+                    modelNames.add(modelId);
+                }
+            }
+            return modelNames;
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                "Cannot get OpenAI model names",
+                e
+            );
+        }
+    }
+
+
+    protected String getModelsApiUrl() {
+        return "https://api.openai.com/v1/models";
+    }
 }
+

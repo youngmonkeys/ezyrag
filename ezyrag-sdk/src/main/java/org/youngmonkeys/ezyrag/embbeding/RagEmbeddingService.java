@@ -18,12 +18,16 @@ package org.youngmonkeys.ezyrag.embbeding;
 
 import org.youngmonkeys.ezyrag.model.RagEmbeddingData;
 
-public interface RagEmbeddingService {
+import java.util.List;
 
-    String getServiceName();
+public interface RagEmbeddingService {
 
     float[] embed(
         RagEmbeddingData data,
         int vectorSize
     ) throws Exception;
+
+    String getServiceName();
+
+    List<String> getModelNames();
 }

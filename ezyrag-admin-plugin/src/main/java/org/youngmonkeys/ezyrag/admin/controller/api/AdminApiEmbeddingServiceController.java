@@ -26,9 +26,12 @@ import com.tvd12.ezyhttp.server.core.annotation.DoPut;
 import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyrag.admin.embbeding.AdminRagEmbeddingServiceManager;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveOpenAIEmbeddingServiceRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagEmbeddingServiceValidator;
+
+import java.util.List;
 
 @Api
 @Authenticated
@@ -38,11 +41,12 @@ import org.youngmonkeys.ezyrag.admin.validator.AdminRagEmbeddingServiceValidator
 public class AdminApiEmbeddingServiceController {
 
     private final AdminEzyRagSettingService ezyRagSettingService;
+    private final AdminRagEmbeddingServiceManager embeddingServiceManager;
     private final AdminRagEmbeddingServiceValidator embeddingServiceValidator;
 
     @Description("Update an embedding service's settings")
     @DoPut("/embedding-services/{serviceName}/settings")
-    public ResponseEntity embeddingServiceSettingsPut(
+    public ResponseEntity embeddingServicesServiceNameSettingsPut(
         @PathVariable String serviceName,
         @RequestBody AdminSaveOpenAIEmbeddingServiceRequest request
     ) {
@@ -51,5 +55,15 @@ public class AdminApiEmbeddingServiceController {
         ezyRagSettingService.setOpenAiApiKey(request.getApiKey());
         ezyRagSettingService.setOpenAiEmbeddingModel(request.getModel());
         return ResponseEntity.noContent();
+    }
+
+    @Description("Update an embedding service's model names")
+    @DoPut("/embedding-services/{serviceName}/model-names")
+    public List<String> embeddingServicesServiceNameModelNamesPut(
+        @PathVariable String serviceName
+    ) {
+        return embeddingServiceManager
+            .getEmbeddingServiceByName(serviceName)
+            .getModelNames();
     }
 }
