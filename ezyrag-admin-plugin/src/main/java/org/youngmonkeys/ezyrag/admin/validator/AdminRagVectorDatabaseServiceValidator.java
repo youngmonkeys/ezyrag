@@ -19,6 +19,7 @@ package org.youngmonkeys.ezyrag.admin.validator;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyhttp.core.exception.HttpBadRequestException;
 import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveMySqlConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
 
@@ -67,6 +68,23 @@ public class AdminRagVectorDatabaseServiceValidator {
         }
         if (request.getVectorSize() < MIN_VECTOR_SIZE) {
             errors.put("vectorSize", "invalid");
+        }
+        if (!errors.isEmpty()) {
+            throw new HttpBadRequestException(errors);
+        }
+    }
+
+    public void validate(
+        AdminSaveMySqlConnectionPropertiesRequest request
+    ) {
+        Map<String, String> errors = new HashMap<>();
+        if (request == null) {
+            throw new HttpBadRequestException(
+                singletonMap("request", "required")
+            );
+        }
+        if (isBlank(request.getBaseUrl())) {
+            errors.put("baseUrl", "required");
         }
         if (!errors.isEmpty()) {
             throw new HttpBadRequestException(errors);

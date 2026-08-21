@@ -27,7 +27,7 @@ import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
-import org.youngmonkeys.ezyrag.web.vd.WebRagMySqlVectorDatabaseService;
+import org.youngmonkeys.ezyrag.web.vd.WebEzyVectorDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
 @AllArgsConstructor
 public class WebApiQdrantCollectionController {
 
-    private final WebRagMySqlVectorDatabaseService vectorDatabaseService;
+    private final WebEzyVectorDatabase vectorDatabaseService;
 
     @DoPut("/{collectionName}")
     public Map<String, Object> collectionNamePut(

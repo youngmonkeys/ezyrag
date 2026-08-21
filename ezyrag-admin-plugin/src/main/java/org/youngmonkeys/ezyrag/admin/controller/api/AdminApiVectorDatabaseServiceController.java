@@ -26,6 +26,7 @@ import com.tvd12.ezyhttp.server.core.annotation.DoPut;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveMySqlConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
@@ -56,6 +57,18 @@ public class AdminApiVectorDatabaseServiceController {
             request.getVectorSize()
         );
         qdrantVectorDatabaseService.createCollectionIfAbsent();
+        return ResponseEntity.noContent();
+    }
+
+    @Description("Update a vector database service's connection settings")
+    @DoPut("/vector-database-services/MYSQL/connection-properties")
+    public ResponseEntity vectorDatabaseServicesMySqlPut(
+        @RequestBody AdminSaveMySqlConnectionPropertiesRequest request
+    ) throws Exception {
+        vectorDatabaseServiceValidator.validate(request);
+        ezyRagSettingService.setMySqlConnectionProperties(
+            requestToModelConverter.toModel(request)
+        );
         return ResponseEntity.noContent();
     }
 }

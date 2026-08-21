@@ -26,6 +26,8 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
+import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.model.RagMySqlConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 
 import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
@@ -64,6 +66,18 @@ public class AdminVectorDatabaseServiceController {
         @PathVariable String serviceName
     ) {
         vectorDatabaseServiceValidator.validateServiceName(serviceName);
+        if (RagVectorDatabaseServiceName.MYSQL.equalsValue(serviceName)) {
+            RagMySqlConnectionPropertiesModel mySqlConnectionProperties =
+                ezyRagSettingService.getMySqlConnectionPropertiesInDb();
+            return newViewBuilder()
+                .template("ezyrag/vector-database-service/details")
+                .addVariable("vectorDatabaseServiceName", serviceName)
+                .addVariable(
+                    "mySqlConnection",
+                    mySqlConnectionProperties
+                )
+                .build();
+        }
         RagQdrantConnectionPropertiesModel qdrantConnectionProperties =
             ezyRagSettingService.getConnectionPropertiesInDb();
         return newViewBuilder()

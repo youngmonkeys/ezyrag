@@ -19,6 +19,7 @@ package org.youngmonkeys.ezyrag.admin.service;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.server.core.annotation.Service;
 import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
+import org.youngmonkeys.ezyrag.model.RagMySqlConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
@@ -26,6 +27,7 @@ import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDD
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_CONNECTION_PROPERTIES;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
@@ -125,6 +127,36 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             SETTING_NAME_QDRANT_VECTOR_SIZE,
             vectorSize
         );
+    }
+
+    public void setMySqlConnectionProperties(
+        RagMySqlConnectionPropertiesModel model
+    ) {
+        settingService.setObjectValue(
+            SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+            EzyMapBuilder.mapBuilder()
+                .put("baseUrl", model.getBaseUrl())
+                .toMap()
+        );
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+            model
+        );
+        settingService.setLastUpdateTime(
+            SETTING_NAME_MYSQL_CONNECTION_PROPERTIES
+        );
+    }
+
+    public RagMySqlConnectionPropertiesModel getMySqlConnectionPropertiesInDb() {
+        RagMySqlConnectionPropertiesModel model =
+            settingService
+                .getObjectValue(
+                    SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+                    RagMySqlConnectionPropertiesModel.class
+                );
+        return model != null
+            ? model
+            : new RagMySqlConnectionPropertiesModel();
     }
 
     public RagQdrantConnectionPropertiesModel getConnectionPropertiesInDb() {

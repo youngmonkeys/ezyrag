@@ -14,24 +14,21 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.web.vd;
+package org.youngmonkeys.ezyrag.model;
 
-import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import com.tvd12.ezyhttp.client.HttpClient;
-import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
-import org.youngmonkeys.ezyrag.vd.RagMySqlHnswVectorDatabaseService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@EzySingleton
-public class WebRagMySqlVectorDatabaseService
-    extends RagMySqlHnswVectorDatabaseService {
-
-    public WebRagMySqlVectorDatabaseService(
-        HttpClient httpClient,
-        WebSettingService settingService
-    ) {
-        super(
-            httpClient,
-            settingService
-        );
-    }
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class RagMySqlConnectionPropertiesModel {
+    private String baseUrl;
 }

@@ -16,114 +16,243 @@
 
 package org.youngmonkeys.ezyrag.vd;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tvd12.ezyfox.util.EzyMapBuilder;
+import com.tvd12.ezyhttp.client.HttpClient;
+import com.tvd12.ezyhttp.client.request.GetRequest;
+import com.tvd12.ezyhttp.client.request.PostRequest;
+import com.tvd12.ezyhttp.client.request.PutRequest;
+import com.tvd12.ezyhttp.client.request.RequestEntity;
+import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import org.youngmonkeys.ezyplatform.service.MutableSettingService;
-import org.youngmonkeys.ezyrag.entity.RagCollection;
-import org.youngmonkeys.ezyrag.entity.RagCollectionPoint;
+import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.model.RagMySqlConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
-import org.youngmonkeys.ezyrag.repo.RagCollectionPointRepository;
-import org.youngmonkeys.ezyrag.repo.RagCollectionRepository;
-import org.youngmonkeys.ezyrag.vd.hnsw.HnswIndex;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_COLLECTION_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_VECTOR_SIZE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_COLLECTION_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_CONNECTION_PROPERTIES;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_VECTOR_SIZE;
 
 public class RagMySqlHnswVectorDatabaseService
-    extends RagMySqlVectorDatabaseService {
+    implements RagVectorDatabaseService {
 
-    private final RagCollectionRepository collectionRepository;
-    private final RagCollectionPointRepository collectionPointRepository;
-    private final HnswIndex index = new HnswIndex();
-    private final Map<Long, Map<String, Object>> payloadById =
-        new ConcurrentHashMap<>();
-    private final Object loadLock = new Object();
-    private volatile boolean indexLoaded = false;
+    private final HttpClient httpClient;
+    private final MutableSettingService settingService;
 
     public RagMySqlHnswVectorDatabaseService(
-        MutableSettingService settingService,
-        RagCollectionRepository collectionRepository,
-        RagCollectionPointRepository collectionPointRepository,
-        ObjectMapper objectMapper
+        HttpClient httpClient,
+        MutableSettingService settingService
     ) {
-        super(
-            settingService,
-            collectionRepository,
-            collectionPointRepository,
-            objectMapper
+        this.httpClient = httpClient;
+        this.settingService = settingService;
+        settingService.watchLastUpdatedTime(
+            SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+            () -> settingService.cacheValueIfNotNull(
+                SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+                readConnectionProperties()
+            )
         );
-        this.collectionRepository = collectionRepository;
-        this.collectionPointRepository = collectionPointRepository;
+    }
+
+    private RagMySqlConnectionPropertiesModel readConnectionProperties() {
+        return settingService.getObjectValue(
+            SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+            RagMySqlConnectionPropertiesModel.class
+        );
     }
 
     @Override
     public void createCollectionIfAbsent() throws Exception {
-        super.createCollectionIfAbsent();
-        ensureIndexLoaded();
+        RagMySqlConnectionPropertiesModel properties =
+            getConnectionProperties();
+        httpClient.call(
+            new PutRequest()
+                .setURL(
+                    getCollectionUrl(
+                        properties.getBaseUrl(),
+                        getCollectionName()
+                    )
+                )
+                .setEntity(requestEntity(null))
+        );
+        refreshMySqlVectorSize(properties);
     }
 
     @Override
     public void upsert(
         List<RagVectorPointModel> points
     ) throws Exception {
-        ensureIndexLoaded();
-        super.upsert(points);
+        RagMySqlConnectionPropertiesModel properties =
+            getConnectionProperties();
+        List<Map<String, Object>> requestPoints = new ArrayList<>(points.size());
         for (RagVectorPointModel point : points) {
-            index.insert(point.getId(), point.getVector());
-            payloadById.put(point.getId(), point.getPayload());
+            requestPoints.add(
+                EzyMapBuilder.mapBuilder()
+                    .put("id", point.getId())
+                    .put("vector", point.getVector())
+                    .put("payload", point.getPayload())
+                    .toMap()
+            );
         }
+        Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
+            .put("points", requestPoints)
+            .toMap();
+        httpClient.call(
+            new PutRequest()
+                .setURL(
+                    getPointsUrl(
+                        properties.getBaseUrl(),
+                        getCollectionName()
+                    )
+                )
+                .setEntity(requestEntity(requestBody))
+        );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<RagVectorSearchResultModel> search(
         float[] vector,
         int limit
     ) throws Exception {
-        ensureIndexLoaded();
-        List<HnswIndex.SearchResult> hits = index.search(
-            vector,
-            limit,
-            Math.max(limit * 4, 64)
+        RagMySqlConnectionPropertiesModel properties =
+            getConnectionProperties();
+        Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
+            .put("vector", vector)
+            .put("limit", limit)
+            .toMap();
+        Map<String, Object> responseBody = httpClient.call(
+            new PostRequest()
+                .setURL(
+                    getPointsUrl(
+                        properties.getBaseUrl(),
+                        getCollectionName()
+                    ) + "/search"
+                )
+                .setEntity(requestEntity(requestBody))
         );
-        List<RagVectorSearchResultModel> results =
-            new ArrayList<>(hits.size());
-        for (HnswIndex.SearchResult hit : hits) {
-            results.add(
+        List<Map<String, Object>> result =
+            (List<Map<String, Object>>) responseBody.get("result");
+        List<RagVectorSearchResultModel> searchResults =
+            new ArrayList<>(result.size());
+        for (Map<String, Object> point : result) {
+            searchResults.add(
                 RagVectorSearchResultModel.builder()
-                    .chunkId(hit.getId())
-                    .score(hit.getScore())
-                    .payload(payloadById.get(hit.getId()))
+                    .chunkId(toLongOrZeroFromObject(point.get("id")))
+                    .score(((Number) point.get("score")).floatValue())
+                    .payload((Map<String, Object>) point.get("payload"))
                     .build()
             );
         }
-        return results;
+        return searchResults;
     }
 
-    private void ensureIndexLoaded() throws Exception {
-        if (indexLoaded) {
+    private RequestEntity requestEntity(Map<String, Object> body) {
+        RequestEntity.Builder builder = RequestEntity.builder()
+            .contentType(ContentTypes.APPLICATION_JSON);
+        if (body != null) {
+            builder.body(body);
+        }
+        return builder.build();
+    }
+
+    private String getCollectionUrl(
+        String baseUrl,
+        String collectionName
+    ) {
+        return baseUrl + "/collections/" + collectionName;
+    }
+
+    private String getPointsUrl(
+        String baseUrl,
+        String collectionName
+    ) {
+        return getCollectionUrl(baseUrl, collectionName) + "/points";
+    }
+
+    @SuppressWarnings("unchecked")
+    private void refreshMySqlVectorSize(
+        RagMySqlConnectionPropertiesModel properties
+    ) throws Exception {
+        Map<String, Object> responseBody = httpClient.call(
+            new GetRequest()
+                .setURL(
+                    getCollectionUrl(
+                        properties.getBaseUrl(),
+                        getCollectionName()
+                    )
+                )
+                .setEntity(requestEntity(null))
+        );
+        Map<String, Object> result =
+            (Map<String, Object>) responseBody.get("result");
+        Map<String, Object> config =
+            result == null
+                ? null
+                : (Map<String, Object>) result.get("config");
+        Map<String, Object> params =
+            config == null
+                ? null
+                : (Map<String, Object>) config.get("params");
+        Map<String, Object> vectors =
+            params == null
+                ? null
+                : (Map<String, Object>) params.get("vectors");
+        int vectorSize = getVectorSize(vectors);
+        if (vectorSize <= 0) {
             return;
         }
-        synchronized (loadLock) {
-            if (indexLoaded) {
-                return;
-            }
-            RagCollection collection = collectionRepository
-                .findByName(getCollectionName());
-            if (collection == null) {
-                return;
-            }
-            List<RagCollectionPoint> points = collectionPointRepository
-                .findListByCollectionId(collection.getId());
-            for (RagCollectionPoint point : points) {
-                index.insert(point.getPointId(), point.getVector());
-                payloadById.put(
-                    point.getPointId(),
-                    toPayloadMap(point.getPayload())
-                );
-            }
-            indexLoaded = true;
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_MYSQL_VECTOR_SIZE,
+            vectorSize
+        );
+    }
+
+    private int getVectorSize(Map<String, Object> vectors) {
+        if (vectors == null || vectors.isEmpty()) {
+            return 0;
         }
+        Object size = vectors.get("size");
+        return size instanceof Number
+            ? ((Number) size).intValue()
+            : 0;
+    }
+
+    @Override
+    public int getVectorSize() {
+        return settingService.getCachedValue(
+            SETTING_NAME_MYSQL_VECTOR_SIZE,
+            DEFAULT_MYSQL_VECTOR_SIZE
+        );
+    }
+
+    public String getCollectionName() {
+        return settingService.getTextValue(
+            SETTING_NAME_MYSQL_COLLECTION_NAME,
+            DEFAULT_MYSQL_COLLECTION_NAME
+        );
+    }
+
+    private RagMySqlConnectionPropertiesModel getConnectionProperties() {
+        RagMySqlConnectionPropertiesModel properties = settingService
+            .getCachedValue(SETTING_NAME_MYSQL_CONNECTION_PROPERTIES);
+        if (properties == null) {
+            throw new IllegalStateException(
+                "You need to setup MySQL vector database connection first"
+            );
+        }
+        return properties;
+    }
+
+    @Override
+    public String getProviderName() {
+        return RagVectorDatabaseServiceName.MYSQL.toString();
     }
 }

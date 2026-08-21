@@ -16,22 +16,28 @@
 
 package org.youngmonkeys.ezyrag.web.vd;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import com.tvd12.ezyhttp.client.HttpClient;
 import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
-import org.youngmonkeys.ezyrag.vd.RagMySqlHnswVectorDatabaseService;
+import org.youngmonkeys.ezyrag.vd.EzyVectorDatabase;
+import org.youngmonkeys.ezyrag.web.repo.WebRagCollectionPointRepository;
+import org.youngmonkeys.ezyrag.web.repo.WebRagCollectionRepository;
 
 @EzySingleton
-public class WebRagMySqlVectorDatabaseService
-    extends RagMySqlHnswVectorDatabaseService {
+public class WebEzyVectorDatabase
+    extends EzyVectorDatabase {
 
-    public WebRagMySqlVectorDatabaseService(
-        HttpClient httpClient,
-        WebSettingService settingService
+    public WebEzyVectorDatabase(
+        WebSettingService settingService,
+        WebRagCollectionRepository collectionRepository,
+        WebRagCollectionPointRepository collectionPointRepository,
+        ObjectMapper objectMapper
     ) {
         super(
-            httpClient,
-            settingService
+            settingService,
+            collectionRepository,
+            collectionPointRepository,
+            objectMapper
         );
     }
 }
