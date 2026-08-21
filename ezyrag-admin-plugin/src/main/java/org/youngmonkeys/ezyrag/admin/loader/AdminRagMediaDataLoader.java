@@ -17,7 +17,9 @@
 package org.youngmonkeys.ezyrag.admin.loader;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import org.youngmonkeys.ezyplatform.admin.manager.AdminFileSystemManager;
 import org.youngmonkeys.ezyplatform.admin.repo.AdminMediaRepository;
+import org.youngmonkeys.ezyrag.admin.reader.AdminRagMediaTextReaderManager;
 import org.youngmonkeys.ezyrag.loader.RagMediaDataLoader;
 
 @EzySingleton
@@ -25,8 +27,14 @@ public class AdminRagMediaDataLoader
     extends RagMediaDataLoader {
 
     public AdminRagMediaDataLoader(
+        AdminRagMediaTextReaderManager mediaTextReaderManager,
+        AdminFileSystemManager fileSystemManager,
         AdminMediaRepository mediaRepository
     ) {
-        super(mediaRepository);
+        super(
+            mediaTextReaderManager,
+            fileSystemManager,
+            mediaRepository
+        );
     }
 }

@@ -14,27 +14,19 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.web.loader;
+package org.youngmonkeys.ezyrag.admin.reader;
 
+import com.tvd12.ezyfox.bean.EzySingletonFactory;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import org.youngmonkeys.ezyplatform.web.manager.WebFileSystemManager;
-import org.youngmonkeys.ezyplatform.web.repo.WebMediaRepository;
-import org.youngmonkeys.ezyrag.loader.RagMediaDataLoader;
-import org.youngmonkeys.ezyrag.web.reader.WebRagMediaTextReaderManager;
+import org.youngmonkeys.ezyrag.reader.RagMediaTextReaderManager;
 
 @EzySingleton
-public class WebRagMediaDataLoader
-    extends RagMediaDataLoader {
+public class AdminRagMediaTextReaderManager
+    extends RagMediaTextReaderManager {
 
-    public WebRagMediaDataLoader(
-        WebRagMediaTextReaderManager mediaTextReaderManager,
-        WebFileSystemManager fileSystemManager,
-        WebMediaRepository mediaRepository
+    public AdminRagMediaTextReaderManager(
+        EzySingletonFactory singletonFactory
     ) {
-        super(
-            mediaTextReaderManager,
-            fileSystemManager,
-            mediaRepository
-        );
+        super(singletonFactory);
     }
 }

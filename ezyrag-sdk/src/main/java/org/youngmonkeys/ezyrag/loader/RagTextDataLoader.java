@@ -34,7 +34,7 @@ public class RagTextDataLoader
             .of(model)
             .map(it ->
                 RagInputData.builder()
-                    .text(it.getContent())
+                    .data(it.getData())
                     .build()
             )
             .iterator();
