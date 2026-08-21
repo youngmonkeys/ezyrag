@@ -21,11 +21,11 @@ import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyplatform.socket.service.SocketSettingService;
 import org.youngmonkeys.ezyrag.socket.plugin.repo.SocketRagCollectionPointRepository;
 import org.youngmonkeys.ezyrag.socket.plugin.repo.SocketRagCollectionRepository;
-import org.youngmonkeys.ezyrag.vd.RagMySqlVectorDatabaseService;
+import org.youngmonkeys.ezyrag.vd.EzyVectorDatabase;
 
 @EzySingleton
 public class SocketRagMySqlVectorDatabaseService
-    extends RagMySqlVectorDatabaseService {
+    extends EzyVectorDatabase {
 
     public SocketRagMySqlVectorDatabaseService(
         SocketSettingService settingService,

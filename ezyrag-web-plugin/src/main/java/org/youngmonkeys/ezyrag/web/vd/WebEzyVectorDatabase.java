@@ -40,4 +40,9 @@ public class WebEzyVectorDatabase
             objectMapper
         );
     }
+
+    @Override
+    public String getProviderName() {
+        return "MYSQL_ENGINE";
+    }
 }
