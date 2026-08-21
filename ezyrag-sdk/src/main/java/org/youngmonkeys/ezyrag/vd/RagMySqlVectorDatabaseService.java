@@ -149,7 +149,7 @@ public class RagMySqlVectorDatabaseService
         return collection;
     }
 
-    protected String getCollectionName() {
+    public String getCollectionName() {
         return settingService.getTextValue(
             SETTING_NAME_MYSQL_COLLECTION_NAME,
             DEFAULT_MYSQL_COLLECTION_NAME
