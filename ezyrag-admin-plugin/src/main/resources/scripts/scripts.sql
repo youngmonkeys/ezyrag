@@ -27,3 +27,26 @@ CREATE TABLE IF NOT EXISTS `ezyrag_data_chunks` (
     PRIMARY KEY (`id`),
     INDEX `index_source_pagination` (`source_type`, `source_id`, `chunk_index`, `content_hash`, `id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+CREATE TABLE IF NOT EXISTS `ezyrag_collections` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(120) NOT NULL,
+    `vector_size` int unsigned NOT NULL,
+    `distance` varchar(32) NOT NULL,
+    `created_at` datetime NOT NULL,
+    `updated_at` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `index_name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+CREATE TABLE IF NOT EXISTS `ezyrag_collection_points` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `collection_id` bigint unsigned NOT NULL,
+    `point_id` bigint unsigned NOT NULL,
+    `vector` mediumblob NOT NULL,
+    `payload` mediumtext COLLATE utf8mb4_unicode_520_ci,
+    `created_at` datetime NOT NULL,
+    `updated_at` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `index_collection_point` (`collection_id`, `point_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;

@@ -1,12 +1,12 @@
 /*
  * Copyright 2026 youngmonkeys.org
- * 
+ *
  * Licensed under the ezyplatform, Version 1.0.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,14 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.socket.plugin.repo;
 
-public enum RagVectorDatabaseServiceName {
-    QDRANT,
-    MYSQL;
+import com.tvd12.ezydata.database.EzyDatabaseRepository;
+import com.tvd12.ezyfox.database.annotation.EzyRepository;
+import org.youngmonkeys.ezyrag.entity.RagCollection;
+import org.youngmonkeys.ezyrag.repo.RagCollectionRepository;
 
-    public boolean equalsValue(String value) {
-        return toString().equals(value);
-    }
-}
+@EzyRepository
+public interface SocketRagCollectionRepository extends
+    RagCollectionRepository,
+    EzyDatabaseRepository<Long, RagCollection> {}
