@@ -31,6 +31,9 @@
 <body>
 <div layout:fragment="content" class="row">
     <th:block th:replace="~{ezyrag/chunk/chunk-data :: content}" />
+    <div class="col-12">
+        <hr>
+    </div>
     <th:block th:replace="~{ezyrag/chunk/chunk-list :: content}" />
 </div>
 <th:block layout:fragment="scripts">

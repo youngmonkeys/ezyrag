@@ -75,6 +75,10 @@ public class EzyRagClient {
         RagDataSourceModel dataSource
     ) throws Exception {
         String sourceType = dataSource.getSourceType();
+        boolean isTextSourceType = CommonContentType
+            .TEXT
+            .toString()
+            .equalsIgnoreCase(sourceType);
         RagDataLoader dataLoader = dataLoaderManager
             .getDataLoaderBySourceTypeOrThrow(sourceType);
         RagEmbeddingService embeddingService = getEmbeddingService();
@@ -96,8 +100,9 @@ public class EzyRagClient {
             List<RagChunkedResultModel> chunkedResults =
                 chunker.chunk(text);
             for (RagChunkedResultModel chunkedResult : chunkedResults) {
-                RagDataChunkEmbeddingModel chunkEmbedding = dataChunkService
-                    .getEmbeddingBySourceTypeAndSourceIdAndIndex(
+                RagDataChunkEmbeddingModel chunkEmbedding = isTextSourceType
+                    ? null
+                    : dataChunkService.getEmbeddingBySourceTypeAndSourceIdAndIndex(
                         sourceType,
                         sourceId,
                         chunkIndex + 1

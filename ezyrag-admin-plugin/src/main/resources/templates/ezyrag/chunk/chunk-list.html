@@ -20,6 +20,9 @@
         xmlns:th="http://www.thymeleaf.org">
 <body>
 <th:block th:fragment="content">
+    <div class="col-12 mb-3">
+        <h3>[[#{chunk_list}]]</h3>
+    </div>
     <div class="col-12">
         <div class="row">
             <div class="col-lg-3"></div>
@@ -336,7 +339,7 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
     return `
         <tr>
             <td class="text-center">${dataChunk.id}</td>
-            <td>${ezyadmin.escapeHtml(dataChunk.sourceType || '')}</td>
+            <td>${ezyadmin.getI18nMessage(dataChunk.sourceType?.toLowerCase() || '')}</td>
             <td class="text-center">${dataChunk.sourceId}</td>
             <td class="text-center">${dataChunk.chunkIndex}</td>
             ${scoreHtml}

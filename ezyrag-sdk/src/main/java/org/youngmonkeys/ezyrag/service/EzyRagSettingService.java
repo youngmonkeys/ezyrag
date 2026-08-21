@@ -22,6 +22,7 @@ import org.youngmonkeys.ezyrag.constant.RagDataChunkerName;
 import org.youngmonkeys.ezyrag.constant.RagDataRetrieverName;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 
+import static com.tvd12.ezyfox.io.EzyStrings.isEmpty;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_EXCERPT_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
@@ -104,10 +105,13 @@ public class EzyRagSettingService {
     }
 
     public String getKnowledgeChunkParagraphSeparator() {
-        return settingService.getTextValue(
-            SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR,
-            DEFAULT_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR
+        String answer = settingService.getTextValue(
+            SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR
         );
+        if (isEmpty(answer) || answer.equals(" ")) {
+            answer = DEFAULT_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
+        }
+        return answer;
     }
 
     public String getKnowledgeChunkSentenceBoundaryPattern() {

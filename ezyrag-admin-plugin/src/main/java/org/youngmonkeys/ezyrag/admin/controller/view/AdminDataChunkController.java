@@ -25,6 +25,11 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.loader.AdminRagDataLoaderManager;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 
+import java.util.List;
+
+import static com.tvd12.ezyfox.io.EzyLists.newArrayList;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.VIEW_VARIABLE_ADDITIONAL_MESSAGE_KEYS;
+
 @Controller
 @Authenticated
 @EzyFeature("rag")
@@ -36,15 +41,18 @@ public class AdminDataChunkController {
 
     @DoGet("/data-chunks")
     public View dataChunksGet() {
+        List<String> datasourceTypes = dataLoaderManager
+            .getSortedSourceTypes();
         return View.builder()
             .template("ezyrag/chunk/list")
             .addVariable(
                 "defaultEmbeddingServiceName",
                 ezyRagSettingService.getEmbeddingService()
             )
-            .addVariable(
-                "dataSourceTypes",
-                dataLoaderManager.getSortedSourceTypes()
+            .addVariable("dataSourceTypes", datasourceTypes)
+            .appendValuesToVariable(
+                VIEW_VARIABLE_ADDITIONAL_MESSAGE_KEYS,
+                newArrayList(datasourceTypes, String::toLowerCase)
             )
             .build();
     }
