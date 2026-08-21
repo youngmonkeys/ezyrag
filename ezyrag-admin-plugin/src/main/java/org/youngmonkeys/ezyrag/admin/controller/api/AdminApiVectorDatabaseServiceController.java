@@ -23,6 +23,7 @@ import com.tvd12.ezyhttp.server.core.annotation.Api;
 import com.tvd12.ezyhttp.server.core.annotation.Authenticated;
 import com.tvd12.ezyhttp.server.core.annotation.Controller;
 import com.tvd12.ezyhttp.server.core.annotation.DoPut;
+import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
@@ -45,6 +46,16 @@ public class AdminApiVectorDatabaseServiceController {
     private final AdminRagMySqlVectorDatabaseService mySqlVectorDatabaseService;
     private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
+
+    @Description("Set a vector database service as default")
+    @DoPut("/vector-database-services/{serviceName}/set-as-default")
+    public ResponseEntity vectorDatabaseServicesServiceNameSetAsDefaultPut(
+        @PathVariable String serviceName
+    ) {
+        vectorDatabaseServiceValidator.validateServiceName(serviceName);
+        ezyRagSettingService.setVectorDatabaseServiceName(serviceName);
+        return ResponseEntity.noContent();
+    }
 
     @Description("Update a vector database service's connection settings")
     @DoPut("/vector-database-services/QDRANT/connection-properties")

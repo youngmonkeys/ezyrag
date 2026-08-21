@@ -28,6 +28,7 @@ import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_COL
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_COLLECTION_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_CONNECTION_ACCESS_TOKEN;
@@ -38,6 +39,7 @@ import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPEN
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
 
 @Service
 public class AdminEzyRagSettingService extends EzyRagSettingService {
@@ -88,6 +90,20 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
     public void setDataRetrieverName(String name) {
         setTextValue(
             SETTING_NAME_DATA_RETRIEVER_NAME,
+            name
+        );
+    }
+
+    public void setEmbeddingServiceName(String name) {
+        setTextValue(
+            SETTING_NAME_EMBEDDING_SERVICE_NAME,
+            name
+        );
+    }
+
+    public void setVectorDatabaseServiceName(String name) {
+        setTextValue(
+            SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
             name
         );
     }
