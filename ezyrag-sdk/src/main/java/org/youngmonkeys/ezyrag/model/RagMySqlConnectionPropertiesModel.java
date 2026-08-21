@@ -31,4 +31,5 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RagMySqlConnectionPropertiesModel {
     private String baseUrl;
+    private String accessToken;
 }

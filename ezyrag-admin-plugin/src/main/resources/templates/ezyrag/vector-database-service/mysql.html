@@ -57,6 +57,59 @@
                     <i class="far fa-times-circle"></i> <span id="baseUrlError">[[#{invalid}]]</span>
                 </label>
             </div>
+            <div class="form-group row">
+                <label for="accessToken" class="col-md-3 col-form-label">
+                    [[#{mysql_access_token}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="password" name="accessToken" id="accessToken"
+                           class="form-control" th:placeholder="#{mysql_access_token}"
+                           autocomplete="new-password"
+                           th:value="${mySqlAccessTokenValue}">
+                    <small class="form-text text-muted">
+                        [[#{access_token_keep_hint}]]
+                    </small>
+                </div>
+                <label id="accessTokenErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="accessToken">
+                    <i class="far fa-times-circle"></i> <span id="accessTokenError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="collectionName" class="col-md-3 col-form-label">
+                    [[#{mysql_collection_name}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="collectionName" id="collectionName"
+                           class="form-control" th:placeholder="#{mysql_collection_name}"
+                           th:value="${mySqlCollectionName}">
+                    <small class="form-text text-muted">
+                        [[#{mysql_collection_name_hint}]]
+                    </small>
+                </div>
+                <label id="collectionNameErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="collectionName">
+                    <i class="far fa-times-circle"></i> <span id="collectionNameError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="vectorSize" class="col-md-3 col-form-label">
+                    [[#{mysql_vector_size}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="number" name="vectorSize" id="vectorSize"
+                           class="form-control" th:placeholder="#{mysql_vector_size}"
+                           th:min="${minVectorSize}"
+                           th:value="${mySqlVectorSize}">
+                    <small class="form-text text-muted">
+                        [[#{mysql_vector_size_hint}]]
+                    </small>
+                </div>
+                <label id="vectorSizeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="vectorSize">
+                    <i class="far fa-times-circle"></i> <span id="vectorSizeError">[[#{invalid}]]</span>
+                </label>
+            </div>
             <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-2">

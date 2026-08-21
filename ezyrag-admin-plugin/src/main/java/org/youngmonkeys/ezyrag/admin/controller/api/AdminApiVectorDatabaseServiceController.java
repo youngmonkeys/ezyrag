@@ -30,6 +30,7 @@ import org.youngmonkeys.ezyrag.admin.request.AdminSaveMySqlConnectionPropertiesR
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
+import org.youngmonkeys.ezyrag.admin.vd.AdminRagMySqlVectorDatabaseService;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 
 @Api
@@ -41,6 +42,7 @@ public class AdminApiVectorDatabaseServiceController {
 
     private final AdminEzyRagSettingService ezyRagSettingService;
     private final AdminRagQdrantVectorDatabaseService qdrantVectorDatabaseService;
+    private final AdminRagMySqlVectorDatabaseService mySqlVectorDatabaseService;
     private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
@@ -69,6 +71,13 @@ public class AdminApiVectorDatabaseServiceController {
         ezyRagSettingService.setMySqlConnectionProperties(
             requestToModelConverter.toModel(request)
         );
+        ezyRagSettingService.setMySqlCollectionName(
+            request.getCollectionName()
+        );
+        ezyRagSettingService.setMySqlVectorSize(
+            request.getVectorSize()
+        );
+        mySqlVectorDatabaseService.createCollectionIfAbsent();
         return ResponseEntity.noContent();
     }
 }

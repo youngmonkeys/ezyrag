@@ -49,6 +49,8 @@ public final class EzyRagConstants {
         "ezyrag_mysql_collection_name";
     public static final String SETTING_NAME_MYSQL_VECTOR_SIZE =
         "ezyrag_mysql_vector_size";
+    public static final String SETTING_NAME_MYSQL_CONNECTION_ACCESS_TOKEN =
+        "ezyrag_mysql_connection_access_token";
     public static final String SETTING_NAME_MYSQL_CONNECTION_PROPERTIES =
         "ezyrag_mysql_connection_properties";
     public static final String SETTING_NAME_VECTOR_DATA_DIR =

@@ -33,10 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.HEADER_NAME_AUTHORIZATION;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PREFIX_BEARER_TOKEN;
 import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_COLLECTION_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_COLLECTION_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_CONNECTION_ACCESS_TOKEN;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_CONNECTION_PROPERTIES;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_VECTOR_SIZE;
 
@@ -62,10 +66,20 @@ public class RagMySqlHnswVectorDatabaseService
     }
 
     private RagMySqlConnectionPropertiesModel readConnectionProperties() {
-        return settingService.getObjectValue(
-            SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
-            RagMySqlConnectionPropertiesModel.class
-        );
+        RagMySqlConnectionPropertiesModel model =
+            settingService
+                .getObjectValue(
+                    SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+                    RagMySqlConnectionPropertiesModel.class
+                );
+        if (model != null) {
+            model.setAccessToken(
+                settingService.getPasswordValue(
+                    SETTING_NAME_MYSQL_CONNECTION_ACCESS_TOKEN
+                )
+            );
+        }
+        return model;
     }
 
     @Override
@@ -80,7 +94,7 @@ public class RagMySqlHnswVectorDatabaseService
                         getCollectionName()
                     )
                 )
-                .setEntity(requestEntity(null))
+                .setEntity(requestEntity(properties.getAccessToken(), null))
         );
         refreshMySqlVectorSize(properties);
     }
@@ -112,7 +126,12 @@ public class RagMySqlHnswVectorDatabaseService
                         getCollectionName()
                     )
                 )
-                .setEntity(requestEntity(requestBody))
+                .setEntity(
+                    requestEntity(
+                        properties.getAccessToken(),
+                        requestBody
+                    )
+                )
         );
     }
 
@@ -136,7 +155,12 @@ public class RagMySqlHnswVectorDatabaseService
                         getCollectionName()
                     ) + "/search"
                 )
-                .setEntity(requestEntity(requestBody))
+                .setEntity(
+                    requestEntity(
+                        properties.getAccessToken(),
+                        requestBody
+                    )
+                )
         );
         List<Map<String, Object>> result =
             (List<Map<String, Object>>) responseBody.get("result");
@@ -154,9 +178,18 @@ public class RagMySqlHnswVectorDatabaseService
         return searchResults;
     }
 
-    private RequestEntity requestEntity(Map<String, Object> body) {
+    private RequestEntity requestEntity(
+        String accessToken,
+        Map<String, Object> body
+    ) {
         RequestEntity.Builder builder = RequestEntity.builder()
             .contentType(ContentTypes.APPLICATION_JSON);
+        if (!isBlank(accessToken)) {
+            builder.header(
+                HEADER_NAME_AUTHORIZATION,
+                PREFIX_BEARER_TOKEN + accessToken
+            );
+        }
         if (body != null) {
             builder.body(body);
         }
@@ -189,7 +222,7 @@ public class RagMySqlHnswVectorDatabaseService
                         getCollectionName()
                     )
                 )
-                .setEntity(requestEntity(null))
+                .setEntity(requestEntity(properties.getAccessToken(), null))
         );
         Map<String, Object> result =
             (Map<String, Object>) responseBody.get("result");

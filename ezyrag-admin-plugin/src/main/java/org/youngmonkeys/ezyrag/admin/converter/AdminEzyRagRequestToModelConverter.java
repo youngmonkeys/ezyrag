@@ -44,6 +44,7 @@ public class AdminEzyRagRequestToModelConverter {
         return RagMySqlConnectionPropertiesModel
             .builder()
             .baseUrl(request.getBaseUrl())
+            .accessToken(request.getAccessToken())
             .build();
     }
 

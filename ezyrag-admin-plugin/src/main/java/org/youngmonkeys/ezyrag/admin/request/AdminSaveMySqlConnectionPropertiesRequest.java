@@ -23,4 +23,7 @@ import lombok.Setter;
 @Setter
 public class AdminSaveMySqlConnectionPropertiesRequest {
     private String baseUrl;
+    private String accessToken;
+    private String collectionName;
+    private int vectorSize;
 }

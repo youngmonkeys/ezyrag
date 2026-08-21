@@ -86,6 +86,15 @@ public class AdminRagVectorDatabaseServiceValidator {
         if (isBlank(request.getBaseUrl())) {
             errors.put("baseUrl", "required");
         }
+        if (isBlank(request.getAccessToken())) {
+            errors.put("accessToken", "required");
+        }
+        if (isBlank(request.getCollectionName())) {
+            errors.put("collectionName", "required");
+        }
+        if (request.getVectorSize() < MIN_VECTOR_SIZE) {
+            errors.put("vectorSize", "invalid");
+        }
         if (!errors.isEmpty()) {
             throw new HttpBadRequestException(errors);
         }

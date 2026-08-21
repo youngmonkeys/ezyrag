@@ -79,6 +79,21 @@ public class AdminVectorDatabaseServiceController {
                     "mySqlConnection",
                     mySqlConnectionProperties
                 )
+                .addVariable(
+                    "mySqlAccessTokenValue",
+                    isNotBlank(mySqlConnectionProperties.getAccessToken())
+                        ? DEFAULT_HIDDEN_PASSWORD
+                        : EMPTY_STRING
+                )
+                .addVariable(
+                    "mySqlCollectionName",
+                    ezyRagSettingService.getMySqlCollectionName()
+                )
+                .addVariable(
+                    "mySqlVectorSize",
+                    ezyRagSettingService.getMySqlVectorSize()
+                )
+                .addVariable("minVectorSize", MIN_VECTOR_SIZE)
                 .build();
         }
         RagQdrantConnectionPropertiesModel qdrantConnectionProperties =
