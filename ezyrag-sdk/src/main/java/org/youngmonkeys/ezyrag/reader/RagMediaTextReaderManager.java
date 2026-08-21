@@ -18,13 +18,13 @@ package org.youngmonkeys.ezyrag.reader;
 
 import com.tvd12.ezyfox.bean.EzySingletonFactory;
 import com.tvd12.ezyfox.concurrent.EzyLazyInitializer;
+import com.tvd12.ezyfox.io.EzyStrings;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
 
 public class RagMediaTextReaderManager {
 
@@ -43,11 +43,15 @@ public class RagMediaTextReaderManager {
             )
                 .stream()
                 .sorted(Comparator.comparingInt(RagMediaTextReader::getPriority))
-                .filter(it -> isNotBlank(it.getExtension()))
+                .flatMap(it ->
+                    Arrays.stream(it.getExtensions())
+                        .filter(EzyStrings::isNotBlank)
+                        .map(extension -> new Object[] { extension, it })
+                )
                 .collect(
                     Collectors.toMap(
-                        RagMediaTextReader::getExtension,
-                        it -> it,
+                        entry -> (String) entry[0],
+                        entry -> (RagMediaTextReader) entry[1],
                         (o, n) -> o
                     )
                 )
@@ -58,16 +62,21 @@ public class RagMediaTextReaderManager {
             )
                 .stream()
                 .sorted(Comparator.comparingInt(RagMediaTextReader::getPriority))
-                .filter(it -> isNotBlank(it.getMimeType()))
+                .flatMap(it ->
+                    Arrays.stream(it.getMimeTypes())
+                        .filter(EzyStrings::isNotBlank)
+                        .map(mimeType -> new Object[] { mimeType, it })
+                )
                 .collect(
                     Collectors.toMap(
-                        RagMediaTextReader::getMimeType,
-                        it -> it,
+                        entry -> (String) entry[0],
+                        entry -> (RagMediaTextReader) entry[1],
                         (o, n) -> o
                     )
                 )
         );
     }
+
 
     public RagMediaTextReader getMediaTextReaderByMimeTypeOrExtension(
         String mimeType,

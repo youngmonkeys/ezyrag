@@ -9,12 +9,12 @@ public interface RagMediaTextReader {
 
     Iterable<String> read(File path);
 
-    default String getMimeType() {
-        return EMPTY_STRING;
+    default String[] getMimeTypes() {
+        return new String[] { EMPTY_STRING };
     }
 
-    default String getExtension() {
-        return EMPTY_STRING;
+    default String[] getExtensions() {
+        return new String[] { EMPTY_STRING };
     }
 
     default int getPriority() {
