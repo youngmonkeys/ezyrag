@@ -32,11 +32,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AdminRagDataChunkModelDecorator {
 
-    private final AdminEzyRagModelToResponseConverter modelToResponseConverter;
     private final AdminRagDataChunkMetaService dataChunkMetaService;
+    private final AdminEzyRagModelToResponseConverter modelToResponseConverter;
 
-    public PaginationModel<AdminRagDataChunkResponse>
-    decorateToDataChunkPaginationResponse(
+    @SuppressWarnings("LineLength")
+    public PaginationModel<AdminRagDataChunkResponse> decorateToDataChunkPaginationResponse(
         PaginationModel<RagDataChunkModel> pagination
     ) {
         List<RagDataChunkModel> models = pagination.getItems();
@@ -47,10 +47,11 @@ public class AdminRagDataChunkModelDecorator {
                     .collect(Collectors.toList())
             );
         return pagination.map(
-            model -> modelToResponseConverter.toDataChunkResponse(
-                model,
-                metaMap.get(model.getId())
-            )
+            model -> modelToResponseConverter
+                .toDataChunkResponse(
+                    model,
+                    metaMap.get(model.getId())
+                )
         );
     }
 }
