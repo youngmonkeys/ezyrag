@@ -1790,3 +1790,21 @@ Java Heap khi dữ liệu tăng lên hàng triệu point.
 File file = fileSystemManager.concatWithEzyHomeToFile(
     data/ezyvector
 );
+
+
+Chưa phải 100%.
+Hiện tại đã có bản chạy được về mặt thiết kế chính:
+- vector raw nằm trên disk;
+- không load toàn bộ vector vào heap để exact search;
+- có backfill batch;
+- có hnsw.dat;
+- search ưu tiên HNSW khi ready;
+- fallback exact scan khi HNSW chưa ready.
+  Nhưng để gọi là hoàn thiện production 100% thì còn thiếu:
+- recovery/operation log cho crash giữa lúc DB đã commit nhưng file/HNSW chưa ghi xong;
+- delete vector/tombstone;
+- segment thật sự nhiều segment + freeze/compaction, hiện mới dùng segment 000001;
+- checksum/header cho vectors.dat, point_ids.dat, hnsw.dat;
+- migration SQL cho bảng cũ bằng ALTER TABLE;
+- benchmark/tuning M, efConstruction, efSearch;
+- test build/integration/corruption/restart.

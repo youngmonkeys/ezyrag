@@ -38,37 +38,7 @@
     <div class="col-12">
         <hr>
     </div>
-    <div class="col-12" th:if="${vectorDatabaseServiceName == 'MYSQL'}">
-        <form id="updateVectorDatabaseServiceForm" onsubmit="return false;">
-            <div class="form-group row">
-                <label for="baseUrl" class="col-md-3 col-form-label">
-                    [[#{mysql_base_url}]] (<span class="text-danger">*</span>)
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="text" name="baseUrl" id="baseUrl"
-                           class="form-control" th:placeholder="#{mysql_base_url}"
-                           th:value="${#strings.isEmpty(mySqlConnection.baseUrl) ? 'http://localhost:8080/api/v1' : mySqlConnection.baseUrl}">
-                    <small class="form-text text-muted">
-                        [[#{mysql_base_url_hint}]]
-                    </small>
-                </div>
-                <label id="baseUrlErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
-                       for="baseUrl">
-                    <i class="far fa-times-circle"></i> <span id="baseUrlError">[[#{invalid}]]</span>
-                </label>
-            </div>
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-primary btn-block"
-                            onclick="ezyrag.saveVectorDatabaseService();">
-                        [[#{save}]]
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="col-12" th:if="${vectorDatabaseServiceName != 'MYSQL'}">
+    <div class="col-12">
         <form id="updateVectorDatabaseServiceForm" onsubmit="return false;">
             <div class="form-group row">
                 <label for="baseUrl" class="col-md-3 col-form-label">

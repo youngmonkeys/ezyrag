@@ -1,0 +1,96 @@
+<!--
+ ~ Copyright 2026 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        lang="en"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+<head>
+    <script>
+        var ezyrag = {};
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-md-3">
+        <label>[[#{service_name}]]:</label>
+    </div>
+    <div class="col-md-9">
+        [[${vectorDatabaseServiceName}]]
+    </div>
+    <div class="col-12">
+        <hr>
+    </div>
+    <div class="col-12">
+        <form id="updateVectorDatabaseServiceForm" onsubmit="return false;">
+            <div class="form-group row">
+                <label for="baseUrl" class="col-md-3 col-form-label">
+                    [[#{mysql_base_url}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="baseUrl" id="baseUrl"
+                           class="form-control" th:placeholder="#{mysql_base_url}"
+                           th:value="${#strings.isEmpty(mySqlConnection.baseUrl) ? 'http://localhost:8080/api/v1' : mySqlConnection.baseUrl}">
+                    <small class="form-text text-muted">
+                        [[#{mysql_base_url_hint}]]
+                    </small>
+                </div>
+                <label id="baseUrlErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="baseUrl">
+                    <i class="far fa-times-circle"></i> <span id="baseUrlError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary btn-block"
+                            onclick="ezyrag.saveVectorDatabaseService();">
+                        [[#{save}]]
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyrag.vectorDatabaseServiceName = /*[[${vectorDatabaseServiceName}]]*/ '';
+/*]]>*/
+
+ezyrag.saveVectorDatabaseService = function() {
+    var formData = ezyadmin.formDataToObject('updateVectorDatabaseServiceForm');
+    $.ajax({
+        type: 'PUT',
+        url: `/ezyrag/api/v1/vector-database-services/${ezyrag.vectorDatabaseServiceName}/connection-properties`,
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function () {
+            ezyadmin.hideFormErrors(formData);
+            ezyadmin.shortToast('bg-success', ezyadmin.messages.save_successfully);
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors(formData, data);
+        }
+    });
+}
+</script>
+</body>
+</html>
