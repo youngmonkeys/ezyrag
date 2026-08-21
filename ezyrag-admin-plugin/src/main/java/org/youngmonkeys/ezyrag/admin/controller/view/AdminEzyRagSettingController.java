@@ -22,11 +22,10 @@ import com.tvd12.ezyhttp.server.core.annotation.Controller;
 import com.tvd12.ezyhttp.server.core.annotation.DoGet;
 import com.tvd12.ezyhttp.server.core.view.View;
 import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyrag.admin.builder.AdminRagKnowledgeDataBuilderManager;
+import org.youngmonkeys.ezyrag.admin.chunker.AdminRagDataChunkerManager;
+import org.youngmonkeys.ezyrag.admin.retriever.AdminRagDataRetrieverManager;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
-
-import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
-import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
-import static org.youngmonkeys.ezyplatform.constant.CommonConstants.DEFAULT_HIDDEN_PASSWORD;
 
 @Controller
 @Authenticated
@@ -34,6 +33,9 @@ import static org.youngmonkeys.ezyplatform.constant.CommonConstants.DEFAULT_HIDD
 @AllArgsConstructor
 public class AdminEzyRagSettingController {
 
+    private final AdminRagDataChunkerManager dataChunkerManager;
+    private final AdminRagDataRetrieverManager dataRetrieverManager;
+    private final AdminRagKnowledgeDataBuilderManager knowledgeDataBuilderManager;
     private final AdminEzyRagSettingService settingsService;
 
     @DoGet("/settings")
@@ -41,10 +43,29 @@ public class AdminEzyRagSettingController {
         return View.builder()
             .template("ezyrag/setting/index")
             .addVariable(
-                "openAiApiKeyValue",
-                isNotBlank(settingsService.getOpenAiApiKey())
-                    ? DEFAULT_HIDDEN_PASSWORD
-                    : EMPTY_STRING
+                "dataChunkerNames",
+                dataChunkerManager.getSortedDataChunkerNames()
+            )
+            .addVariable(
+                "dataRetrieverNames",
+                dataRetrieverManager.getSortedDataRetrieverNames()
+            )
+            .addVariable(
+                "knowledgeDataBuilderNames",
+                knowledgeDataBuilderManager
+                    .getSortedKnowledgeDataBuilderNames()
+            )
+            .addVariable(
+                "dataChunkerName",
+                settingsService.getDataChunker()
+            )
+            .addVariable(
+                "dataRetrieverName",
+                settingsService.getDataRetriever()
+            )
+            .addVariable(
+                "knowledgeDataBuilderName",
+                settingsService.getKnowledgeDataBuilder()
             )
             .build();
     }

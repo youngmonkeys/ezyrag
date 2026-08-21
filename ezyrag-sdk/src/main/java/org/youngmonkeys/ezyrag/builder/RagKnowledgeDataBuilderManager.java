@@ -51,4 +51,13 @@ public class RagKnowledgeDataBuilderManager {
     ) {
         return knowledgeDataBuilderByName.get().get(name);
     }
+
+    public List<String> getSortedKnowledgeDataBuilderNames() {
+        return knowledgeDataBuilderByName
+            .get()
+            .keySet()
+            .stream()
+            .sorted()
+            .collect(Collectors.toList());
+    }
 }

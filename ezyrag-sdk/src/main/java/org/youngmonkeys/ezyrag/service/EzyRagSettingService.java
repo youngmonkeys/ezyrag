@@ -17,21 +17,19 @@
 package org.youngmonkeys.ezyrag.service;
 
 import org.youngmonkeys.ezyplatform.service.DefaultSettingService;
+import org.youngmonkeys.ezyplatform.util.Numbers;
 import org.youngmonkeys.ezyrag.constant.EmbeddingServiceName;
 import org.youngmonkeys.ezyrag.constant.RagDataChunkerName;
 import org.youngmonkeys.ezyrag.constant.RagDataRetrieverName;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isEmpty;
-import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_EXCERPT_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
-import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_EXCERPT_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
-import static org.youngmonkeys.ezyplatform.util.Numbers.toIntOrZero;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_QDRANT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
@@ -60,7 +58,7 @@ public class EzyRagSettingService {
         );
         settingService.addValueConverter(
             SETTING_NAME_QDRANT_VECTOR_SIZE,
-            it -> toIntOrZero(it)
+            Numbers::toIntOrZero
         );
         settingService.scheduleCacheValue(
             SETTING_NAME_QDRANT_VECTOR_SIZE
@@ -94,13 +92,6 @@ public class EzyRagSettingService {
         return settingService.getIntValue(
             SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH,
             DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH
-        );
-    }
-
-    public int getKnowledgeChunkExcerptLength() {
-        return settingService.getIntValue(
-            SETTING_NAME_KNOWLEDGE_CHUNK_EXCERPT_LENGTH,
-            DEFAULT_KNOWLEDGE_CHUNK_EXCERPT_LENGTH
         );
     }
 

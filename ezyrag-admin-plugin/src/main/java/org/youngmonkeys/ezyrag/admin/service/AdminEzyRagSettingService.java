@@ -23,8 +23,11 @@ import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDDEN_PASSWORD;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
@@ -58,6 +61,27 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         settingService.cacheValueIfNotNull(
             SETTING_NAME_OPENAI_EMBEDDING_MODEL,
             model
+        );
+    }
+
+    public void setKnowledgeDataBuilderName(String name) {
+        setTextValue(
+            SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME,
+            name
+        );
+    }
+
+    public void setDataChunkerName(String name) {
+        setTextValue(
+            SETTING_NAME_DATA_CHUNKER_NAME,
+            name
+        );
+    }
+
+    public void setDataRetrieverName(String name) {
+        setTextValue(
+            SETTING_NAME_DATA_RETRIEVER_NAME,
+            name
         );
     }
 
@@ -120,5 +144,16 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         return model != null
             ? model
             : new RagQdrantConnectionPropertiesModel();
+    }
+
+    private void setTextValue(String settingName, String value) {
+        settingService.setTextValue(
+            settingName,
+            value
+        );
+        settingService.cacheValueIfNotNull(
+            settingName,
+            value
+        );
     }
 }

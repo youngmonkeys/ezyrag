@@ -22,5 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminSaveEzyRagSettingsRequest {
-    private String openAiApiKey;
+    private String knowledgeDataBuilderName;
+    private String dataChunkerName;
+    private String dataRetrieverName;
 }

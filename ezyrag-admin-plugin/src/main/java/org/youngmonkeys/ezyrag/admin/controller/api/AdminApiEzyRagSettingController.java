@@ -38,8 +38,14 @@ public class AdminApiEzyRagSettingController {
     public ResponseEntity settingsPut(
         @RequestBody AdminSaveEzyRagSettingsRequest request
     ) {
-        ezyRagSettingService.setOpenAiApiKey(
-            request.getOpenAiApiKey()
+        ezyRagSettingService.setKnowledgeDataBuilderName(
+            request.getKnowledgeDataBuilderName()
+        );
+        ezyRagSettingService.setDataChunkerName(
+            request.getDataChunkerName()
+        );
+        ezyRagSettingService.setDataRetrieverName(
+            request.getDataRetrieverName()
         );
         return ResponseEntity.noContent();
     }

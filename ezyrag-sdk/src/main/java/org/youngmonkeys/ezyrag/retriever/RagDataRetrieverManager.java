@@ -52,4 +52,13 @@ public class RagDataRetrieverManager {
     ) {
         return dataRetrieverBySourceType.get().get(name);
     }
+
+    public List<String> getSortedDataRetrieverNames() {
+        return dataRetrieverBySourceType
+            .get()
+            .keySet()
+            .stream()
+            .sorted()
+            .collect(Collectors.toList());
+    }
 }

@@ -52,4 +52,13 @@ public class RagDataChunkerManager {
     ) {
         return dataChunkerBySourceType.get().get(serviceName);
     }
+
+    public List<String> getSortedDataChunkerNames() {
+        return dataChunkerBySourceType
+            .get()
+            .keySet()
+            .stream()
+            .sorted()
+            .collect(Collectors.toList());
+    }
 }
