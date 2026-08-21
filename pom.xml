@@ -46,6 +46,7 @@
         <javax.mail.version>1.6.2</javax.mail.version>
         <jsoup.version>1.18.3</jsoup.version>
         <pdfbox.version>2.0.31</pdfbox.version>
+        <poi.version>5.2.5</poi.version>
         <socket.monitor.version>0.0.1</socket.monitor.version>
         <zxing.version>3.5.3</zxing.version>
         <ezyai.version>0.0.2</ezyai.version>

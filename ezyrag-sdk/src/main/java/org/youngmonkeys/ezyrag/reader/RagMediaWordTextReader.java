@@ -17,16 +17,17 @@
 package org.youngmonkeys.ezyrag.reader;
 
 import lombok.AllArgsConstructor;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 
 @AllArgsConstructor
-public class RagMediaPdfTextReader
+public class RagMediaWordTextReader
     implements RagMediaTextReader {
 
     private final EzyRagSettingService ezyRagSettingService;
@@ -42,20 +43,26 @@ public class RagMediaPdfTextReader
     @Override
     public String[] getMimeTypes() {
         return new String[] {
-            "application/pdf"
+            "application/vnd.openxmlformats-officedocument" +
+                ".wordprocessingml.document"
         };
     }
 
     @Override
     public String[] getExtensions() {
         return new String[] {
-            "pdf"
+            "docx"
         };
     }
 
     private String extractText(File path) {
-        try (PDDocument document = PDDocument.load(path)) {
-            return new PDFTextStripper().getText(document);
+        try (
+            XWPFDocument document = new XWPFDocument(
+                Files.newInputStream(path.toPath())
+            );
+            XWPFWordExtractor extractor = new XWPFWordExtractor(document)
+        ) {
+            return extractor.getText();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

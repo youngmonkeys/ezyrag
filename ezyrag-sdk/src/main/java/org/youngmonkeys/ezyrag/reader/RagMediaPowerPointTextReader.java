@@ -17,16 +17,17 @@
 package org.youngmonkeys.ezyrag.reader;
 
 import lombok.AllArgsConstructor;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 
 @AllArgsConstructor
-public class RagMediaPdfTextReader
+public class RagMediaPowerPointTextReader
     implements RagMediaTextReader {
 
     private final EzyRagSettingService ezyRagSettingService;
@@ -42,20 +43,27 @@ public class RagMediaPdfTextReader
     @Override
     public String[] getMimeTypes() {
         return new String[] {
-            "application/pdf"
+            "application/vnd.openxmlformats-officedocument" +
+                ".presentationml.presentation"
         };
     }
 
     @Override
     public String[] getExtensions() {
         return new String[] {
-            "pdf"
+            "pptx"
         };
     }
 
     private String extractText(File path) {
-        try (PDDocument document = PDDocument.load(path)) {
-            return new PDFTextStripper().getText(document);
+        try (
+            XMLSlideShow slideShow = new XMLSlideShow(
+                Files.newInputStream(path.toPath())
+            );
+            XSLFPowerPointExtractor extractor =
+                new XSLFPowerPointExtractor(slideShow)
+        ) {
+            return extractor.getText();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
