@@ -17,7 +17,7 @@
 package org.youngmonkeys.ezyrag.reader;
 
 import lombok.AllArgsConstructor;
-import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
+import org.apache.poi.xslf.extractor.XSLFExtractor;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
@@ -60,8 +60,8 @@ public class RagMediaPowerPointTextReader
             XMLSlideShow slideShow = new XMLSlideShow(
                 Files.newInputStream(path.toPath())
             );
-            XSLFPowerPointExtractor extractor =
-                new XSLFPowerPointExtractor(slideShow)
+            XSLFExtractor extractor =
+                new XSLFExtractor(slideShow)
         ) {
             return extractor.getText();
         } catch (IOException e) {
