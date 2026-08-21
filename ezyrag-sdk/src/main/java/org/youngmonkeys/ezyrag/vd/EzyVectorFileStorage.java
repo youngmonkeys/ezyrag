@@ -38,6 +38,7 @@ public class EzyVectorFileStorage {
     private static final String VECTORS_FILE = "vectors.dat";
     private static final String POINT_IDS_FILE = "point_ids.dat";
     private static final String BACKFILL_PROGRESS_FILE = "backfill.progress";
+    private static final String HNSW_FILE = "hnsw.dat";
 
     private final Path dataDir;
 
@@ -218,6 +219,14 @@ public class EzyVectorFileStorage {
             .resolve(String.valueOf(collectionId))
             .resolve("segments")
             .resolve(String.format("%06d", SEGMENT_NO));
+    }
+
+    public Path getHnswPath(long collectionId) {
+        return getSegmentDir(collectionId).resolve(HNSW_FILE);
+    }
+
+    public boolean isHnswPresent(long collectionId) {
+        return Files.isRegularFile(getHnswPath(collectionId));
     }
 
     private void searchChunk(

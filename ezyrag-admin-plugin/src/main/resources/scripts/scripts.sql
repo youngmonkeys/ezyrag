@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `ezyrag_collections` (
     `name` varchar(120) NOT NULL,
     `vector_size` int unsigned NOT NULL,
     `distance` varchar(32) NOT NULL,
-    `index_type` varchar(32) NOT NULL DEFAULT 'EXACT',
+    `index_type` varchar(32) NOT NULL DEFAULT 'HNSW',
     `status` varchar(32) NOT NULL DEFAULT 'ACTIVE',
     `points_count` bigint unsigned NOT NULL DEFAULT 0,
     `config` text COLLATE utf8mb4_unicode_520_ci,

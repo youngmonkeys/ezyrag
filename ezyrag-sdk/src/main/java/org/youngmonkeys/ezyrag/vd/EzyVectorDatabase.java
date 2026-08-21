@@ -29,6 +29,7 @@ import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 import org.youngmonkeys.ezyrag.repo.RagCollectionPointRepository;
 import org.youngmonkeys.ezyrag.repo.RagCollectionRepository;
 import org.youngmonkeys.ezyrag.repo.RagCollectionSegmentRepository;
+import org.youngmonkeys.ezyrag.vd.hnsw.HnswIndex;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,6 +57,12 @@ public class EzyVectorDatabase extends EzyLoggable
     private final Object writeLock = new Object();
     private final Set<Long> backfillingCollectionIds =
         ConcurrentHashMap.newKeySet();
+    private final Map<Long, HnswIndex> hnswIndexByCollectionId =
+        new ConcurrentHashMap<>();
+    private final Set<Long> readyHnswCollectionIds =
+        ConcurrentHashMap.newKeySet();
+    private final Set<Long> buildingHnswCollectionIds =
+        ConcurrentHashMap.newKeySet();
 
     public EzyVectorDatabase(
         MutableSettingService settingService,
@@ -80,7 +87,7 @@ public class EzyVectorDatabase extends EzyLoggable
             entity.setName(collectionName);
             entity.setVectorSize(getVectorSize());
             entity.setDistance("COSINE");
-            entity.setIndexType("EXACT");
+            entity.setIndexType("HNSW");
             entity.setStatus("ACTIVE");
             entity.setCreatedAt(now);
             entity.setUpdatedAt(now);
@@ -88,6 +95,7 @@ public class EzyVectorDatabase extends EzyLoggable
         }
         ensureMutableSegment();
         startBackfillIfNecessary();
+        startHnswBuildIfNecessary();
     }
 
     @Override
@@ -97,6 +105,7 @@ public class EzyVectorDatabase extends EzyLoggable
         RagCollection collection = getCollectionOrThrow();
         ensureMutableSegment(collection);
         startBackfillIfNecessary(collection);
+        startHnswBuildIfNecessary(collection);
         LocalDateTime now = LocalDateTime.now();
         EzyVectorFileStorage storage = newVectorFileStorage();
         synchronized (writeLock) {
@@ -135,7 +144,9 @@ public class EzyVectorDatabase extends EzyLoggable
                 collection.getVectorSize(),
                 records
             );
+            updateHnswIndex(collection, records);
         }
+        startHnswBuildIfNecessary(collection);
     }
 
     @Override
@@ -145,6 +156,16 @@ public class EzyVectorDatabase extends EzyLoggable
     ) throws Exception {
         RagCollection collection = getCollectionOrThrow();
         startBackfillIfNecessary(collection);
+        startHnswBuildIfNecessary(collection);
+        HnswIndex hnswIndex = getReadyHnswIndex(collection);
+        if (hnswIndex != null) {
+            List<HnswIndex.SearchResult> hits = hnswIndex.search(
+                vector,
+                limit,
+                Math.max(limit * 8, 64)
+            );
+            return toSearchResults(collection, hits);
+        }
         List<EzyVectorFileStorage.SearchResult> hits =
             newVectorFileStorage().search(
                 collection.getId(),
@@ -152,6 +173,40 @@ public class EzyVectorDatabase extends EzyLoggable
                 vector,
                 limit
             );
+        return toExactSearchResults(collection, hits);
+    }
+
+    private List<RagVectorSearchResultModel> toSearchResults(
+        RagCollection collection,
+        List<HnswIndex.SearchResult> hits
+    ) throws Exception {
+        List<RagVectorSearchResultModel> results =
+            new ArrayList<>(hits.size());
+        for (HnswIndex.SearchResult hit : hits) {
+            RagCollectionPoint point = collectionPointRepository
+                .findByCollectionIdAndPointId(
+                    collection.getId(),
+                    hit.getId()
+                );
+            results.add(
+                RagVectorSearchResultModel.builder()
+                    .chunkId(hit.getId())
+                    .score(hit.getScore())
+                    .payload(
+                        point == null
+                            ? null
+                            : toPayloadMap(point.getPayload())
+                    )
+                    .build()
+            );
+        }
+        return results;
+    }
+
+    private List<RagVectorSearchResultModel> toExactSearchResults(
+        RagCollection collection,
+        List<EzyVectorFileStorage.SearchResult> hits
+    ) throws Exception {
         List<RagVectorSearchResultModel> results =
             new ArrayList<>(hits.size());
         for (EzyVectorFileStorage.SearchResult hit : hits) {
@@ -307,6 +362,133 @@ public class EzyVectorDatabase extends EzyLoggable
             );
         } finally {
             backfillingCollectionIds.remove(collection.getId());
+        }
+    }
+
+    private void startHnswBuildIfNecessary() throws Exception {
+        RagCollection collection = collectionRepository
+            .findByName(getCollectionName());
+        if (collection != null) {
+            startHnswBuildIfNecessary(collection);
+        }
+    }
+
+    private void startHnswBuildIfNecessary(
+        RagCollection collection
+    ) throws Exception {
+        long collectionId = collection.getId();
+        if (readyHnswCollectionIds.contains(collectionId)) {
+            return;
+        }
+        EzyVectorFileStorage storage = newVectorFileStorage();
+        if (storage.isHnswPresent(collectionId)) {
+            try {
+                hnswIndexByCollectionId.put(
+                    collectionId,
+                    HnswIndex.load(storage.getHnswPath(collectionId))
+                );
+                readyHnswCollectionIds.add(collectionId);
+                return;
+            } catch (Exception e) {
+                logger.warn(
+                    "load hnsw index for vector collection: {} failed",
+                    collectionId,
+                    e
+                );
+            }
+        }
+        if (!buildingHnswCollectionIds.add(collectionId)) {
+            return;
+        }
+        hnswIndexByCollectionId.put(collectionId, new HnswIndex());
+        Thread thread = new Thread(
+            () -> buildHnswIndex(collection),
+            "ezyrag-vector-hnsw-build-" + collectionId
+        );
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private HnswIndex getReadyHnswIndex(
+        RagCollection collection
+    ) throws Exception {
+        long collectionId = collection.getId();
+        if (!readyHnswCollectionIds.contains(collectionId)) {
+            return null;
+        }
+        HnswIndex index = hnswIndexByCollectionId.get(collectionId);
+        if (index != null) {
+            return index;
+        }
+        EzyVectorFileStorage storage = newVectorFileStorage();
+        if (!storage.isHnswPresent(collectionId)) {
+            return null;
+        }
+        try {
+            index = HnswIndex.load(storage.getHnswPath(collectionId));
+            hnswIndexByCollectionId.put(collectionId, index);
+            return index;
+        } catch (Exception e) {
+            readyHnswCollectionIds.remove(collectionId);
+            logger.warn(
+                "load hnsw index for vector collection: {} failed",
+                collectionId,
+                e
+            );
+            startHnswBuildIfNecessary(collection);
+            return null;
+        }
+    }
+
+    private void updateHnswIndex(
+        RagCollection collection,
+        List<EzyVectorFileStorage.VectorRecord> records
+    ) throws Exception {
+        HnswIndex index = hnswIndexByCollectionId.get(collection.getId());
+        if (index == null) {
+            return;
+        }
+        for (EzyVectorFileStorage.VectorRecord record : records) {
+            index.insert(record.getPointId(), record.getVector());
+        }
+        if (readyHnswCollectionIds.contains(collection.getId())) {
+            index.save(newVectorFileStorage().getHnswPath(collection.getId()));
+        }
+    }
+
+    private void buildHnswIndex(RagCollection collection) {
+        try {
+            HnswIndex index = hnswIndexByCollectionId.get(collection.getId());
+            if (index == null) {
+                index = new HnswIndex();
+                hnswIndexByCollectionId.put(collection.getId(), index);
+            }
+            long lastId = 0L;
+            while (true) {
+                List<RagCollectionPoint> points = collectionPointRepository
+                    .findListByCollectionIdAndIdGreaterThan(
+                        collection.getId(),
+                        lastId,
+                        EzyNext.fromLimit(500)
+                    );
+                if (points.isEmpty()) {
+                    break;
+                }
+                for (RagCollectionPoint point : points) {
+                    index.insert(point.getPointId(), point.getVector());
+                    lastId = point.getId();
+                }
+            }
+            index.save(newVectorFileStorage().getHnswPath(collection.getId()));
+            readyHnswCollectionIds.add(collection.getId());
+        } catch (Exception e) {
+            logger.warn(
+                "build hnsw index for vector collection: {} failed",
+                collection.getId(),
+                e
+            );
+        } finally {
+            buildingHnswCollectionIds.remove(collection.getId());
         }
     }
 

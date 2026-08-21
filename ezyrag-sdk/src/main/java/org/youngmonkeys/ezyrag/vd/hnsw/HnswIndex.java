@@ -16,6 +16,15 @@
 
 package org.youngmonkeys.ezyrag.vd.hnsw;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +38,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class HnswIndex {
+
+    private static final int FILE_MAGIC = 0x455A4857;
+    private static final int FILE_VERSION = 1;
 
     private final int maxM;
     private final int maxM0;
@@ -204,6 +216,136 @@ public class HnswIndex {
             }
         }
         return count;
+    }
+
+    public void save(Path path) throws IOException {
+        lock.readLock().lock();
+        try {
+            Files.createDirectories(path.getParent());
+            Path tempPath = path.resolveSibling(path.getFileName() + ".tmp");
+            try (
+                OutputStream outputStream = Files.newOutputStream(tempPath);
+                DataOutputStream output = new DataOutputStream(outputStream)
+            ) {
+                output.writeInt(FILE_MAGIC);
+                output.writeInt(FILE_VERSION);
+                output.writeInt(maxM);
+                output.writeInt(efConstruction);
+                output.writeInt(vectorSize);
+                output.writeInt(maxLevel);
+                output.writeLong(entryPoint == null ? 0L : entryPoint.id);
+                output.writeInt(nodesById.size());
+                for (Node node : nodesById.values()) {
+                    writeNode(output, node);
+                }
+            }
+            try {
+                Files.move(
+                    tempPath,
+                    path,
+                    StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE
+                );
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(
+                    tempPath,
+                    path,
+                    StandardCopyOption.REPLACE_EXISTING
+                );
+            }
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public static HnswIndex load(Path path) throws IOException {
+        try (
+            InputStream inputStream = Files.newInputStream(path);
+            DataInputStream input = new DataInputStream(inputStream)
+        ) {
+            if (input.readInt() != FILE_MAGIC) {
+                throw new IOException("Invalid HNSW file magic");
+            }
+            int version = input.readInt();
+            if (version != FILE_VERSION) {
+                throw new IOException(
+                    "Unsupported HNSW file version: " + version
+                );
+            }
+            HnswIndex index = new HnswIndex(
+                input.readInt(),
+                input.readInt()
+            );
+            index.vectorSize = input.readInt();
+            index.maxLevel = input.readInt();
+            long entryPointId = input.readLong();
+            int nodeCount = input.readInt();
+            for (int i = 0; i < nodeCount; ++i) {
+                Node node = readNode(input, index.vectorSize);
+                index.nodesById.put(node.id, node);
+            }
+            index.entryPoint = index.nodesById.get(entryPointId);
+            if (index.entryPoint == null) {
+                index.entryPoint = index.findActiveEntryPoint();
+                index.maxLevel = index.getMaxActiveLevel();
+            }
+            return index;
+        }
+    }
+
+    private static void writeNode(
+        DataOutputStream output,
+        Node node
+    ) throws IOException {
+        output.writeLong(node.id);
+        output.writeInt(node.level);
+        output.writeBoolean(node.deleted);
+        output.writeInt(node.vector.length);
+        for (float value : node.vector) {
+            output.writeFloat(value);
+        }
+        output.writeInt(node.neighborsByLevel.size());
+        for (List<Long> neighbors : node.neighborsByLevel) {
+            output.writeInt(neighbors.size());
+            for (long neighborId : neighbors) {
+                output.writeLong(neighborId);
+            }
+        }
+    }
+
+    private static Node readNode(
+        DataInputStream input,
+        int vectorSize
+    ) throws IOException {
+        long id = input.readLong();
+        int level = input.readInt();
+        boolean deleted = input.readBoolean();
+        int nodeVectorSize = input.readInt();
+        if (vectorSize >= 0 && nodeVectorSize != vectorSize) {
+            throw new IOException(
+                "Vector dimension mismatch: expected " +
+                    vectorSize +
+                    ", actual " +
+                    nodeVectorSize
+            );
+        }
+        float[] vector = new float[nodeVectorSize];
+        for (int i = 0; i < nodeVectorSize; ++i) {
+            vector[i] = input.readFloat();
+        }
+        Node node = new Node(id, vector, level);
+        node.deleted = deleted;
+        int levelCount = input.readInt();
+        node.neighborsByLevel.clear();
+        for (int i = 0; i < levelCount; ++i) {
+            int neighborCount = input.readInt();
+            List<Long> neighbors = new ArrayList<>(neighborCount);
+            for (int j = 0; j < neighborCount; ++j) {
+                neighbors.add(input.readLong());
+            }
+            node.neighborsByLevel.add(neighbors);
+        }
+        return node;
     }
 
     private void removeNode(long id) {
