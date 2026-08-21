@@ -149,7 +149,7 @@ public class RagMySqlVectorDatabaseService
         return collection;
     }
 
-    private String getCollectionName() {
+    protected String getCollectionName() {
         return settingService.getTextValue(
             SETTING_NAME_MYSQL_COLLECTION_NAME,
             DEFAULT_MYSQL_COLLECTION_NAME
@@ -180,7 +180,7 @@ public class RagMySqlVectorDatabaseService
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> toPayloadMap(
+    protected Map<String, Object> toPayloadMap(
         String json
     ) throws Exception {
         return isBlank(json)

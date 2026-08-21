@@ -19,13 +19,13 @@ package org.youngmonkeys.ezyrag.web.vd;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
-import org.youngmonkeys.ezyrag.vd.RagMySqlVectorDatabaseService;
+import org.youngmonkeys.ezyrag.vd.RagMySqlHnswVectorDatabaseService;
 import org.youngmonkeys.ezyrag.web.repo.WebRagCollectionPointRepository;
 import org.youngmonkeys.ezyrag.web.repo.WebRagCollectionRepository;
 
 @EzySingleton
 public class WebRagMySqlVectorDatabaseService
-    extends RagMySqlVectorDatabaseService {
+    extends RagMySqlHnswVectorDatabaseService {
 
     public WebRagMySqlVectorDatabaseService(
         WebSettingService settingService,
