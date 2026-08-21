@@ -22,6 +22,7 @@ import com.tvd12.ezyhttp.core.response.ResponseEntity;
 import com.tvd12.ezyhttp.server.core.annotation.Api;
 import com.tvd12.ezyhttp.server.core.annotation.Authenticated;
 import com.tvd12.ezyhttp.server.core.annotation.Controller;
+import com.tvd12.ezyhttp.server.core.annotation.DoGet;
 import com.tvd12.ezyhttp.server.core.annotation.DoPut;
 import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
@@ -58,8 +59,8 @@ public class AdminApiEmbeddingServiceController {
     }
 
     @Description("Update an embedding service's model names")
-    @DoPut("/embedding-services/{serviceName}/model-names")
-    public List<String> embeddingServicesServiceNameModelNamesPut(
+    @DoGet("/embedding-services/{serviceName}/model-names")
+    public List<String> embeddingServicesServiceNameModelNamesGet(
         @PathVariable String serviceName
     ) {
         return embeddingServiceManager

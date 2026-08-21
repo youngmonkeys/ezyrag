@@ -45,9 +45,9 @@
                     [[#{open_ai_embedding_model}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
-                    <input type="text" name="model" id="model"
-                           class="form-control" th:placeholder="#{open_ai_embedding_model}"
-                           th:value="${openAiEmbeddingModel}">
+                    <select name="model" id="model" class="form-control">
+                        <option value="">[[#{select}]]</option>
+                    </select>
                 </div>
                 <label id="modelErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
                        for="model">
@@ -88,6 +88,8 @@
 <script layout:fragment="scripts" th:inline="javascript">
 /*<![CDATA[*/
 ezyrag.embeddingServiceName = /*[[${embeddingServiceName}]]*/ '';
+ezyrag.openAiEmbeddingModel = /*[[${openAiEmbeddingModel}]]*/ '';
+ezyadmin.messages.select = /*[[#{select}]]*/ '';
 /*]]>*/
 
 ezyrag.saveEmbeddingService = function() {
@@ -106,6 +108,34 @@ ezyrag.saveEmbeddingService = function() {
         }
     });
 }
+
+ezyrag.loadModelNames = function() {
+    $.ajax({
+        type: 'GET',
+        url: `/ezyrag/api/v1/embedding-services/${ezyrag.embeddingServiceName}/model-names`,
+        dataType: 'json',
+        success: function (modelNames) {
+            var currentModel = $('#model').val();
+            var options = `<option value="">${ezyadmin.messages.select}</option>`;
+            (modelNames || []).forEach(function (modelName) {
+                options += `<option value="${ezyadmin.escapeHtml(modelName)}"${ezyrag.openAiEmbeddingModel == modelName ? ' selected' : ''}>
+                    ${ezyadmin.escapeHtml(modelName)}
+                </option>`;
+            });
+            $('#model').html(options);
+            if (currentModel) {
+                $('#model').val(currentModel);
+            }
+        },
+        error: function (data, e) {
+            ezyadmin.processGetApiErrors(data);
+        }
+    });
+}
+
+$(document).ready(function () {
+    ezyrag.loadModelNames();
+});
 </script>
 </body>
 </html>
