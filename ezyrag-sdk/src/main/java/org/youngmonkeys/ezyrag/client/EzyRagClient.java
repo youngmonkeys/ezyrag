@@ -87,22 +87,17 @@ public class EzyRagClient {
         long sourceId = dataSource.getSourceId();
         int chunkIndex = 0;
         Map<String, Object> dataSourceMetadata = dataSource
-            .toMetadata();
+            .getMetadata();
         while (iterator.hasNext()) {
             RagInputData inputData = iterator.next();
             String text = textCleanerManager.cleanText(
-                inputData.getText()
+                (String) inputData.getData()
             );
             List<RagChunkedResultModel> chunkedResults =
                 chunker.chunk(text);
             for (RagChunkedResultModel chunkedResult : chunkedResults) {
-                RagDataChunkEmbeddingModel chunkEmbedding =
-                    CommonContentType
-                        .TEXT
-                        .toString()
-                        .equalsIgnoreCase(sourceType)
-                    ? null
-                    : dataChunkService.getEmbeddingBySourceTypeAndSourceIdAndIndex(
+                RagDataChunkEmbeddingModel chunkEmbedding = dataChunkService
+                    .getEmbeddingBySourceTypeAndSourceIdAndIndex(
                         sourceType,
                         sourceId,
                         chunkIndex + 1

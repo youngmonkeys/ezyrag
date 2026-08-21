@@ -25,7 +25,6 @@ import java.util.Map;
 @Builder
 public class RagInputData {
     private Object data;
-    private String text;
     private String dataType;
     private Map<String, Object> metadata;
 }
