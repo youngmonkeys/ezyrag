@@ -67,4 +67,13 @@ public class RagDataLoaderManager {
         }
         return dataLoader;
     }
+
+    public List<String> getSortedSourceTypes() {
+        return dataLoaderBySourceType
+            .get()
+            .keySet()
+            .stream()
+            .sorted()
+            .collect(Collectors.toList());
+    }
 }

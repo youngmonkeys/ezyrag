@@ -1,0 +1,221 @@
+<!--
+ ~ Copyright 2026 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<html
+        lang="en"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="content">
+    <div class="col-12">
+        <form id="chunkTextDataForm" onsubmit="return false;">
+            <div class="form-group row">
+                <label for="chunkDataSourceType" class="col-md-2 col-form-label">
+                    [[#{source_type}]]
+                </label>
+                <div class="col-md-10">
+                    <label id="sourceTypeErrorLabel" class="col-form-label text-danger d-none"
+                           for="chunkDataSourceType">
+                        <i class="far fa-times-circle"></i> <span id="sourceTypeError">[[#{invalid}]]</span>
+                    </label>
+                    <select name="sourceType" id="chunkDataSourceType"
+                            class="form-control"
+                            onchange="ezyrag.onChunkDataSourceTypeChanged();">
+                        <option th:each="dataSourceType : ${dataSourceTypes}"
+                                th:value="${dataSourceType}">
+                            [[#{${dataSourceType.toLowerCase()}}]]
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div id="chunkDataSourceIdInput" class="form-group row">
+                <label for="chunkDataPostId" class="col-md-2 col-form-label">
+                    [[#{source_id}]]
+                </label>
+                <div class="col-md-10">
+                    <div id="chunkDataPostInput">
+                        <label id="postIdErrorLabel" class="col-form-label text-danger d-none"
+                               for="chunkDataPostId">
+                            <i class="far fa-times-circle"></i> <span id="postIdError">[[#{invalid}]]</span>
+                        </label>
+                        <input type="text" name="postId" id="chunkDataPostId"
+                               class="form-control" th:placeholder="#{post}"
+                               autocomplete="off" inputmode="text"
+                               onkeydown="ezyrag.onKeyDownToChunkData();">
+                    </div>
+                    <div id="chunkDataProductInput">
+                        <label id="productIdErrorLabel" class="col-form-label text-danger d-none"
+                               for="chunkDataProductId">
+                            <i class="far fa-times-circle"></i> <span id="productIdError">[[#{invalid}]]</span>
+                        </label>
+                        <input type="text" name="productId" id="chunkDataProductId"
+                               class="form-control" th:placeholder="#{product}"
+                               autocomplete="off" inputmode="text"
+                               onkeydown="ezyrag.onKeyDownToChunkData();">
+                    </div>
+                    <div id="chunkDataMediaInput">
+                        <label id="mediaIdErrorLabel" class="col-form-label text-danger d-none"
+                               for="chunkDataMediaId">
+                            <i class="far fa-times-circle"></i> <span id="mediaIdError">[[#{invalid}]]</span>
+                        </label>
+                        <div class="input-group">
+                            <input type="text" name="mediaId" id="chunkDataMediaId"
+                                   class="form-control" th:placeholder="#{media}"
+                                   readonly>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-primary"
+                                        onclick="ezyrag.showChunkDataMediaModal();">
+                                    [[#{select}]]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="chunkDataTextInput" class="form-group row">
+                <label for="chunkTextDataContent" class="col-md-2 col-form-label">
+                    [[#{content}]]
+                </label>
+                <div class="col-md-10">
+                    <label id="contentErrorLabel" class="col-form-label text-danger d-none"
+                           for="chunkTextDataContent">
+                        <i class="far fa-times-circle"></i> <span id="contentError">[[#{invalid}]]</span>
+                    </label>
+                    <textarea name="data" id="chunkTextDataContent"
+                              class="form-control" th:placeholder="#{content}"
+                              rows="5"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <button type="button" class="btn btn-primary"
+                            onclick="ezyrag.chunkTextData();">
+                        [[#{submit}]]
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</th:block>
+<script th:fragment="scripts">
+ezyrag.dataSourceTypes = {
+    MEDIA: 'media',
+    POST: 'post',
+    PRODUCT: 'product',
+    TEXT: 'TEXT'
+};
+
+ezyrag.getChunkDataSourceType = function() {
+    return $('#chunkDataSourceType').val();
+}
+
+ezyrag.onChunkDataSourceTypeChanged = function() {
+    var sourceType = ezyrag.getChunkDataSourceType();
+    $('#chunkDataPostInput').toggleClass(
+        'd-none',
+        sourceType != ezyrag.dataSourceTypes.POST
+    );
+    $('#chunkDataProductInput').toggleClass(
+        'd-none',
+        sourceType != ezyrag.dataSourceTypes.PRODUCT
+    );
+    $('#chunkDataMediaInput').toggleClass(
+        'd-none',
+        sourceType != ezyrag.dataSourceTypes.MEDIA
+    );
+    $('#chunkDataTextInput').toggleClass(
+        'd-none',
+        sourceType == ezyrag.dataSourceTypes.POST ||
+            sourceType == ezyrag.dataSourceTypes.PRODUCT ||
+            sourceType == ezyrag.dataSourceTypes.MEDIA
+    );
+    $('#chunkDataSourceIdInput').toggleClass(
+        'd-none',
+        sourceType != ezyrag.dataSourceTypes.POST &&
+            sourceType != ezyrag.dataSourceTypes.PRODUCT &&
+            sourceType != ezyrag.dataSourceTypes.MEDIA
+    );
+}
+
+ezyrag.showChunkDataMediaModal = function() {
+    ezyadmin
+        .showMediaModal('chunkDataMedia')
+        .onMediaSelected(function(media) {
+            if (media) {
+                var displayName = media.originalName || media.title || media.name || '';
+                $('#chunkDataMediaId').val(
+                    displayName
+                        ? displayName + '<' + media.id + '>'
+                        : media.id
+                );
+            }
+            ezyadmin.closeMediaModal();
+        });
+}
+
+ezyrag.onKeyDownToChunkData = function() {
+    if(event.key === 'Enter') {
+        ezyrag.chunkTextData();
+    }
+}
+
+ezyrag.chunkTextData = function() {
+    var formData = ezyadmin.formDataToObject('chunkTextDataForm');
+    if (formData.sourceType == ezyrag.dataSourceTypes.POST) {
+        formData.sourceId = ezyrag.getChunkDataAutocompleteId('chunkDataPostId');
+    } else if (formData.sourceType == ezyrag.dataSourceTypes.PRODUCT) {
+        formData.sourceId = ezyrag.getChunkDataAutocompleteId('chunkDataProductId');
+    } else if (formData.sourceType == ezyrag.dataSourceTypes.MEDIA) {
+        formData.sourceId = ezyrag.getChunkDataMediaId();
+    }
+    delete formData.postId;
+    delete formData.productId;
+    delete formData.mediaId;
+    ezyrag.chunkData(formData);
+}
+
+ezyrag.getChunkDataAutocompleteId = function(inputId) {
+    var value = $('#' + inputId).val();
+    if (!value) {
+        return 0;
+    }
+    var from = value.lastIndexOf('<');
+    var to = value.lastIndexOf('>');
+    return from >= 0 && to > from
+        ? value.substring(from + 1, to)
+        : value;
+}
+
+ezyrag.getChunkDataMediaId = function() {
+    var value = $('#chunkDataMediaId').val();
+    if (!value) {
+        return 0;
+    }
+    var from = value.lastIndexOf('<');
+    var to = value.lastIndexOf('>');
+    return from >= 0 && to > from
+        ? value.substring(from + 1, to)
+        : value;
+}
+
+$(document).ready(function() {
+    ezyarticle.registerPostTitleAutocomplete('chunkDataPostId');
+    ecommerce.registerProductIdAutocomplete('chunkDataProductId');
+    ezyrag.onChunkDataSourceTypeChanged();
+});
+</script>
+</body>
+</html>

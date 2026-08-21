@@ -24,16 +24,21 @@
 <head>
     <script>
         const ezyrag = {};
+        var ezyarticle = ezyarticle || {};
+        var ecommerce = ecommerce || {};
     </script>
 </head>
 <body>
 <div layout:fragment="content" class="row">
-    <th:block th:replace="~{ezyrag/chunk/chunk-text-data :: content}" />
+    <th:block th:replace="~{ezyrag/chunk/chunk-data :: content}" />
     <th:block th:replace="~{ezyrag/chunk/chunk-list :: content}" />
 </div>
 <th:block layout:fragment="scripts">
+    <th:block th:replace="~{scripts/suggestion :: input}" />
+    <th:block th:replace="~{ezyarticle/scripts/suggestion :: post-title}" />
+    <th:block th:replace="~{ecommerce/scripts/suggestion :: product}" />
     <th:block th:replace="~{ezyrag/chunk/scripts :: chunk-data}" />
-    <th:block th:replace="~{ezyrag/chunk/chunk-text-data :: scripts}" />
+    <th:block th:replace="~{ezyrag/chunk/chunk-data :: scripts}" />
     <th:block th:replace="~{ezyrag/chunk/chunk-list :: scripts}" />
 </th:block>
 </body>

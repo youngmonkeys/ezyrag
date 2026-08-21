@@ -22,6 +22,7 @@ import com.tvd12.ezyhttp.server.core.annotation.Controller;
 import com.tvd12.ezyhttp.server.core.annotation.DoGet;
 import com.tvd12.ezyhttp.server.core.view.View;
 import lombok.AllArgsConstructor;
+import org.youngmonkeys.ezyrag.admin.loader.AdminRagDataLoaderManager;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 
 @Controller
@@ -30,6 +31,7 @@ import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 @AllArgsConstructor
 public class AdminDataChunkController {
 
+    private final AdminRagDataLoaderManager dataLoaderManager;
     private final AdminEzyRagSettingService ezyRagSettingService;
 
     @DoGet("/data-chunks")
@@ -39,6 +41,10 @@ public class AdminDataChunkController {
             .addVariable(
                 "defaultEmbeddingServiceName",
                 ezyRagSettingService.getEmbeddingService()
+            )
+            .addVariable(
+                "dataSourceTypes",
+                dataLoaderManager.getSortedSourceTypes()
             )
             .build();
     }
