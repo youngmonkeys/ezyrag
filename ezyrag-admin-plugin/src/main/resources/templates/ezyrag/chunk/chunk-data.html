@@ -33,7 +33,7 @@
                     </label>
                     <select name="sourceType" id="chunkDataSourceType"
                             class="form-control"
-                            onchange="ezyrag.onChunkDataSourceTypeChanged();">
+                            onchange="ezyrag.onChunkDataSourceTypeChanged(true);">
                         <option th:each="dataSourceType : ${dataSourceTypes}"
                                 th:value="${dataSourceType}">
                             [[#{${dataSourceType.toLowerCase()}}]]
@@ -112,9 +112,9 @@
 </th:block>
 <script th:fragment="scripts">
 ezyrag.dataSourceTypes = {
-    MEDIA: 'media',
-    POST: 'post',
-    PRODUCT: 'product',
+    MEDIA: 'ezy_medias',
+    POST: 'ezyarticle_posts',
+    PRODUCT: 'ecommerce_products',
     TEXT: 'TEXT'
 };
 
@@ -122,32 +122,54 @@ ezyrag.getChunkDataSourceType = function() {
     return $('#chunkDataSourceType').val();
 }
 
-ezyrag.onChunkDataSourceTypeChanged = function() {
+ezyrag.onChunkDataSourceTypeChanged = function(openMediaModal) {
     var sourceType = ezyrag.getChunkDataSourceType();
     $('#chunkDataPostInput').toggleClass(
         'd-none',
-        sourceType != ezyrag.dataSourceTypes.POST
+        !ezyrag.isChunkDataPostSourceType(sourceType)
     );
     $('#chunkDataProductInput').toggleClass(
         'd-none',
-        sourceType != ezyrag.dataSourceTypes.PRODUCT
+        !ezyrag.isChunkDataProductSourceType(sourceType)
     );
     $('#chunkDataMediaInput').toggleClass(
         'd-none',
-        sourceType != ezyrag.dataSourceTypes.MEDIA
+        !ezyrag.isChunkDataMediaSourceType(sourceType)
     );
+    var hasVisibleSourceId =
+        ezyrag.isChunkDataPostSourceType(sourceType) ||
+        ezyrag.isChunkDataProductSourceType(sourceType) ||
+        ezyrag.isChunkDataMediaSourceType(sourceType);
+    var isMediaSource = ezyrag.isChunkDataMediaSourceType(sourceType);
     $('#chunkDataTextInput').toggleClass(
         'd-none',
-        sourceType == ezyrag.dataSourceTypes.POST ||
-            sourceType == ezyrag.dataSourceTypes.PRODUCT ||
-            sourceType == ezyrag.dataSourceTypes.MEDIA
+        hasVisibleSourceId || isMediaSource
     );
     $('#chunkDataSourceIdInput').toggleClass(
         'd-none',
-        sourceType != ezyrag.dataSourceTypes.POST &&
-            sourceType != ezyrag.dataSourceTypes.PRODUCT &&
-            sourceType != ezyrag.dataSourceTypes.MEDIA
+        !hasVisibleSourceId
     );
+    if (openMediaModal && isMediaSource) {
+        ezyrag.showChunkDataMediaModal();
+    }
+}
+
+ezyrag.isChunkDataPostSourceType = function(sourceType) {
+    sourceType = (sourceType || '').toLowerCase();
+    return sourceType == ezyrag.dataSourceTypes.POST ||
+        sourceType.indexOf('post') >= 0;
+}
+
+ezyrag.isChunkDataProductSourceType = function(sourceType) {
+    sourceType = (sourceType || '').toLowerCase();
+    return sourceType == ezyrag.dataSourceTypes.PRODUCT ||
+        sourceType.indexOf('product') >= 0;
+}
+
+ezyrag.isChunkDataMediaSourceType = function(sourceType) {
+    sourceType = (sourceType || '').toLowerCase();
+    return sourceType == ezyrag.dataSourceTypes.MEDIA ||
+        sourceType.indexOf('media') >= 0;
 }
 
 ezyrag.showChunkDataMediaModal = function() {
@@ -155,15 +177,20 @@ ezyrag.showChunkDataMediaModal = function() {
         .showMediaModal('chunkDataMedia')
         .onMediaSelected(function(media) {
             if (media) {
-                var displayName = media.originalName || media.title || media.name || '';
-                $('#chunkDataMediaId').val(
-                    displayName
-                        ? displayName + '<' + media.id + '>'
-                        : media.id
-                );
+                ezyrag.selectedChunkDataMedia = media;
+                ezyrag.setChunkDataMediaInput(media);
             }
             ezyadmin.closeMediaModal();
         });
+}
+
+ezyrag.setChunkDataMediaInput = function(media) {
+    var displayName = media.originalName || media.title || media.name || '';
+    $('#chunkDataMediaId').val(
+        displayName
+            ? displayName + '<' + media.id + '>'
+            : media.id
+    );
 }
 
 ezyrag.onKeyDownToChunkData = function() {
@@ -174,11 +201,11 @@ ezyrag.onKeyDownToChunkData = function() {
 
 ezyrag.chunkTextData = function() {
     var formData = ezyadmin.formDataToObject('chunkTextDataForm');
-    if (formData.sourceType == ezyrag.dataSourceTypes.POST) {
+    if (ezyrag.isChunkDataPostSourceType(formData.sourceType)) {
         formData.sourceId = ezyrag.getChunkDataAutocompleteId('chunkDataPostId');
-    } else if (formData.sourceType == ezyrag.dataSourceTypes.PRODUCT) {
+    } else if (ezyrag.isChunkDataProductSourceType(formData.sourceType)) {
         formData.sourceId = ezyrag.getChunkDataAutocompleteId('chunkDataProductId');
-    } else if (formData.sourceType == ezyrag.dataSourceTypes.MEDIA) {
+    } else if (ezyrag.isChunkDataMediaSourceType(formData.sourceType)) {
         formData.sourceId = ezyrag.getChunkDataMediaId();
     }
     delete formData.postId;

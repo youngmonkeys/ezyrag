@@ -20,6 +20,7 @@ import com.tvd12.ezyfox.util.EzyFileUtil;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyplatform.entity.Media;
+import org.youngmonkeys.ezyplatform.entity.MediaType;
 import org.youngmonkeys.ezyplatform.manager.FileSystemManager;
 import org.youngmonkeys.ezyplatform.repo.MediaRepository;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
@@ -111,7 +112,7 @@ public class RagMediaDataLoader implements RagDataLoader {
                     return null;
                 }
                 File mediaFile = fileSystemManager.getMediaFilePath(
-                    media.getType(),
+                    MediaType.ofName(media.getType()).getFolder(),
                     media.getName()
                 );
                 if (!mediaFile.isFile()) {
