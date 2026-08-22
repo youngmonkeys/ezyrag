@@ -142,7 +142,7 @@ public class EzyRagSettingService {
     public String getVectorDatabaseService() {
         return settingService.getTextValue(
             SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
-            RagVectorDatabaseServiceName.QDRANT.toString()
+            RagVectorDatabaseServiceName.EZYVECTOR.toString()
         );
     }
 

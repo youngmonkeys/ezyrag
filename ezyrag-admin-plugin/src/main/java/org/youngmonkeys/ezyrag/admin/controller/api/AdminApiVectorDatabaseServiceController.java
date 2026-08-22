@@ -27,11 +27,11 @@ import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
-import org.youngmonkeys.ezyrag.admin.request.AdminSaveMySqlConnectionPropertiesRequest;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyVectorConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
-import org.youngmonkeys.ezyrag.admin.vd.AdminRagMySqlVectorDatabaseService;
+import org.youngmonkeys.ezyrag.admin.vd.AdminRagEzyVectorVectorDatabaseService;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 
 @Api
@@ -43,7 +43,7 @@ public class AdminApiVectorDatabaseServiceController {
 
     private final AdminEzyRagSettingService ezyRagSettingService;
     private final AdminRagQdrantVectorDatabaseService qdrantVectorDatabaseService;
-    private final AdminRagMySqlVectorDatabaseService mySqlVectorDatabaseService;
+    private final AdminRagEzyVectorVectorDatabaseService mySqlVectorDatabaseService;
     private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
@@ -76,14 +76,11 @@ public class AdminApiVectorDatabaseServiceController {
     @Description("Update a vector database service's connection settings")
     @DoPut("/vector-database-services/MYSQL/connection-properties")
     public ResponseEntity vectorDatabaseServicesMySqlPut(
-        @RequestBody AdminSaveMySqlConnectionPropertiesRequest request
+        @RequestBody AdminSaveEzyVectorConnectionPropertiesRequest request
     ) throws Exception {
         vectorDatabaseServiceValidator.validate(request);
-        ezyRagSettingService.setMySqlConnectionProperties(
+        ezyRagSettingService.setEzyVectorConnectionProperties(
             requestToModelConverter.toModel(request)
-        );
-        ezyRagSettingService.setMySqlCollectionName(
-            request.getCollectionName()
         );
         ezyRagSettingService.setMySqlVectorSize(
             request.getVectorSize()

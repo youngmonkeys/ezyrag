@@ -18,7 +18,7 @@ package org.youngmonkeys.ezyrag.constant;
 
 public enum RagVectorDatabaseServiceName {
     QDRANT,
-    MYSQL;
+    EZYVECTOR;
 
     public boolean equalsValue(String value) {
         return toString().equals(value);

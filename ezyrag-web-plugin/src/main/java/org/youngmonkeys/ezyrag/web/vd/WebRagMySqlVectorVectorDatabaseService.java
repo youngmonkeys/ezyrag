@@ -19,13 +19,13 @@ package org.youngmonkeys.ezyrag.web.vd;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyhttp.client.HttpClient;
 import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
-import org.youngmonkeys.ezyrag.vd.RagMySqlHnswVectorDatabaseService;
+import org.youngmonkeys.ezyrag.vd.RagEzyVectorVectorDatabaseService;
 
 @EzySingleton
-public class WebRagMySqlVectorDatabaseService
-    extends RagMySqlHnswVectorDatabaseService {
+public class WebRagMySqlVectorVectorDatabaseService
+    extends RagEzyVectorVectorDatabaseService {
 
-    public WebRagMySqlVectorDatabaseService(
+    public WebRagMySqlVectorVectorDatabaseService(
         HttpClient httpClient,
         WebSettingService settingService
     ) {

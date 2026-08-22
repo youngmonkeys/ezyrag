@@ -14,16 +14,23 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.admin.request;
+package org.youngmonkeys.ezyrag.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AdminSaveMySqlConnectionPropertiesRequest {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class RagEzyVectorConnectionPropertiesModel {
     private String baseUrl;
-    private String accessToken;
+    private String apiKey;
     private String collectionName;
-    private int vectorSize;
 }

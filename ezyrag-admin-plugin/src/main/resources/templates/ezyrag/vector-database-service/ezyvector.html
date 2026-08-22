@@ -47,7 +47,7 @@
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="baseUrl" id="baseUrl"
                            class="form-control" th:placeholder="#{mysql_base_url}"
-                           th:value="${#strings.isEmpty(mySqlConnection.baseUrl) ? 'http://localhost:8080/api/v1' : mySqlConnection.baseUrl}">
+                           th:value="${#strings.isEmpty(ezyVectorConnection.baseUrl) ? 'http://localhost:8080/api/v1' : ezyVectorConnection.baseUrl}">
                     <small class="form-text text-muted">
                         [[#{mysql_base_url_hint}]]
                     </small>
@@ -58,21 +58,21 @@
                 </label>
             </div>
             <div class="form-group row">
-                <label for="accessToken" class="col-md-3 col-form-label">
-                    [[#{mysql_access_token}]] (<span class="text-danger">*</span>)
+                <label for="ezyVectorApiKey" class="col-md-3 col-form-label">
+                    [[#{api_key}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
-                    <input type="password" name="accessToken" id="accessToken"
-                           class="form-control" th:placeholder="#{mysql_access_token}"
+                    <input type="password" name="apiKey" id="ezyVectorApiKey"
+                           class="form-control" th:placeholder="#{api_key}"
                            autocomplete="new-password"
-                           th:value="${mySqlAccessTokenValue}">
+                           th:value="${ezyVectorApiKey}">
                     <small class="form-text text-muted">
                         [[#{access_token_keep_hint}]]
                     </small>
                 </div>
-                <label id="accessTokenErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
-                       for="accessToken">
-                    <i class="far fa-times-circle"></i> <span id="accessTokenError">[[#{invalid}]]</span>
+                <label id="ezyVectorApiKeyErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="ezyVectorApiKey">
+                    <i class="far fa-times-circle"></i> <span id="ezyVectorApiKeyError">[[#{invalid}]]</span>
                 </label>
             </div>
             <div class="form-group row">
@@ -82,7 +82,7 @@
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="collectionName" id="collectionName"
                            class="form-control" th:placeholder="#{mysql_collection_name}"
-                           th:value="${mySqlCollectionName}">
+                           th:value="${#strings.isEmpty(ezyVectorConnection.collectionName) ? 'ezyrag_vector_collection' : qdrantConnection.collectionName}">
                     <small class="form-text text-muted">
                         [[#{mysql_collection_name_hint}]]
                     </small>
@@ -100,7 +100,7 @@
                     <input type="number" name="vectorSize" id="vectorSize"
                            class="form-control" th:placeholder="#{mysql_vector_size}"
                            th:min="${minVectorSize}"
-                           th:value="${mySqlVectorSize}">
+                           th:value="${ezyVectorVectorSize}">
                     <small class="form-text text-muted">
                         [[#{mysql_vector_size_hint}]]
                     </small>

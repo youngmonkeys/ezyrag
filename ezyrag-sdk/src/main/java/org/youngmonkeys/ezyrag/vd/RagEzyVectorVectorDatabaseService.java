@@ -25,7 +25,7 @@ import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import org.youngmonkeys.ezyplatform.service.MutableSettingService;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
-import org.youngmonkeys.ezyrag.model.RagMySqlConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 
@@ -34,48 +34,44 @@ import java.util.List;
 import java.util.Map;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
-import static org.youngmonkeys.ezyplatform.constant.CommonConstants.HEADER_NAME_AUTHORIZATION;
-import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PREFIX_BEARER_TOKEN;
 import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_COLLECTION_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_VECTOR_SIZE;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_COLLECTION_NAME;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_CONNECTION_ACCESS_TOKEN;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_CONNECTION_PROPERTIES;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_MYSQL_VECTOR_SIZE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_VECTOR_SIZE;
 
-public class RagMySqlHnswVectorDatabaseService
+public class RagEzyVectorVectorDatabaseService
     implements RagVectorDatabaseService {
 
     private final HttpClient httpClient;
     private final MutableSettingService settingService;
 
-    public RagMySqlHnswVectorDatabaseService(
+    public RagEzyVectorVectorDatabaseService(
         HttpClient httpClient,
         MutableSettingService settingService
     ) {
         this.httpClient = httpClient;
         this.settingService = settingService;
         settingService.watchLastUpdatedTime(
-            SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+            SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
             () -> settingService.cacheValueIfNotNull(
-                SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
+                SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
                 readConnectionProperties()
             )
         );
     }
 
-    private RagMySqlConnectionPropertiesModel readConnectionProperties() {
-        RagMySqlConnectionPropertiesModel model =
+    private RagEzyVectorConnectionPropertiesModel readConnectionProperties() {
+        RagEzyVectorConnectionPropertiesModel model =
             settingService
                 .getObjectValue(
-                    SETTING_NAME_MYSQL_CONNECTION_PROPERTIES,
-                    RagMySqlConnectionPropertiesModel.class
+                    SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
+                    RagEzyVectorConnectionPropertiesModel.class
                 );
         if (model != null) {
-            model.setAccessToken(
+            model.setApiKey(
                 settingService.getPasswordValue(
-                    SETTING_NAME_MYSQL_CONNECTION_ACCESS_TOKEN
+                    SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY
                 )
             );
         }
@@ -84,17 +80,17 @@ public class RagMySqlHnswVectorDatabaseService
 
     @Override
     public void createCollectionIfAbsent() throws Exception {
-        RagMySqlConnectionPropertiesModel properties =
+        RagEzyVectorConnectionPropertiesModel properties =
             getConnectionProperties();
         httpClient.call(
             new PutRequest()
                 .setURL(
                     getCollectionUrl(
                         properties.getBaseUrl(),
-                        getCollectionName()
+                        properties.getCollectionName()
                     )
                 )
-                .setEntity(requestEntity(properties.getAccessToken(), null))
+                .setEntity(requestEntity(properties.getApiKey(), null))
         );
         refreshMySqlVectorSize(properties);
     }
@@ -103,7 +99,7 @@ public class RagMySqlHnswVectorDatabaseService
     public void upsert(
         List<RagVectorPointModel> points
     ) throws Exception {
-        RagMySqlConnectionPropertiesModel properties =
+        RagEzyVectorConnectionPropertiesModel properties =
             getConnectionProperties();
         List<Map<String, Object>> requestPoints = new ArrayList<>(points.size());
         for (RagVectorPointModel point : points) {
@@ -123,12 +119,12 @@ public class RagMySqlHnswVectorDatabaseService
                 .setURL(
                     getPointsUrl(
                         properties.getBaseUrl(),
-                        getCollectionName()
+                        properties.getCollectionName()
                     )
                 )
                 .setEntity(
                     requestEntity(
-                        properties.getAccessToken(),
+                        properties.getApiKey(),
                         requestBody
                     )
                 )
@@ -141,7 +137,7 @@ public class RagMySqlHnswVectorDatabaseService
         float[] vector,
         int limit
     ) throws Exception {
-        RagMySqlConnectionPropertiesModel properties =
+        RagEzyVectorConnectionPropertiesModel properties =
             getConnectionProperties();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put("vector", vector)
@@ -152,12 +148,12 @@ public class RagMySqlHnswVectorDatabaseService
                 .setURL(
                     getPointsUrl(
                         properties.getBaseUrl(),
-                        getCollectionName()
+                        properties.getCollectionName()
                     ) + "/search"
                 )
                 .setEntity(
                     requestEntity(
-                        properties.getAccessToken(),
+                        properties.getApiKey(),
                         requestBody
                     )
                 )
@@ -179,16 +175,13 @@ public class RagMySqlHnswVectorDatabaseService
     }
 
     private RequestEntity requestEntity(
-        String accessToken,
+        String apiKey,
         Map<String, Object> body
     ) {
         RequestEntity.Builder builder = RequestEntity.builder()
             .contentType(ContentTypes.APPLICATION_JSON);
-        if (!isBlank(accessToken)) {
-            builder.header(
-                HEADER_NAME_AUTHORIZATION,
-                PREFIX_BEARER_TOKEN + accessToken
-            );
+        if (!isBlank(apiKey)) {
+            builder.header("api-key", apiKey);
         }
         if (body != null) {
             builder.body(body);
@@ -212,17 +205,17 @@ public class RagMySqlHnswVectorDatabaseService
 
     @SuppressWarnings("unchecked")
     private void refreshMySqlVectorSize(
-        RagMySqlConnectionPropertiesModel properties
+        RagEzyVectorConnectionPropertiesModel properties
     ) throws Exception {
         Map<String, Object> responseBody = httpClient.call(
             new GetRequest()
                 .setURL(
                     getCollectionUrl(
                         properties.getBaseUrl(),
-                        getCollectionName()
+                        properties.getCollectionName()
                     )
                 )
-                .setEntity(requestEntity(properties.getAccessToken(), null))
+                .setEntity(requestEntity(properties.getApiKey(), null))
         );
         Map<String, Object> result =
             (Map<String, Object>) responseBody.get("result");
@@ -243,7 +236,7 @@ public class RagMySqlHnswVectorDatabaseService
             return;
         }
         settingService.cacheValueIfNotNull(
-            SETTING_NAME_MYSQL_VECTOR_SIZE,
+            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
             vectorSize
         );
     }
@@ -261,21 +254,14 @@ public class RagMySqlHnswVectorDatabaseService
     @Override
     public int getVectorSize() {
         return settingService.getCachedValue(
-            SETTING_NAME_MYSQL_VECTOR_SIZE,
+            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
             DEFAULT_MYSQL_VECTOR_SIZE
         );
     }
 
-    public String getCollectionName() {
-        return settingService.getTextValue(
-            SETTING_NAME_MYSQL_COLLECTION_NAME,
-            DEFAULT_MYSQL_COLLECTION_NAME
-        );
-    }
-
-    private RagMySqlConnectionPropertiesModel getConnectionProperties() {
-        RagMySqlConnectionPropertiesModel properties = settingService
-            .getCachedValue(SETTING_NAME_MYSQL_CONNECTION_PROPERTIES);
+    private RagEzyVectorConnectionPropertiesModel getConnectionProperties() {
+        RagEzyVectorConnectionPropertiesModel properties = settingService
+            .getCachedValue(SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES);
         if (properties == null) {
             throw new IllegalStateException(
                 "You need to setup MySQL vector database connection first"
@@ -286,6 +272,6 @@ public class RagMySqlHnswVectorDatabaseService
 
     @Override
     public String getProviderName() {
-        return RagVectorDatabaseServiceName.MYSQL.toString();
+        return RagVectorDatabaseServiceName.EZYVECTOR.toString();
     }
 }

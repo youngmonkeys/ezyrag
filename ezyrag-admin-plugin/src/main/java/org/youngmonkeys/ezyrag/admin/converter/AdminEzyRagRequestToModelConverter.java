@@ -18,10 +18,10 @@ package org.youngmonkeys.ezyrag.admin.converter;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
-import org.youngmonkeys.ezyrag.admin.request.AdminSaveMySqlConnectionPropertiesRequest;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyVectorConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
-import org.youngmonkeys.ezyrag.model.RagMySqlConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 
 @EzySingleton
@@ -38,13 +38,14 @@ public class AdminEzyRagRequestToModelConverter {
             .build();
     }
 
-    public RagMySqlConnectionPropertiesModel toModel(
-        AdminSaveMySqlConnectionPropertiesRequest request
+    public RagEzyVectorConnectionPropertiesModel toModel(
+        AdminSaveEzyVectorConnectionPropertiesRequest request
     ) {
-        return RagMySqlConnectionPropertiesModel
+        return RagEzyVectorConnectionPropertiesModel
             .builder()
             .baseUrl(request.getBaseUrl())
-            .accessToken(request.getAccessToken())
+            .apiKey(request.getApiKey())
+            .collectionName(request.getCollectionName())
             .build();
     }
 

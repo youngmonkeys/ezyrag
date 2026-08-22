@@ -39,9 +39,6 @@
         <ezylogin.version>0.3.5</ezylogin.version>
         <ezymail.version>0.2.4</ezymail.version>
         <ezysupport.version>0.5.0</ezysupport.version>
-        <facebook.client.version>2022.3.1</facebook.client.version>
-        <google.apis.version>v2-rev157-1.25.0</google.apis.version>
-        <google.client.version>1.33.2</google.client.version>
         <graphql.version>0.2.8</graphql.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <jsoup.version>1.18.3</jsoup.version>

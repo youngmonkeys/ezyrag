@@ -22,8 +22,6 @@ public final class EzyRagConstants {
         "text-embedding-3-small";
     public static final int DEFAULT_QDRANT_VECTOR_SIZE = 384;
     public static final int DEFAULT_MYSQL_VECTOR_SIZE = 384;
-    public static final String DEFAULT_MYSQL_COLLECTION_NAME = "default";
-    public static final String DEFAULT_VECTOR_DATA_DIR = "data/ezyvector";
 
     public static final String SETTING_NAME_OPENAI_API_KEY =
         "ezyrag_openai_api_key";
@@ -35,6 +33,12 @@ public final class EzyRagConstants {
         "ezyrag_qdrant_connection_api_key";
     public static final String SETTING_NAME_QDRANT_VECTOR_SIZE =
         "ezyrag_qdrant_vector_size";
+    public static final String SETTING_NAME_EZY_VECTOR_VECTOR_SIZE =
+        "ezyrag_mysql_vector_size";
+    public static final String SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY =
+        "ezyrag_ezy_vector_connection_api_key";
+    public static final String SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES =
+        "ezyrag_ezy_vector_connection_properties";
     public static final String SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME =
         "ezyrag_knowledge_data_builder_name";
     public static final String SETTING_NAME_DATA_CHUNKER_NAME =
@@ -45,16 +49,6 @@ public final class EzyRagConstants {
         "ezyrag_data_retriever_name";
     public static final String SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME =
         "ezyrag_vector_database_service_name";
-    public static final String SETTING_NAME_MYSQL_COLLECTION_NAME =
-        "ezyrag_mysql_collection_name";
-    public static final String SETTING_NAME_MYSQL_VECTOR_SIZE =
-        "ezyrag_mysql_vector_size";
-    public static final String SETTING_NAME_MYSQL_CONNECTION_ACCESS_TOKEN =
-        "ezyrag_mysql_connection_access_token";
-    public static final String SETTING_NAME_MYSQL_CONNECTION_PROPERTIES =
-        "ezyrag_mysql_connection_properties";
-    public static final String SETTING_NAME_VECTOR_DATA_DIR =
-        "ezyrag_vector_data_dir";
 
     public static final String META_KEY_TITLE = "title";
     public static final String META_KEY_SLUG = "slug";

@@ -59,11 +59,11 @@
             </div>
             <div class="form-group row">
                 <label for="apiKey" class="col-md-3 col-form-label">
-                    [[#{qdrant_api_key}]] (<span class="text-danger">*</span>)
+                    [[#{api_key}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
                     <input type="password" name="apiKey" id="apiKey"
-                           class="form-control" th:placeholder="#{qdrant_api_key}"
+                           class="form-control" th:placeholder="#{api_key}"
                            autocomplete="new-password"
                            th:value="${qdrantApiKeyValue}">
                     <small class="form-text text-muted">
