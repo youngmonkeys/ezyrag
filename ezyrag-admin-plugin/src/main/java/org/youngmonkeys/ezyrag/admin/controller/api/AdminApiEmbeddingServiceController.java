@@ -45,6 +45,16 @@ public class AdminApiEmbeddingServiceController {
     private final AdminRagEmbeddingServiceManager embeddingServiceManager;
     private final AdminRagEmbeddingServiceValidator embeddingServiceValidator;
 
+    @Description("Set an embedding service as default")
+    @DoPut("/embedding-services/{serviceName}/set-as-default")
+    public ResponseEntity embeddingServicesServiceNameSetAsDefaultPut(
+        @PathVariable String serviceName
+    ) {
+        embeddingServiceValidator.validateServiceName(serviceName);
+        ezyRagSettingService.setEmbeddingServiceName(serviceName);
+        return ResponseEntity.noContent();
+    }
+
     @Description("Update an embedding service's settings")
     @DoPut("/embedding-services/{serviceName}/settings")
     public ResponseEntity embeddingServicesServiceNameSettingsPut(

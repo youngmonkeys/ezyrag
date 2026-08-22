@@ -26,7 +26,12 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
+import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
@@ -64,11 +69,60 @@ public class AdminVectorDatabaseServiceController {
         @PathVariable String serviceName
     ) {
         vectorDatabaseServiceValidator.validateServiceName(serviceName);
+        View.Builder viewBuilder = newViewBuilder()
+            .template(
+                "ezyrag/vector-database-service/" +
+                    serviceName.toLowerCase()
+            )
+            .addVariable("vectorDatabaseServiceName", serviceName)
+            .addVariable(
+                "qdrantVectorSize",
+                ezyRagSettingService.getQdrantVectorSize()
+            )
+            .addVariable("minVectorSize", MIN_VECTOR_SIZE);
+        Map<String, Runnable> viewDecoratorByServiceName = new HashMap<>();
+        viewDecoratorByServiceName.put(
+            RagVectorDatabaseServiceName.EZYVECTOR.toString(),
+            () -> decorateEzyVectorView(viewBuilder)
+        );
+        viewDecoratorByServiceName.put(
+            RagVectorDatabaseServiceName.QDRANT.toString(),
+            () -> decorateQdrantView(viewBuilder)
+        );
+        Runnable decorator = viewDecoratorByServiceName.get(serviceName);
+        if (decorator != null) {
+            decorator.run();
+        }
+        return viewBuilder.build();
+    }
+
+    private void decorateEzyVectorView(
+        View.Builder viewBuilder
+    ) {
+        RagEzyVectorConnectionPropertiesModel ezyVectorConnectionProperties =
+            ezyRagSettingService.getEzyVectorConnectionPropertiesInDb();
+        viewBuilder.addVariable(
+                "ezyVectorConnection",
+                ezyVectorConnectionProperties
+            )
+            .addVariable(
+                "ezyVectorApiKey",
+                isNotBlank(ezyVectorConnectionProperties.getApiKey())
+                    ? DEFAULT_HIDDEN_PASSWORD
+                    : EMPTY_STRING
+            )
+            .addVariable(
+                "ezyVectorVectorSize",
+                ezyRagSettingService.getEzyVectorVectorSize()
+            );
+    }
+
+    private void decorateQdrantView(
+        View.Builder viewBuilder
+    ) {
         RagQdrantConnectionPropertiesModel qdrantConnectionProperties =
             ezyRagSettingService.getConnectionPropertiesInDb();
-        return newViewBuilder()
-            .template("ezyrag/vector-database-service/details")
-            .addVariable("vectorDatabaseServiceName", serviceName)
+        viewBuilder
             .addVariable(
                 "qdrantConnection",
                 qdrantConnectionProperties
@@ -82,9 +136,7 @@ public class AdminVectorDatabaseServiceController {
             .addVariable(
                 "qdrantVectorSize",
                 ezyRagSettingService.getQdrantVectorSize()
-            )
-            .addVariable("minVectorSize", MIN_VECTOR_SIZE)
-            .build();
+            );
     }
 
     private View.Builder newViewBuilder() {

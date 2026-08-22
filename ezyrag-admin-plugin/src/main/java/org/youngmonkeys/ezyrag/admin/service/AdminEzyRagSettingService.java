@@ -19,18 +19,25 @@ package org.youngmonkeys.ezyrag.admin.service;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.server.core.annotation.Service;
 import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
+import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDDEN_PASSWORD;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
 
 @Service
 public class AdminEzyRagSettingService extends EzyRagSettingService {
@@ -85,6 +92,20 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         );
     }
 
+    public void setEmbeddingServiceName(String name) {
+        setTextValue(
+            SETTING_NAME_EMBEDDING_SERVICE_NAME,
+            name
+        );
+    }
+
+    public void setVectorDatabaseServiceName(String name) {
+        setTextValue(
+            SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
+            name
+        );
+    }
+
     public void setQdrantConnectionProperties(
         RagQdrantConnectionPropertiesModel model
     ) {
@@ -124,6 +145,74 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         settingService.cacheValueIfNotNull(
             SETTING_NAME_QDRANT_VECTOR_SIZE,
             vectorSize
+        );
+    }
+
+    public void setEzyVectorConnectionProperties(
+        RagEzyVectorConnectionPropertiesModel model
+    ) {
+        settingService.setObjectValue(
+            SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
+            EzyMapBuilder.mapBuilder()
+                .put("baseUrl", model.getBaseUrl())
+                .put("collectionName", model.getCollectionName())
+                .toMap()
+        );
+        String apiKey = model.getApiKey();
+        if (apiKey.matches(PATTERN_HIDDEN_PASSWORD)) {
+            apiKey = settingService.getPasswordValue(
+                SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY
+            );
+        } else {
+            settingService.setPasswordValue(
+                SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY,
+                apiKey
+            );
+        }
+        model.setApiKey(apiKey);
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
+            model
+        );
+        settingService.setLastUpdateTime(
+            SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES
+        );
+    }
+
+    public void setMySqlVectorSize(int vectorSize) {
+        settingService.setIntValue(
+            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
+            vectorSize
+        );
+        settingService.cacheValueIfNotNull(
+            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
+            vectorSize
+        );
+    }
+
+    public RagEzyVectorConnectionPropertiesModel getEzyVectorConnectionPropertiesInDb() {
+        RagEzyVectorConnectionPropertiesModel model =
+            settingService
+                .getObjectValue(
+                    SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
+                    RagEzyVectorConnectionPropertiesModel.class
+                );
+        if (model != null) {
+            model.setApiKey(
+                settingService.getPasswordValue(
+                    SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY
+                )
+            );
+        }
+        return model != null
+            ? model
+            : new RagEzyVectorConnectionPropertiesModel();
+    }
+
+    public int getEzyVectorVectorSize() {
+        return settingService.getIntValue(
+            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
+            DEFAULT_VECTOR_SIZE
         );
     }
 

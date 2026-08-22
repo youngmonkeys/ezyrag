@@ -35,9 +35,8 @@ public class AdminRagEmbeddingServiceValidator {
     private final AdminRagEmbeddingServiceManager embeddingServiceManager;
 
     public void validateServiceName(String serviceName) {
-        if (
-            embeddingServiceManager
-                .getEmbeddingServiceByName(serviceName) == null
+        if (embeddingServiceManager
+            .getEmbeddingServiceByName(serviceName) == null
         ) {
             throw new HttpBadRequestException(
                 singletonMap("serviceName", "invalid")

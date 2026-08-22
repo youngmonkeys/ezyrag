@@ -25,7 +25,7 @@ import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import org.youngmonkeys.ezyplatform.service.MutableSettingService;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
-import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
 
@@ -36,42 +36,42 @@ import java.util.Map;
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_SIZE;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_VECTOR_SIZE;
 
-public class RagQdrantVectorDatabaseService
+public class RagEzyVectorVectorDatabaseService
     implements RagVectorDatabaseService {
 
     private final HttpClient httpClient;
     private final MutableSettingService settingService;
 
-    public RagQdrantVectorDatabaseService(
+    public RagEzyVectorVectorDatabaseService(
         HttpClient httpClient,
         MutableSettingService settingService
     ) {
         this.httpClient = httpClient;
         this.settingService = settingService;
         settingService.watchLastUpdatedTime(
-            SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+            SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
             () -> settingService.cacheValueIfNotNull(
-                SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
+                SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
                 readConnectionProperties()
             )
         );
     }
 
-    private RagQdrantConnectionPropertiesModel readConnectionProperties() {
-        RagQdrantConnectionPropertiesModel model =
+    private RagEzyVectorConnectionPropertiesModel readConnectionProperties() {
+        RagEzyVectorConnectionPropertiesModel model =
             settingService
                 .getObjectValue(
-                    SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
-                    RagQdrantConnectionPropertiesModel.class
+                    SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
+                    RagEzyVectorConnectionPropertiesModel.class
                 );
         if (model != null) {
             model.setApiKey(
                 settingService.getPasswordValue(
-                    SETTING_NAME_QDRANT_CONNECTION_API_KEY
+                    SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY
                 )
             );
         }
@@ -80,7 +80,7 @@ public class RagQdrantVectorDatabaseService
 
     @Override
     public void createCollectionIfAbsent() throws Exception {
-        RagQdrantConnectionPropertiesModel properties =
+        RagEzyVectorConnectionPropertiesModel properties =
             getConnectionProperties();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put(
@@ -106,14 +106,14 @@ public class RagQdrantVectorDatabaseService
                     )
                 )
         );
-        refreshQdrantVectorSize(properties);
+        refreshEzyVectorVectorSize(properties);
     }
 
     @Override
     public void upsert(
         List<RagVectorPointModel> points
     ) throws Exception {
-        RagQdrantConnectionPropertiesModel properties =
+        RagEzyVectorConnectionPropertiesModel properties =
             getConnectionProperties();
         List<Map<String, Object>> requestPoints = new ArrayList<>(points.size());
         for (RagVectorPointModel point : points) {
@@ -134,7 +134,7 @@ public class RagQdrantVectorDatabaseService
                     getPointsUrl(
                         properties.getBaseUrl(),
                         properties.getCollectionName()
-                    ) + "?wait=true"
+                    )
                 )
                 .setEntity(
                     requestEntity(
@@ -151,12 +151,11 @@ public class RagQdrantVectorDatabaseService
         float[] vector,
         int limit
     ) throws Exception {
-        RagQdrantConnectionPropertiesModel properties =
+        RagEzyVectorConnectionPropertiesModel properties =
             getConnectionProperties();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put("vector", vector)
             .put("limit", limit)
-            .put("with_payload", true)
             .toMap();
         Map<String, Object> responseBody = httpClient.call(
             new PostRequest()
@@ -174,8 +173,7 @@ public class RagQdrantVectorDatabaseService
                 )
         );
         List<Map<String, Object>> result =
-            (List<Map<String, Object>>) responseBody
-                .get("result");
+            (List<Map<String, Object>>) responseBody.get("result");
         List<RagVectorSearchResultModel> searchResults =
             new ArrayList<>(result.size());
         for (Map<String, Object> point : result) {
@@ -220,8 +218,8 @@ public class RagQdrantVectorDatabaseService
     }
 
     @SuppressWarnings("unchecked")
-    private void refreshQdrantVectorSize(
-        RagQdrantConnectionPropertiesModel properties
+    private void refreshEzyVectorVectorSize(
+        RagEzyVectorConnectionPropertiesModel properties
     ) throws Exception {
         Map<String, Object> responseBody = httpClient.call(
             new GetRequest()
@@ -231,12 +229,7 @@ public class RagQdrantVectorDatabaseService
                         properties.getCollectionName()
                     )
                 )
-                .setEntity(
-                    requestEntity(
-                        properties.getApiKey(),
-                        null
-                    )
-                )
+                .setEntity(requestEntity(properties.getApiKey(), null))
         );
         Map<String, Object> result =
             (Map<String, Object>) responseBody.get("result");
@@ -256,64 +249,50 @@ public class RagQdrantVectorDatabaseService
         if (vectorSize <= 0) {
             return;
         }
-        settingService.setIntValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            vectorSize
-        );
         settingService.cacheValueIfNotNull(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
             vectorSize
         );
     }
 
-    @SuppressWarnings("unchecked")
     private int getVectorSize(Map<String, Object> vectors) {
         if (vectors == null || vectors.isEmpty()) {
             return 0;
         }
         Object size = vectors.get("size");
-        if (size instanceof Number) {
-            return ((Number) size).intValue();
-        }
-        for (Object item : vectors.values()) {
-            if (item instanceof Map) {
-                Object namedVectorSize =
-                    ((Map<String, Object>) item).get("size");
-                if (namedVectorSize instanceof Number) {
-                    return ((Number) namedVectorSize).intValue();
-                }
-            }
-        }
-        return 0;
+        return size instanceof Number
+            ? ((Number) size).intValue()
+            : 0;
     }
 
     @Override
     public int getVectorSize() {
         int size = settingService.getCachedValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
+            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
             0
         );
         if (size <= 0) {
             size = settingService.getIntValue(
-                SETTING_NAME_QDRANT_VECTOR_SIZE,
+                SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
                 DEFAULT_VECTOR_SIZE
             );
         }
         return size;
     }
 
-    private RagQdrantConnectionPropertiesModel getConnectionProperties() {
-        RagQdrantConnectionPropertiesModel properties = settingService
-            .getCachedValue(SETTING_NAME_QDRANT_CONNECTION_PROPERTIES);
+    private RagEzyVectorConnectionPropertiesModel getConnectionProperties() {
+        RagEzyVectorConnectionPropertiesModel properties = settingService
+            .getCachedValue(SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES);
         if (properties == null) {
             throw new IllegalStateException(
-                "You need to setup Qdrant first"
+                "You need to setup MySQL vector database connection first"
             );
         }
         return properties;
     }
 
+    @Override
     public String getProviderName() {
-        return RagVectorDatabaseServiceName.QDRANT.toString();
+        return RagVectorDatabaseServiceName.EZYVECTOR.toString();
     }
 }

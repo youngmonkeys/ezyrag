@@ -14,15 +14,24 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.admin.vd;
 
-public final class EzyRagTableNames {
+import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import com.tvd12.ezyhttp.client.HttpClient;
+import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
+import org.youngmonkeys.ezyrag.vd.RagEzyVectorVectorDatabaseService;
 
-    public static final String TABLE_NAME_DATA_CHUNK = "ezyrag_data_chunks";
-    public static final String TABLE_NAME_COLLECTION = "ezyrag_collections";
-    public static final String TABLE_NAME_COLLECTION_POINT = "ezyrag_collection_points";
-    public static final String TABLE_NAME_COLLECTION_SEGMENT =
-        "ezyrag_collection_segments";
+@EzySingleton
+public class AdminRagEzyVectorVectorDatabaseService
+    extends RagEzyVectorVectorDatabaseService {
 
-    private EzyRagTableNames() {}
+    public AdminRagEzyVectorVectorDatabaseService(
+        HttpClient httpClient,
+        AdminSettingService settingService
+    ) {
+        super(
+            httpClient,
+            settingService
+        );
+    }
 }

@@ -14,15 +14,23 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.model;
 
-public final class EzyRagTableNames {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    public static final String TABLE_NAME_DATA_CHUNK = "ezyrag_data_chunks";
-    public static final String TABLE_NAME_COLLECTION = "ezyrag_collections";
-    public static final String TABLE_NAME_COLLECTION_POINT = "ezyrag_collection_points";
-    public static final String TABLE_NAME_COLLECTION_SEGMENT =
-        "ezyrag_collection_segments";
-
-    private EzyRagTableNames() {}
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class RagEzyVectorConnectionPropertiesModel {
+    private String baseUrl;
+    private String apiKey;
+    private String collectionName;
 }

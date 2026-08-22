@@ -14,15 +14,16 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.admin.request;
 
-public final class EzyRagTableNames {
+import lombok.Getter;
+import lombok.Setter;
 
-    public static final String TABLE_NAME_DATA_CHUNK = "ezyrag_data_chunks";
-    public static final String TABLE_NAME_COLLECTION = "ezyrag_collections";
-    public static final String TABLE_NAME_COLLECTION_POINT = "ezyrag_collection_points";
-    public static final String TABLE_NAME_COLLECTION_SEGMENT =
-        "ezyrag_collection_segments";
-
-    private EzyRagTableNames() {}
+@Getter
+@Setter
+public class AdminSaveEzyVectorConnectionPropertiesRequest {
+    private String baseUrl;
+    private String apiKey;
+    private String collectionName;
+    private int vectorSize;
 }

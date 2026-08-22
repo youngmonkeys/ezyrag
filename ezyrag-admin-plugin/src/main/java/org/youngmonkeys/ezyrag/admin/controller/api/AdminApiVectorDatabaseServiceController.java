@@ -23,12 +23,15 @@ import com.tvd12.ezyhttp.server.core.annotation.Api;
 import com.tvd12.ezyhttp.server.core.annotation.Authenticated;
 import com.tvd12.ezyhttp.server.core.annotation.Controller;
 import com.tvd12.ezyhttp.server.core.annotation.DoPut;
+import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyVectorConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
+import org.youngmonkeys.ezyrag.admin.vd.AdminRagEzyVectorVectorDatabaseService;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 
 @Api
@@ -40,8 +43,19 @@ public class AdminApiVectorDatabaseServiceController {
 
     private final AdminEzyRagSettingService ezyRagSettingService;
     private final AdminRagQdrantVectorDatabaseService qdrantVectorDatabaseService;
+    private final AdminRagEzyVectorVectorDatabaseService mySqlVectorDatabaseService;
     private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
+
+    @Description("Set a vector database service as default")
+    @DoPut("/vector-database-services/{serviceName}/set-as-default")
+    public ResponseEntity vectorDatabaseServicesServiceNameSetAsDefaultPut(
+        @PathVariable String serviceName
+    ) {
+        vectorDatabaseServiceValidator.validateServiceName(serviceName);
+        ezyRagSettingService.setVectorDatabaseServiceName(serviceName);
+        return ResponseEntity.noContent();
+    }
 
     @Description("Update a vector database service's connection settings")
     @DoPut("/vector-database-services/QDRANT/connection-properties")
@@ -56,6 +70,22 @@ public class AdminApiVectorDatabaseServiceController {
             request.getVectorSize()
         );
         qdrantVectorDatabaseService.createCollectionIfAbsent();
+        return ResponseEntity.noContent();
+    }
+
+    @Description("Update a vector database service's connection settings")
+    @DoPut("/vector-database-services/EZYVECTOR/connection-properties")
+    public ResponseEntity vectorDatabaseServicesMySqlPut(
+        @RequestBody AdminSaveEzyVectorConnectionPropertiesRequest request
+    ) throws Exception {
+        vectorDatabaseServiceValidator.validate(request);
+        ezyRagSettingService.setEzyVectorConnectionProperties(
+            requestToModelConverter.toModel(request)
+        );
+        ezyRagSettingService.setMySqlVectorSize(
+            request.getVectorSize()
+        );
+        mySqlVectorDatabaseService.createCollectionIfAbsent();
         return ResponseEntity.noContent();
     }
 }

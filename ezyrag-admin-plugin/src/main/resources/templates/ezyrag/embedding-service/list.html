@@ -42,9 +42,17 @@
                     </a>
                 </td>
                 <td class="text-center">
-                    <th:block th:if="${embeddingServiceName == defaultEmbeddingServiceName}">
-                        [[#{yes}]]
-                    </th:block>
+                    <button type="button"
+                            th:if="${embeddingServiceName != defaultEmbeddingServiceName}"
+                            class="btn btn-link pt-0"
+                            th:attr="onclick=|ezyrag.setDefaultEmbeddingService('${embeddingServiceName}')|">
+                        [[#{set_as}]]
+                    </button>
+                    <button type="button"
+                            th:if="${embeddingServiceName == defaultEmbeddingServiceName}"
+                            class="btn btn-link text-success pt-0">
+                        [[#{default}]]
+                    </button>
                 </td>
                 <td class="text-center">
                     <a th:href="${'/ezyrag/embedding-services/' + embeddingServiceName}">
@@ -61,6 +69,20 @@
 $(document).ready(() => {
     ezyadmin.createDataTable('embeddingServiceList', 12);
 });
+
+ezyrag.setDefaultEmbeddingService = function(serviceName) {
+    $.ajax({
+        type: 'PUT',
+        url: `/ezyrag/api/v1/embedding-services/${serviceName}/set-as-default`,
+        success: function () {
+            window.location = '/ezyrag/embedding-services'
+                + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+        },
+        error: function (e) {
+            ezyadmin.processGetApiErrors(e);
+        }
+    });
+}
 </script>
 </body>
 </html>

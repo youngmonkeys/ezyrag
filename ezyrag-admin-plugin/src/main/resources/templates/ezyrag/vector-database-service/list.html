@@ -21,6 +21,11 @@
         xmlns:th="http://www.thymeleaf.org"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
         layout:decorate="~{ezyadmin}">
+<head>
+    <script>
+        var ezyrag = {};
+    </script>
+</head>
 <body>
 <div layout:fragment="content" class="row">
     <div class="col-12">
@@ -29,7 +34,7 @@
             <tr>
                 <th class="text-center pl-2p5">#</th>
                 <th>[[#{name}]]</th>
-                <th class="text-center">[[#{active}]]</th>
+                <th class="text-center">[[#{default}]]</th>
                 <th class="text-center">[[#{actions}]]</th>
             </tr>
             </thead>
@@ -42,9 +47,17 @@
                     </a>
                 </td>
                 <td class="text-center">
-                    <th:block th:if="${vectorDatabaseServiceName == defaultVectorDatabaseServiceName}">
-                        [[#{yes}]]
-                    </th:block>
+                    <button type="button"
+                            th:if="${vectorDatabaseServiceName != defaultVectorDatabaseServiceName}"
+                            class="btn btn-link pt-0"
+                            th:attr="onclick=|ezyrag.setDefaultVectorDatabaseService('${vectorDatabaseServiceName}')|">
+                        [[#{set_as}]]
+                    </button>
+                    <button type="button"
+                            th:if="${vectorDatabaseServiceName == defaultVectorDatabaseServiceName}"
+                            class="btn btn-link text-success pt-0">
+                        [[#{default}]]
+                    </button>
                 </td>
                 <td class="text-center">
                     <a th:href="${'/ezyrag/vector-database-services/' + vectorDatabaseServiceName}">
@@ -61,6 +74,20 @@
 $(document).ready(() => {
     ezyadmin.createDataTable('vectorDatabaseServiceList', 12);
 });
+
+ezyrag.setDefaultVectorDatabaseService = function(serviceName) {
+    $.ajax({
+        type: 'PUT',
+        url: `/ezyrag/api/v1/vector-database-services/${serviceName}/set-as-default`,
+        success: function () {
+            window.location = '/ezyrag/vector-database-services'
+                + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+        },
+        error: function (e) {
+            ezyadmin.processGetApiErrors(e);
+        }
+    });
+}
 </script>
 </body>
 </html>
