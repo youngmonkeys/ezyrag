@@ -42,11 +42,11 @@
         <form id="updateVectorDatabaseServiceForm" onsubmit="return false;">
             <div class="form-group row">
                 <label for="baseUrl" class="col-md-3 col-form-label">
-                    [[#{qdrant_base_url}]] (<span class="text-danger">*</span>)
+                    [[#{base_url}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="baseUrl" id="baseUrl"
-                           class="form-control" th:placeholder="#{qdrant_base_url}"
+                           class="form-control" th:placeholder="#{base_url}"
                            th:value="${#strings.isEmpty(qdrantConnection.baseUrl) ? 'http://localhost:6333' : qdrantConnection.baseUrl}">
                     <small class="form-text text-muted">
                         [[#{qdrant_base_url_hint}]]
@@ -77,14 +77,14 @@
             </div>
             <div class="form-group row">
                 <label for="collectionName" class="col-md-3 col-form-label">
-                    [[#{qdrant_collection_name}]] (<span class="text-danger">*</span>)
+                    [[#{collection_name}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="collectionName" id="collectionName"
-                           class="form-control" th:placeholder="#{qdrant_collection_name}"
+                           class="form-control" th:placeholder="#{collection_name}"
                            th:value="${#strings.isEmpty(qdrantConnection.collectionName) ? 'ezyrag_vector_collection' : qdrantConnection.collectionName}">
                     <small class="form-text text-muted">
-                        [[#{qdrant_collection_name_hint}]]
+                        [[#{collection_name_hint}]]
                     </small>
                 </div>
                 <label id="collectionNameErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
@@ -94,15 +94,15 @@
             </div>
             <div class="form-group row">
                 <label for="vectorSize" class="col-md-3 col-form-label">
-                    [[#{qdrant_vector_size}]] (<span class="text-danger">*</span>)
+                    [[#{vector_size}]] (<span class="text-danger">*</span>)
                 </label>
                 <div class="col-lg-7 col-md-6">
                     <input type="number" name="vectorSize" id="vectorSize"
-                           class="form-control" th:placeholder="#{qdrant_vector_size}"
+                           class="form-control" th:placeholder="#{vector_size}"
                            th:min="${minVectorSize}"
                            th:value="${qdrantVectorSize}">
                     <small class="form-text text-muted">
-                        [[#{qdrant_vector_size_hint}]]
+                        [[#{vector_size_hint}]]
                     </small>
                 </div>
                 <label id="vectorSizeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
