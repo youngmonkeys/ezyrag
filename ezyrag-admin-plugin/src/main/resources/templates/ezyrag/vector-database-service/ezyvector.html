@@ -47,7 +47,7 @@
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="baseUrl" id="baseUrl"
                            class="form-control" th:placeholder="#{mysql_base_url}"
-                           th:value="${#strings.isEmpty(ezyVectorConnection.baseUrl) ? 'http://localhost:8080/api/v1' : ezyVectorConnection.baseUrl}">
+                           th:value="${#strings.isEmpty(ezyVectorConnection.baseUrl) ? 'http://localhost:8080/ezyvector' : ezyVectorConnection.baseUrl}">
                     <small class="form-text text-muted">
                         [[#{mysql_base_url_hint}]]
                     </small>

@@ -74,7 +74,7 @@ public class AdminApiVectorDatabaseServiceController {
     }
 
     @Description("Update a vector database service's connection settings")
-    @DoPut("/vector-database-services/MYSQL/connection-properties")
+    @DoPut("/vector-database-services/EZYVECTOR/connection-properties")
     public ResponseEntity vectorDatabaseServicesMySqlPut(
         @RequestBody AdminSaveEzyVectorConnectionPropertiesRequest request
     ) throws Exception {

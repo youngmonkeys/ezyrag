@@ -24,7 +24,7 @@ import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDDEN_PASSWORD;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_VECTOR_SIZE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
@@ -155,6 +155,7 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
             EzyMapBuilder.mapBuilder()
                 .put("baseUrl", model.getBaseUrl())
+                .put("collectionName", model.getCollectionName())
                 .toMap()
         );
         String apiKey = model.getApiKey();
@@ -211,7 +212,7 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
     public int getEzyVectorVectorSize() {
         return settingService.getIntValue(
             SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
-            DEFAULT_MYSQL_VECTOR_SIZE
+            DEFAULT_VECTOR_SIZE
         );
     }
 

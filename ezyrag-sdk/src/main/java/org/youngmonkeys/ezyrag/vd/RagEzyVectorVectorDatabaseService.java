@@ -35,7 +35,7 @@ import java.util.Map;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_MYSQL_VECTOR_SIZE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_VECTOR_SIZE;
@@ -82,6 +82,15 @@ public class RagEzyVectorVectorDatabaseService
     public void createCollectionIfAbsent() throws Exception {
         RagEzyVectorConnectionPropertiesModel properties =
             getConnectionProperties();
+        Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
+            .put(
+                "vectors",
+                EzyMapBuilder.mapBuilder()
+                    .put("size", getVectorSize())
+                    .put("distance", "Cosine")
+                    .toMap()
+            )
+            .toMap();
         httpClient.call(
             new PutRequest()
                 .setURL(
@@ -90,9 +99,14 @@ public class RagEzyVectorVectorDatabaseService
                         properties.getCollectionName()
                     )
                 )
-                .setEntity(requestEntity(properties.getApiKey(), null))
+                .setEntity(
+                    requestEntity(
+                        properties.getApiKey(),
+                        requestBody
+                    )
+                )
         );
-        refreshMySqlVectorSize(properties);
+        refreshEzyVectorVectorSize(properties);
     }
 
     @Override
@@ -204,7 +218,7 @@ public class RagEzyVectorVectorDatabaseService
     }
 
     @SuppressWarnings("unchecked")
-    private void refreshMySqlVectorSize(
+    private void refreshEzyVectorVectorSize(
         RagEzyVectorConnectionPropertiesModel properties
     ) throws Exception {
         Map<String, Object> responseBody = httpClient.call(
@@ -253,10 +267,17 @@ public class RagEzyVectorVectorDatabaseService
 
     @Override
     public int getVectorSize() {
-        return settingService.getCachedValue(
+        int size = settingService.getCachedValue(
             SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
-            DEFAULT_MYSQL_VECTOR_SIZE
+            0
         );
+        if (size <= 0) {
+            size = settingService.getIntValue(
+                SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
+                DEFAULT_VECTOR_SIZE
+            );
+        }
+        return size;
     }
 
     private RagEzyVectorConnectionPropertiesModel getConnectionProperties() {
