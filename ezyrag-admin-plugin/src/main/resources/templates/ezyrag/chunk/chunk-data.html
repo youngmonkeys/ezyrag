@@ -85,18 +85,34 @@
                     </div>
                 </div>
             </div>
-            <div id="chunkDataTextInput" class="form-group row">
-                <label for="chunkTextDataContent" class="col-md-2 col-form-label">
-                    [[#{content}]]
-                </label>
-                <div class="col-md-10">
-                    <label id="contentErrorLabel" class="col-form-label text-danger d-none"
-                           for="chunkTextDataContent">
-                        <i class="far fa-times-circle"></i> <span id="contentError">[[#{invalid}]]</span>
+            <div id="chunkDataTextInput">
+                <div class="form-group row">
+                    <label for="chunkTextDataTitle" class="col-md-2 col-form-label">
+                        [[#{title}]]
                     </label>
-                    <textarea name="data" id="chunkTextDataContent"
-                              class="form-control" th:placeholder="#{content}"
-                              rows="5"></textarea>
+                    <div class="col-md-10">
+                        <label id="titleErrorLabel" class="col-form-label text-danger d-none"
+                               for="chunkTextDataTitle">
+                            <i class="far fa-times-circle"></i> <span id="titleError">[[#{invalid}]]</span>
+                        </label>
+                        <input type="text" name="title" id="chunkTextDataTitle"
+                               class="form-control" th:placeholder="#{title}"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="chunkTextDataContent" class="col-md-2 col-form-label">
+                        [[#{content}]]
+                    </label>
+                    <div class="col-md-10">
+                        <label id="contentErrorLabel" class="col-form-label text-danger d-none"
+                               for="chunkTextDataContent">
+                            <i class="far fa-times-circle"></i> <span id="contentError">[[#{invalid}]]</span>
+                        </label>
+                        <textarea name="data" id="chunkTextDataContent"
+                                  class="form-control" th:placeholder="#{content}"
+                                  rows="5"></textarea>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -173,6 +189,11 @@ ezyrag.isChunkDataMediaSourceType = function(sourceType) {
         sourceType.indexOf('media') >= 0;
 }
 
+ezyrag.isChunkDataTextSourceType = function(sourceType) {
+    sourceType = (sourceType || '').toUpperCase();
+    return sourceType == ezyrag.dataSourceTypes.TEXT;
+}
+
 ezyrag.showChunkDataMediaModal = function() {
     ezyadmin
         .showMediaModal('chunkDataMedia')
@@ -212,6 +233,9 @@ ezyrag.chunkTextData = function() {
     delete formData.postId;
     delete formData.productId;
     delete formData.mediaId;
+    if (!ezyrag.isChunkDataTextSourceType(formData.sourceType)) {
+        delete formData.title;
+    }
     ezyrag.chunkData(formData);
 }
 

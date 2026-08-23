@@ -30,6 +30,7 @@ ezyrag.chunkData = function(formData) {
         success: function () {
             ezyadmin.hideLoadingScreen();
             ezyadmin.hideFormErrors(formData);
+            $('#chunkTextDataTitle').val('');
             $('#chunkTextDataContent').val('');
             ezyrag.fetchDataChunkList();
         },

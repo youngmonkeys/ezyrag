@@ -24,5 +24,6 @@ import lombok.Setter;
 public class AdminChunkDataRequest {
     private String sourceType;
     private long sourceId;
+    private String title;
     private String data;
 }

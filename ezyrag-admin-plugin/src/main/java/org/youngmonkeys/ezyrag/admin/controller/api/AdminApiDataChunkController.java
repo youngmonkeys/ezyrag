@@ -28,10 +28,10 @@ import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import com.tvd12.ezyhttp.server.core.annotation.RequestParam;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.admin.validator.AdminCommonValidator;
+import org.youngmonkeys.ezyplatform.annotation.AdminId;
 import org.youngmonkeys.ezyplatform.model.PaginationModel;
 import org.youngmonkeys.ezyrag.admin.client.AdminEzyRagClient;
 import org.youngmonkeys.ezyrag.admin.controller.service.AdminRagDataChunkControllerService;
-import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
 import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
@@ -53,7 +53,6 @@ public class AdminApiDataChunkController {
     private final AdminEzyRagClient ragClient;
     private final AdminRagDataChunkControllerService dataChunkControllerService;
     private final AdminCommonValidator commonValidator;
-    private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
     @Description("Get the data chunks with pagination")
     @DoGet("/data-chunks")
@@ -86,13 +85,10 @@ public class AdminApiDataChunkController {
 
     @DoPost("/chunk-data")
     public ResponseEntity chunkPost(
+        @AdminId long adminId,
         @RequestBody AdminChunkDataRequest request
     ) throws Exception {
-        ragClient.chunkData(
-            requestToModelConverter.toDataSourceModel(
-                request
-            )
-        );
+        dataChunkControllerService.chunkData(adminId, request);
         return ResponseEntity.noContent();
     }
 
