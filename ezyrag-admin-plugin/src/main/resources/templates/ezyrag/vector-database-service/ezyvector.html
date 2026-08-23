@@ -82,7 +82,7 @@
                 <div class="col-lg-7 col-md-6">
                     <input type="text" name="collectionName" id="collectionName"
                            class="form-control" th:placeholder="#{collection_name}"
-                           th:value="${#strings.isEmpty(ezyVectorConnection.collectionName) ? 'ezyrag_vector_collection' : qdrantConnection.collectionName}">
+                           th:value="${#strings.isEmpty(ezyVectorConnection.collectionName) ? 'ezyrag_vector_collection' : ezyVectorConnection.collectionName}">
                     <small class="form-text text-muted">
                         [[#{collection_name_hint}]]
                     </small>
