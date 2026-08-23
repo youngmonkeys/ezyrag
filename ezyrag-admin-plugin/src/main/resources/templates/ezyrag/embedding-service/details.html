@@ -48,6 +48,17 @@
                     <select name="model" id="model" class="form-control">
                         <option value="">[[#{select}]]</option>
                     </select>
+                    <input type="text" name="model" id="modelInput"
+                           class="form-control d-none" disabled
+                           th:placeholder="#{open_ai_embedding_model}"
+                           th:value="${openAiEmbeddingModel}">
+                    <div class="form-check mt-2">
+                        <input type="checkbox" class="form-check-input wh-1rem" id="enterModelManually"
+                               onchange="ezyrag.toggleModelInputMode(this.checked);">
+                        <label class="form-check-label" for="enterModelManually">
+                            [[#{enter_model_manually}]]
+                        </label>
+                    </div>
                 </div>
                 <label id="modelErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
                        for="model">
@@ -129,8 +140,15 @@ ezyrag.loadModelNames = function() {
         },
         error: function (data, e) {
             ezyadmin.processGetApiErrors(data);
+            $('#enterModelManually').prop('checked', true);
+            ezyrag.toggleModelInputMode(true);
         }
     });
+}
+
+ezyrag.toggleModelInputMode = function(manual) {
+    $('#model').toggleClass('d-none', manual).prop('disabled', manual);
+    $('#modelInput').toggleClass('d-none', !manual).prop('disabled', !manual);
 }
 
 $(document).ready(function () {

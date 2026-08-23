@@ -16,6 +16,7 @@
 
 package org.youngmonkeys.ezyrag.embbeding;
 
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.client.HttpClient;
 import com.tvd12.ezyhttp.client.request.GetRequest;
@@ -29,13 +30,17 @@ import org.youngmonkeys.ezyrag.model.RagEmbeddingData;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_OPENAI_EMBEDDING_MODEL;
 
 
 @AllArgsConstructor
-public class RagOpenAIEmbeddingService implements RagEmbeddingService {
+public class RagOpenAIEmbeddingService
+    extends EzyLoggable
+    implements RagEmbeddingService {
 
     private final HttpClient httpClient;
     private final EzyRagSettingService ezyRagSettingService;
@@ -131,13 +136,12 @@ public class RagOpenAIEmbeddingService implements RagEmbeddingService {
             }
             return modelNames;
         } catch (Exception e) {
-            throw new IllegalStateException(
-                "Cannot get OpenAI model names",
-                e
+            logger.info("Cannot get OpenAI model names", e);
+            return Collections.singletonList(
+                DEFAULT_OPENAI_EMBEDDING_MODEL
             );
         }
     }
-
 
     protected String getModelsApiUrl() {
         return "https://api.openai.com/v1/models";
