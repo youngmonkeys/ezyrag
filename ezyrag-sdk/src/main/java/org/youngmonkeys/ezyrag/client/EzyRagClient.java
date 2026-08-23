@@ -112,6 +112,7 @@ public class EzyRagClient {
                 Map<String, Object> metadata = EzyMapBuilder
                     .mapBuilder()
                     .putAll(dataSourceMetadata)
+                    .putAll(inputData.getMetadata())
                     .putAll(chunkedResult.getMetadata())
                     .toMap();
                 long chunkId;

@@ -17,9 +17,13 @@
 package org.youngmonkeys.ezyrag.admin.loader;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import org.youngmonkeys.ecommerce.repo.ProductCurrencyRepository;
 import org.youngmonkeys.ecommerce.repo.ProductDescriptionI18nRepository;
 import org.youngmonkeys.ecommerce.repo.ProductDescriptionRepository;
+import org.youngmonkeys.ecommerce.repo.ProductMetaRepository;
 import org.youngmonkeys.ecommerce.repo.ProductRepository;
+import org.youngmonkeys.ecommerce.service.EcommerceSettingService;
+import org.youngmonkeys.ecommerce.service.ProductPriceService;
 import org.youngmonkeys.ezyrag.loader.RagProductDataLoader;
 
 @EzySingleton
@@ -29,12 +33,20 @@ public class AdminRagProductDataLoader
     public AdminRagProductDataLoader(
         ProductRepository productRepository,
         ProductDescriptionRepository productDescriptionRepository,
-        ProductDescriptionI18nRepository productDescriptionI18nRepository
+        ProductDescriptionI18nRepository productDescriptionI18nRepository,
+        ProductMetaRepository productMetaRepository,
+        ProductCurrencyRepository productCurrencyRepository,
+        ProductPriceService productPriceService,
+        EcommerceSettingService ecommerceSettingService
     ) {
         super(
             productRepository,
             productDescriptionRepository,
-            productDescriptionI18nRepository
+            productDescriptionI18nRepository,
+            productMetaRepository,
+            productCurrencyRepository,
+            productPriceService,
+            ecommerceSettingService
         );
     }
 }

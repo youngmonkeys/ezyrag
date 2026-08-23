@@ -16,24 +16,38 @@
 
 package org.youngmonkeys.ezyrag.loader;
 
+import com.tvd12.ezyfox.util.EzyMapBuilder;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ecommerce.entity.Product;
+import org.youngmonkeys.ecommerce.entity.ProductCurrency;
 import org.youngmonkeys.ecommerce.entity.ProductDescription;
 import org.youngmonkeys.ecommerce.entity.ProductDescriptionI18n;
+import org.youngmonkeys.ecommerce.entity.ProductMeta;
+import org.youngmonkeys.ecommerce.repo.ProductCurrencyRepository;
 import org.youngmonkeys.ecommerce.repo.ProductDescriptionI18nRepository;
 import org.youngmonkeys.ecommerce.repo.ProductDescriptionRepository;
+import org.youngmonkeys.ecommerce.repo.ProductMetaRepository;
 import org.youngmonkeys.ecommerce.repo.ProductRepository;
+import org.youngmonkeys.ecommerce.service.EcommerceSettingService;
+import org.youngmonkeys.ecommerce.service.ProductPriceService;
 import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagInputData;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static com.tvd12.ezyfox.io.EzyLists.first;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
 import static org.youngmonkeys.ecommerce.constant.EcommerceTableNames.TABLE_NAME_PRODUCT;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.META_KEY_SLUG;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_CURRENCY_ISO_CODE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_PRICE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_PRODUCT_CODE;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_TITLE;
 
 @AllArgsConstructor
 public class RagProductDataLoader implements RagDataLoader {
@@ -41,6 +55,10 @@ public class RagProductDataLoader implements RagDataLoader {
     private final ProductRepository productRepository;
     private final ProductDescriptionRepository productDescriptionRepository;
     private final ProductDescriptionI18nRepository productDescriptionI18nRepository;
+    private final ProductMetaRepository productMetaRepository;
+    private final ProductCurrencyRepository productCurrencyRepository;
+    private final ProductPriceService productPriceService;
+    private final EcommerceSettingService ecommerceSettingService;
 
     @SuppressWarnings("MethodLength")
     @Override
@@ -62,6 +80,7 @@ public class RagProductDataLoader implements RagDataLoader {
         String firstData = builder.length() > 0
             ? builder.toString()
             : null;
+        Map<String, Object> metadata = loadMetadata(product);
         return new Iterator<RagInputData>() {
             private String nextData = firstData;
             private int skip;
@@ -84,6 +103,7 @@ public class RagProductDataLoader implements RagDataLoader {
                     .builder()
                     .data(nextData)
                     .dataType(CommonContentType.TEXT.toString())
+                    .metadata(metadata)
                     .build();
                 nextData = null;
                 return inputData;
@@ -117,6 +137,32 @@ public class RagProductDataLoader implements RagDataLoader {
     @Override
     public String getDataSourceType() {
         return TABLE_NAME_PRODUCT;
+    }
+
+    private Map<String, Object> loadMetadata(Product product) {
+        long productId = product.getId();
+        String slug = productMetaRepository
+            .findByProductIdAndMetaKey(productId, META_KEY_SLUG)
+            .map(ProductMeta::getMetaValue)
+            .orElse(null);
+        long currencyId = ecommerceSettingService.getDefaultCurrencyId();
+        BigDecimal price = productPriceService.getProductPriceValue(
+            productId,
+            currencyId
+        );
+        ProductCurrency currency = productCurrencyRepository
+            .findById(currencyId);
+        return EzyMapBuilder
+            .mapBuilder()
+            .put(META_KEY_TITLE, product.getProductName())
+            .put(META_KEY_SLUG, slug)
+            .put(META_KEY_PRODUCT_CODE, product.getProductCode())
+            .put(META_KEY_PRICE, price)
+            .put(
+                META_KEY_CURRENCY_ISO_CODE,
+                currency != null ? currency.getIsoCode() : null
+            )
+            .toMap();
     }
 
     private static void appendContent(

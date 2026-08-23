@@ -16,18 +16,25 @@
 
 package org.youngmonkeys.ezyrag.loader;
 
+import com.tvd12.ezyfox.util.EzyMapBuilder;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyarticle.sdk.repo.PostRepository;
+import org.youngmonkeys.ezyarticle.sdk.result.PostIdAndSlugResult;
 import org.youngmonkeys.ezyarticle.sdk.result.PostIdAndTitleAndContentResult;
+import org.youngmonkeys.ezyarticle.sdk.result.PostSummaryResult;
 import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagInputData;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.youngmonkeys.ezyarticle.sdk.constant.TableNames.TABLE_NAME_POST;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_EXCERPT;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_SLUG;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_TITLE;
 
 @AllArgsConstructor
 public class RagPostDataLoader implements RagDataLoader {
@@ -36,17 +43,35 @@ public class RagPostDataLoader implements RagDataLoader {
 
     @Override
     public Iterator<RagInputData> load(RagDataSourceModel model) {
+        long postId = model.getSourceId();
         PostIdAndTitleAndContentResult post = postRepository
-            .findPostIdAndTitleAndContentById(model.getSourceId());
+            .findPostIdAndTitleAndContentById(postId);
         if (post == null) {
             return Collections.emptyIterator();
         }
+        PostIdAndSlugResult slugResult = postRepository
+            .findPostIdAndSlugByPostId(postId);
+        PostSummaryResult summaryResult = postRepository
+            .findPostSummaryById(postId);
+        Map<String, Object> metadata = EzyMapBuilder
+            .mapBuilder()
+            .put(META_KEY_TITLE, post.getTitle())
+            .put(
+                META_KEY_SLUG,
+                slugResult != null ? slugResult.getSlug() : null
+            )
+            .put(
+                META_KEY_EXCERPT,
+                summaryResult != null ? summaryResult.getSummary() : null
+            )
+            .toMap();
         return Stream
             .of(post)
             .map(it ->
                 RagInputData.builder()
                     .data(it.getTitle() + "\n\n" + it.getContent())
                     .dataType(CommonContentType.TEXT.toString())
+                    .metadata(metadata)
                     .build()
             )
             .iterator();

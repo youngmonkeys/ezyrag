@@ -17,6 +17,7 @@
 package org.youngmonkeys.ezyrag.loader;
 
 import com.tvd12.ezyfox.util.EzyFileUtil;
+import com.tvd12.ezyfox.util.EzyMapBuilder;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyplatform.entity.Media;
@@ -31,11 +32,16 @@ import org.youngmonkeys.ezyrag.reader.RagMediaTextReaderManager;
 import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.NULL_STRING;
 import static org.youngmonkeys.ezyplatform.constant.CommonTableNames.TABLE_NAME_MEDIA;
+import static org.youngmonkeys.ezyplatform.model.MediaModel.toMediaUrlOrDefault;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_DATA_URL;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.META_KEY_TITLE;
 
 @AllArgsConstructor
 public class RagMediaDataLoader implements RagDataLoader {
@@ -60,7 +66,22 @@ public class RagMediaDataLoader implements RagDataLoader {
         appendContent(builder, media.getDescription());
         appendContent(builder, media.getName());
         appendContent(builder, media.getOriginalName());
-        RagInputData firstInputData = toTextInputData(builder.toString());
+        Map<String, Object> metadata = EzyMapBuilder
+            .mapBuilder()
+            .put(META_KEY_TITLE, media.getTitle())
+            .put(
+                META_KEY_DATA_URL,
+                toMediaUrlOrDefault(
+                    media.getName(),
+                    media.getUrl(),
+                    NULL_STRING
+                )
+            )
+            .toMap();
+        RagInputData firstInputData = toTextInputData(
+            builder.toString(),
+            metadata
+        );
         RagMediaTextReader mediaTextReader = getMediaTextReader(media);
         if (firstInputData == null && mediaTextReader == null) {
             return Collections.emptyIterator();
@@ -91,7 +112,10 @@ public class RagMediaDataLoader implements RagDataLoader {
             private RagInputData loadNextMediaTextInputData() {
                 Iterator<String> iterator = getMediaTextIterator();
                 while (iterator != null && iterator.hasNext()) {
-                    RagInputData inputData = toTextInputData(iterator.next());
+                    RagInputData inputData = toTextInputData(
+                        iterator.next(),
+                        metadata
+                    );
                     if (inputData != null) {
                         return inputData;
                     }
@@ -145,12 +169,14 @@ public class RagMediaDataLoader implements RagDataLoader {
     }
 
     private static RagInputData toTextInputData(
-        String text
+        String text,
+        Map<String, Object> metadata
     ) {
         if (isNotBlank(text)) {
             return RagInputData.builder()
                 .data(text)
                 .dataType(CommonContentType.TEXT.toString())
+                .metadata(metadata)
                 .build();
         }
         return null;
