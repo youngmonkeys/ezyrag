@@ -179,7 +179,7 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         );
     }
 
-    public void setMySqlVectorSize(int vectorSize) {
+    public void setEzyVectorSize(int vectorSize) {
         settingService.setIntValue(
             SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
             vectorSize

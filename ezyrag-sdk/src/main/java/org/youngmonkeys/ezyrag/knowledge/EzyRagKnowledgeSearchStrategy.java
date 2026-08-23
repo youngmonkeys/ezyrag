@@ -44,4 +44,9 @@ public class EzyRagKnowledgeSearchStrategy
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public int getPriority() {
+        return Short.MIN_VALUE;
+    }
 }

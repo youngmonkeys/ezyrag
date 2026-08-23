@@ -252,6 +252,12 @@
                 <resource>
                         <directory>${ezyplatform.home}/admin/plugins/ezymail/resources</directory>
                     </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/admin/plugins/ezyaccount/resources</directory>
+                    </resource>
+                <resource>
+                        <directory>${ezyplatform.home}/admin/plugins/ezylogin/resources</directory>
+                    </resource>
                 </resources>
             </build>
         </profile>

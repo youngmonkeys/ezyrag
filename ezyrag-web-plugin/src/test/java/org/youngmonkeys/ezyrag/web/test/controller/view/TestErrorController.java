@@ -14,24 +14,10 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.web.vd;
+package org.youngmonkeys.ezyrag.web.test.controller.view;
 
-import com.tvd12.ezyfox.bean.annotation.EzySingleton;
-import com.tvd12.ezyhttp.client.HttpClient;
-import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
-import org.youngmonkeys.ezyrag.vd.RagEzyVectorVectorDatabaseService;
+import com.tvd12.ezyhttp.server.core.annotation.Controller;
+import org.youngmonkeys.ezyarticle.web.controller.view.EzyArticleErrorController;
 
-@EzySingleton
-public class WebRagMySqlVectorVectorDatabaseService
-    extends RagEzyVectorVectorDatabaseService {
-
-    public WebRagMySqlVectorVectorDatabaseService(
-        HttpClient httpClient,
-        WebSettingService settingService
-    ) {
-        super(
-            httpClient,
-            settingService
-        );
-    }
-}
+@Controller
+public class TestErrorController extends EzyArticleErrorController {}

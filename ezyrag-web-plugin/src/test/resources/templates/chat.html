@@ -1,0 +1,369 @@
+<!--
+ ~ Copyright 2026 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{ezytheme}">
+<body>
+<div layout:fragment="content" class="row mt-3 ml-md-5 mr-md-5">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h3>[[#{ai_chat}]]</h3>
+    </div>
+    <div class="col-12">
+        <hr class="mb-4"/>
+    </div>
+    <div class="col-md-4 form-group">
+        <label for="chatServiceName">[[#{service_name}]]</label>
+        <select name="chatServiceName" id="chatServiceName" class="form-control">
+            <option value="">[[#{default_service}]]</option>
+            <option th:each="aiChatServiceName : ${aiChatServiceNames}"
+                    th:value="${aiChatServiceName}"
+                    th:text="${aiChatServiceName}"
+                    th:selected="${aiChatServiceName == defaultAIChatServiceName}"></option>
+        </select>
+    </div>
+    <div class="col-md-4 form-group">
+        <label for="chatProfileName">[[#{profile_name}]]</label>
+        <input type="text" name="chatProfileName" id="chatProfileName"
+               class="form-control" th:placeholder="#{default_profile}"
+               onkeydown="ezyai.onKeyDownToSendChatMessage(event);">
+    </div>
+    <div class="col-md-4 form-group">
+        <label for="chatModel">[[#{model}]]</label>
+        <input type="text" name="chatModel" id="chatModel"
+               class="form-control" th:placeholder="#{use_profile_value}"
+               onkeydown="ezyai.onKeyDownToSendChatMessage(event);">
+    </div>
+    <div class="col-md-4 form-group">
+        <label for="chatMaxTokens">[[#{max_tokens}]]</label>
+        <input type="number" name="chatMaxTokens" id="chatMaxTokens"
+               class="form-control" th:placeholder="#{use_profile_value}"
+               onkeydown="ezyai.onKeyDownToSendChatMessage(event);">
+    </div>
+    <div class="col-md-8 form-group">
+        <label for="chatSystemMessage">[[#{system_message}]]</label>
+        <input type="text" name="chatSystemMessage" id="chatSystemMessage"
+               class="form-control" th:placeholder="#{system_message_example}"
+               onkeydown="ezyai.onKeyDownToSendChatMessage(event);">
+        <small class="form-text text-muted">
+            [[#{system_message_hint}]]
+        </small>
+    </div>
+    <div class="col-12">
+        <div id="chatMessageList" class="ai-chat-message-list">
+            <div id="chatEmptyMessage" class="ai-chat-empty">
+                [[#{no_chat_message}]]
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mt-3">
+        <div class="d-flex align-items-center">
+            <textarea name="chatMessage" id="chatMessage" rows="2"
+                      class="form-control ai-chat-input"
+                      th:placeholder="#{chat_message_hint}"
+                      onkeydown="ezyai.onKeyDownToSendChatMessage(event);"></textarea>
+            <button type="button" id="chatSendButton"
+                    class="btn btn-primary ml-2 white-space-nowrap"
+                    onclick="ezyai.sendChatMessage();">
+                [[#{send}]] <i class="fas fa-paper-plane"></i>
+            </button>
+            <button type="button" id="chatClearButton"
+                    class="btn btn-secondary ml-2 white-space-nowrap"
+                    onclick="ezyai.clearChatMessages();">
+                [[#{clear}]]
+            </button>
+        </div>
+    </div>
+</div>
+<script layout:fragment="post-scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyweb.messages.chat_failed = /*[[#{chat_failed}]]*/ '';
+ezyweb.messages.clear_chat_confirm = /*[[#{clear_chat_confirm}]]*/ '';
+ezyweb.messages.no_chat_message = /*[[#{no_chat_message}]]*/ '';
+ezyweb.messages.sending = /*[[#{sending}]]*/ '';
+ezyweb.messages.tokens = /*[[#{tokens}]]*/ '';
+/*]]>*/
+
+var ezyai = {};
+ezyai.chatMessages = [];
+ezyai.chatSending = false;
+
+// ============== ai chat box =============
+ezyai.onKeyDownToSendChatMessage = function(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        ezyai.sendChatMessage();
+    }
+}
+
+ezyai.sendChatMessage = function() {
+    if (ezyai.chatSending) {
+        return;
+    }
+    var content = $('#chatMessage').val().trim();
+    if (!content) {
+        return;
+    }
+    var message = {role: 'user', content: content};
+    ezyai.chatMessages.push(message);
+    ezyai.appendChatMessage(message);
+    $('#chatMessage').val('');
+    ezyai.setChatSending(true);
+    var request = {
+        serviceName: $('#chatServiceName').val(),
+        profileName: $('#chatProfileName').val().trim(),
+        model: $('#chatModel').val().trim(),
+        systemMessage: $('#chatSystemMessage').val().trim(),
+        maxTokens: parseInt($('#chatMaxTokens').val()) || 0,
+        messages: ezyai.chatMessages
+    };
+    ezyai.streamChatMessage(request);
+}
+
+/**
+ * Send the chat to the stream api and show the answer while it is still
+ * being made, the answer bubble is made on the first piece of the answer
+ * and grows with every next one.
+ */
+ezyai.streamChatMessage = async function(request) {
+    var answer = null;
+    var answerContent = '';
+    var answered = false;
+    try {
+        var response = await fetch('/api/v1/chat/stream', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(request)
+        });
+        if (!response.ok) {
+            ezyai.failChatAnswer(answer);
+            ezyweb.processUpdateApiErrors({}, {
+                status: response.status,
+                responseJSON: await ezyai.readChatErrorBody(response)
+            });
+            return;
+        }
+        await ezyai.readChatEvents(response, function(eventName, data) {
+            if (eventName === 'delta') {
+                answer = answer || ezyai.appendChatAnswer();
+                answerContent += data.content;
+                ezyai.setChatAnswerText(answer, answerContent);
+            } else if (eventName === 'done') {
+                answered = true;
+                answer = answer || ezyai.appendChatAnswer();
+                ezyai.chatMessages.push({
+                    role: 'assistant',
+                    content: data.content
+                });
+                ezyai.setChatAnswerText(answer, data.content);
+                ezyai.setChatAnswerUsage(answer, data);
+            } else if (eventName === 'error') {
+                answered = true;
+                ezyai.failChatAnswer(answer, data.errorMessage);
+                answer = null;
+            }
+        });
+        if (!answered) {
+            ezyai.failChatAnswer(answer);
+        }
+    } catch (e) {
+        console.error('chat stream failed', e);
+        if (!answered) {
+            ezyai.failChatAnswer(answer);
+        }
+    } finally {
+        ezyai.setChatSending(false);
+    }
+}
+
+/**
+ * Read the server sent events of the answer. The reader answers with
+ * chunks of bytes which do not follow the event boundaries, so what is
+ * left of a chunk is kept until the rest of its event has arrived.
+ */
+ezyai.readChatEvents = async function(response, handler) {
+    var reader = response.body.getReader();
+    var decoder = new TextDecoder('utf-8');
+    var buffer = '';
+    while (true) {
+        var chunk = await reader.read();
+        if (chunk.done) {
+            break;
+        }
+        buffer += decoder
+            .decode(chunk.value, {stream: true})
+            .replace(/\r\n/g, '\n');
+        var boundary = buffer.indexOf('\n\n');
+        while (boundary >= 0) {
+            ezyai.handleChatEvent(buffer.substring(0, boundary), handler);
+            buffer = buffer.substring(boundary + 2);
+            boundary = buffer.indexOf('\n\n');
+        }
+    }
+}
+
+ezyai.handleChatEvent = function(rawEvent, handler) {
+    var eventName = '';
+    var data = '';
+    rawEvent.split('\n').forEach(function(line) {
+        if (line.startsWith('event:')) {
+            eventName = line.substring('event:'.length).trim();
+        } else if (line.startsWith('data:')) {
+            data += line.substring('data:'.length).trim();
+        }
+    });
+    if (eventName && data) {
+        handler(eventName, JSON.parse(data));
+    }
+}
+
+ezyai.readChatErrorBody = async function(response) {
+    try {
+        return await response.json();
+    } catch (e) {
+        return {};
+    }
+}
+
+ezyai.setChatSending = function(sending) {
+    ezyai.chatSending = sending;
+    $('#chatSendButton').prop('disabled', sending);
+    $('#chatMessage').prop('disabled', sending);
+    if (sending) {
+        $('#chatMessageList').append(`
+            <div class="ai-chat-message" id="chatSendingMessage">
+                <div class="ai-chat-bubble ai-chat-bubble-assistant text-muted">
+                    <i class="fas fa-spinner fa-spin"></i> ${ezyweb.messages.sending}
+                </div>
+            </div>
+            `);
+        ezyai.scrollChatMessageListToBottom();
+    } else {
+        $('#chatSendingMessage').remove();
+    }
+}
+
+ezyai.appendChatMessage = function(message) {
+    $('#chatEmptyMessage').remove();
+    var isUser = message.role === 'user';
+    var messageClass = isUser ? 'ai-chat-message-user' : '';
+    var bubbleClass = isUser
+        ? 'ai-chat-bubble-user'
+        : 'ai-chat-bubble-assistant';
+    $('#chatMessageList').append(`
+        <div class="ai-chat-message ${messageClass}">
+            <div class="ai-chat-message-content">
+                <div class="ai-chat-bubble ${bubbleClass}">
+                    <span class="ai-chat-text">${ezyweb.escapeHtml(message.content || '')}</span>
+                </div>
+            </div>
+        </div>
+        `);
+    ezyai.scrollChatMessageListToBottom();
+}
+
+/**
+ * Make the empty bubble the answer is written to, the sending indicator
+ * is taken away since the answer itself now tells that the service is
+ * still working.
+ */
+ezyai.appendChatAnswer = function() {
+    $('#chatEmptyMessage').remove();
+    $('#chatSendingMessage').remove();
+    var answer = $(`
+        <div class="ai-chat-message">
+            <div class="ai-chat-message-content">
+                <div class="ai-chat-bubble ai-chat-bubble-assistant">
+                    <span class="ai-chat-text"></span>
+                </div>
+                <div class="ai-chat-bubble-usage"></div>
+            </div>
+        </div>
+        `);
+    $('#chatMessageList').append(answer);
+    ezyai.scrollChatMessageListToBottom();
+    return answer;
+}
+
+ezyai.setChatAnswerText = function(answer, content) {
+    answer.find('.ai-chat-text').text(content || '');
+    ezyai.scrollChatMessageListToBottom();
+}
+
+ezyai.setChatAnswerUsage = function(answer, response) {
+    answer.find('.ai-chat-bubble-usage').html(`
+        ${ezyweb.escapeHtml(response.model || '')}
+        &middot;
+        ${response.inputTokens} / ${response.outputTokens}
+        ${ezyweb.messages.tokens}
+        `);
+    ezyai.scrollChatMessageListToBottom();
+}
+
+/**
+ * Take a failed chat back, the message that was being answered is
+ * dropped and what has been answered so far is thrown away since it is
+ * not a whole answer.
+ */
+ezyai.failChatAnswer = function(answer, errorMessage) {
+    ezyai.chatMessages.pop();
+    $('#chatSendingMessage').remove();
+    if (answer) {
+        answer.remove();
+    }
+    ezyai.appendChatError(errorMessage || ezyweb.messages.chat_failed);
+}
+
+ezyai.appendChatError = function(errorMessage) {
+    $('#chatEmptyMessage').remove();
+    $('#chatMessageList').append(`
+        <div class="ai-chat-message">
+            <div class="ai-chat-message-content">
+                <div class="ai-chat-bubble ai-chat-bubble-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span class="ai-chat-text">${ezyweb.escapeHtml(errorMessage || '')}</span>
+                </div>
+            </div>
+        </div>
+        `);
+    ezyai.scrollChatMessageListToBottom();
+}
+
+ezyai.scrollChatMessageListToBottom = function() {
+    var messageList = $('#chatMessageList');
+    messageList.scrollTop(messageList.prop('scrollHeight'));
+}
+
+ezyai.clearChatMessages = function() {
+    if (ezyai.chatSending) {
+        return;
+    }
+    if (!confirm(ezyweb.messages.clear_chat_confirm)) {
+        return;
+    }
+    ezyai.chatMessages = [];
+    $('#chatMessageList').html(`
+        <div id="chatEmptyMessage" class="ai-chat-empty">
+            ${ezyweb.messages.no_chat_message}
+        </div>
+        `);
+}
+</script>
+</body>
+</html>

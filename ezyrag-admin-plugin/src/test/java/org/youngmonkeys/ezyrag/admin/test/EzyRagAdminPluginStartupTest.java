@@ -32,7 +32,9 @@ import com.tvd12.ezyhttp.server.core.annotation.PropertiesSources;
     "org.youngmonkeys.ezychat",
     "org.youngmonkeys.graphql",
     "org.youngmonkeys.ecommerce",
-    "org.youngmonkeys.ezymail"
+    "org.youngmonkeys.ezymail",
+    "org.youngmonkeys.ezyaccount",
+    "org.youngmonkeys.ezylogin"
 })
 public class EzyRagAdminPluginStartupTest {
 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
  ~ Copyright 2026 youngmonkeys.org
- ~ 
+ ~
  ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
  ~ you may not use this file except in compliance with the License.
  ~ You may obtain a copy of the License at
- ~ 
+ ~
  ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
- ~ 
+ ~
  ~ Unless required by applicable law or agreed to in writing, software
  ~ distributed under the License is distributed on an "AS IS" BASIS,
  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ecommerce-sdk</artifactId>
             <version>${ecommerce.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/ecommerce/lib/ecommerce-sdk-${ecommerce.version}.jar</systemPath>
         </dependency>
         <dependency>
@@ -80,7 +80,7 @@
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezyaccount-sdk</artifactId>
             <version>${ezyaccount.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/ezyaccount/lib/ezyaccount-sdk-${ezyaccount.version}.jar</systemPath>
         </dependency>
         <dependency>
@@ -94,14 +94,14 @@
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezyai-sdk</artifactId>
             <version>${ezyai.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/ezyai/lib/ezyai-sdk-${ezyai.version}.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezyarticle-sdk</artifactId>
             <version>${ezyarticle.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/ezyarticle/lib/ezyarticle-sdk-${ezyarticle.version}.jar</systemPath>
         </dependency>
         <dependency>
@@ -115,7 +115,7 @@
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezychat-sdk</artifactId>
             <version>${ezychat.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/ezychat/lib/ezychat-sdk-${ezychat.version}.jar</systemPath>
         </dependency>
         <dependency>
@@ -129,7 +129,7 @@
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezycrm-sdk</artifactId>
             <version>${ezycrm.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/ezycrm/lib/ezycrm-sdk-${ezycrm.version}.jar</systemPath>
         </dependency>
         <dependency>
@@ -179,7 +179,7 @@
             <groupId>org.youngmonkeys</groupId>
             <artifactId>ezysupport-sdk</artifactId>
             <version>${ezysupport.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/ezysupport/lib/ezysupport-sdk-${ezysupport.version}.jar</systemPath>
         </dependency>
         <dependency>
@@ -193,7 +193,7 @@
             <groupId>org.youngmonkeys</groupId>
             <artifactId>graphql-sdk</artifactId>
             <version>${graphql.version}</version>
-        <scope>system</scope>
+            <scope>system</scope>
             <systemPath>${ezyplatform.home}/web/plugins/graphql/lib/graphql-sdk-${graphql.version}.jar</systemPath>
         </dependency>
         <dependency>
@@ -231,23 +231,29 @@
                     <resource>
                         <directory>${ezyplatform.home}/web/settings</directory>
                     </resource>
-                <resource>
+                    <resource>
                         <directory>${ezyplatform.home}/web/plugins/ezyai/resources</directory>
                     </resource>
-                <resource>
+                    <resource>
                         <directory>${ezyplatform.home}/web/plugins/ezyarticle/resources</directory>
                     </resource>
-                <resource>
+                    <resource>
                         <directory>${ezyplatform.home}/web/plugins/ezychat/resources</directory>
                     </resource>
-                <resource>
+                    <resource>
                         <directory>${ezyplatform.home}/web/plugins/graphql/resources</directory>
                     </resource>
-                <resource>
+                    <resource>
                         <directory>${ezyplatform.home}/web/plugins/ecommerce/resources</directory>
                     </resource>
-                <resource>
+                    <resource>
                         <directory>${ezyplatform.home}/web/plugins/ezymail/resources</directory>
+                    </resource>
+                    <resource>
+                        <directory>${ezyplatform.home}/web/plugins/ezyaccount/resources</directory>
+                    </resource>
+                    <resource>
+                        <directory>${ezyplatform.home}/web/plugins/ezylogin/resources</directory>
                     </resource>
                 </resources>
             </build>

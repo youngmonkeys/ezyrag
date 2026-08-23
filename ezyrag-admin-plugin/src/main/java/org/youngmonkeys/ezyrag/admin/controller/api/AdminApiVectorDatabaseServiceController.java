@@ -59,7 +59,7 @@ public class AdminApiVectorDatabaseServiceController {
 
     @Description("Update a vector database service's connection settings")
     @DoPut("/vector-database-services/QDRANT/connection-properties")
-    public ResponseEntity vectorDatabaseServicesServiceNamePut(
+    public ResponseEntity vectorDatabaseServicesQdrantConnectionPropertiesPut(
         @RequestBody AdminSaveQdrantConnectionPropertiesRequest request
     ) throws Exception {
         vectorDatabaseServiceValidator.validate(request);
@@ -75,14 +75,14 @@ public class AdminApiVectorDatabaseServiceController {
 
     @Description("Update a vector database service's connection settings")
     @DoPut("/vector-database-services/EZYVECTOR/connection-properties")
-    public ResponseEntity vectorDatabaseServicesMySqlPut(
+    public ResponseEntity vectorDatabaseServicesEzyVectorConnectionPropertiesPut(
         @RequestBody AdminSaveEzyVectorConnectionPropertiesRequest request
     ) throws Exception {
         vectorDatabaseServiceValidator.validate(request);
         ezyRagSettingService.setEzyVectorConnectionProperties(
             requestToModelConverter.toModel(request)
         );
-        ezyRagSettingService.setMySqlVectorSize(
+        ezyRagSettingService.setEzyVectorSize(
             request.getVectorSize()
         );
         mySqlVectorDatabaseService.createCollectionIfAbsent();
