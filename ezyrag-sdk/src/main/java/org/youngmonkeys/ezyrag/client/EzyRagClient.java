@@ -217,7 +217,7 @@ public class EzyRagClient {
 
     private RagKnowledgeDataBuilder getKnowledgeDataBuilder() {
         String knowledgeDataBuilderName = settingService
-            .getKnowledgeDataBuilder();
+            .getKnowledgeDataBuilderName();
         if (isBlank(knowledgeDataBuilderName)) {
             throw new IllegalStateException(
                 "Knowledge data builder has not been set up"
@@ -239,7 +239,7 @@ public class EzyRagClient {
 
     private RagDataRetriever getDataRetriever() {
         String dataRetrieverName = settingService
-            .getDataRetriever();
+            .getDataRetrieverName();
         if (isBlank(dataRetrieverName)) {
             throw new IllegalStateException(
                 "Data retriever has not been set up"
@@ -258,7 +258,7 @@ public class EzyRagClient {
 
     private RagDataChunker getDataChunker() {
         String dataChunkerName = settingService
-            .getDataChunker();
+            .getDataChunkerName();
 
         if (isBlank(dataChunkerName)) {
             throw new IllegalStateException(
@@ -278,7 +278,7 @@ public class EzyRagClient {
 
     private RagEmbeddingService getEmbeddingService() {
         String embeddingServiceName = settingService
-            .getEmbeddingService();
+            .getEmbeddingServiceName();
         if (isBlank(embeddingServiceName)) {
             throw new IllegalStateException(
                 "Embedding service has not been set up"

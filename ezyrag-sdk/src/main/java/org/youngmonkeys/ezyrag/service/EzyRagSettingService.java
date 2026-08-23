@@ -21,6 +21,7 @@ import org.youngmonkeys.ezyplatform.util.Numbers;
 import org.youngmonkeys.ezyrag.constant.EmbeddingServiceName;
 import org.youngmonkeys.ezyrag.constant.RagDataChunkerName;
 import org.youngmonkeys.ezyrag.constant.RagDataRetrieverName;
+import org.youngmonkeys.ezyrag.constant.RagKnowledgeDataBuilderName;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isEmpty;
@@ -112,27 +113,28 @@ public class EzyRagSettingService {
         );
     }
 
-    public String getKnowledgeDataBuilder() {
+    public String getKnowledgeDataBuilderName() {
         return settingService.getTextValue(
-            SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME
+            SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME,
+            RagKnowledgeDataBuilderName.DEFAULT.toString()
         );
     }
 
-    public String getDataChunker() {
+    public String getDataChunkerName() {
         return settingService.getTextValue(
             SETTING_NAME_DATA_CHUNKER_NAME,
             RagDataChunkerName.HIERARCHICAL.toString()
         );
     }
 
-    public String getEmbeddingService() {
+    public String getEmbeddingServiceName() {
         return settingService.getTextValue(
             SETTING_NAME_EMBEDDING_SERVICE_NAME,
             EmbeddingServiceName.OPENAI.toString()
         );
     }
 
-    public String getDataRetriever() {
+    public String getDataRetrieverName() {
         return settingService.getTextValue(
             SETTING_NAME_DATA_RETRIEVER_NAME,
             RagDataRetrieverName.DATABASE.toString()

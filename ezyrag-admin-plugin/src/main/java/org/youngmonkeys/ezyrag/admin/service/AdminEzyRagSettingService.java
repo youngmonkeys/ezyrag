@@ -72,35 +72,35 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
     }
 
     public void setKnowledgeDataBuilderName(String name) {
-        setTextValue(
+        setAndCacheTextValue(
             SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME,
             name
         );
     }
 
     public void setDataChunkerName(String name) {
-        setTextValue(
+        setAndCacheTextValue(
             SETTING_NAME_DATA_CHUNKER_NAME,
             name
         );
     }
 
     public void setDataRetrieverName(String name) {
-        setTextValue(
+        setAndCacheTextValue(
             SETTING_NAME_DATA_RETRIEVER_NAME,
             name
         );
     }
 
     public void setEmbeddingServiceName(String name) {
-        setTextValue(
+        setAndCacheTextValue(
             SETTING_NAME_EMBEDDING_SERVICE_NAME,
             name
         );
     }
 
     public void setVectorDatabaseServiceName(String name) {
-        setTextValue(
+        setAndCacheTextValue(
             SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
             name
         );
@@ -235,7 +235,7 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             : new RagQdrantConnectionPropertiesModel();
     }
 
-    private void setTextValue(String settingName, String value) {
+    private void setAndCacheTextValue(String settingName, String value) {
         settingService.setTextValue(
             settingName,
             value

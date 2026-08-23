@@ -47,7 +47,7 @@ public class AdminDataChunkController {
             .template("ezyrag/chunk/list")
             .addVariable(
                 "defaultEmbeddingServiceName",
-                ezyRagSettingService.getEmbeddingService()
+                ezyRagSettingService.getEmbeddingServiceName()
             )
             .addVariable("dataSourceTypes", datasourceTypes)
             .appendValuesToVariable(

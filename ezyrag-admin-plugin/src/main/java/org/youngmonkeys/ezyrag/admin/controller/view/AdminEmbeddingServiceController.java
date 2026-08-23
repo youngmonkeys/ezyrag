@@ -51,7 +51,7 @@ public class AdminEmbeddingServiceController {
             )
             .addVariable(
                 "defaultEmbeddingServiceName",
-                ezyRagSettingService.getEmbeddingService()
+                ezyRagSettingService.getEmbeddingServiceName()
             )
             .build();
     }

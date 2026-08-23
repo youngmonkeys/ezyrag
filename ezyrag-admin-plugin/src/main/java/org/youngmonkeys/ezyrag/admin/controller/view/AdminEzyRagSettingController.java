@@ -57,15 +57,15 @@ public class AdminEzyRagSettingController {
             )
             .addVariable(
                 "dataChunkerName",
-                settingsService.getDataChunker()
+                settingsService.getDataChunkerName()
             )
             .addVariable(
                 "dataRetrieverName",
-                settingsService.getDataRetriever()
+                settingsService.getDataRetrieverName()
             )
             .addVariable(
                 "knowledgeDataBuilderName",
-                settingsService.getKnowledgeDataBuilder()
+                settingsService.getKnowledgeDataBuilderName()
             )
             .build();
     }
