@@ -24,6 +24,4 @@ import lombok.Setter;
 public class AdminSaveEzyVectorConnectionPropertiesRequest {
     private String baseUrl;
     private String apiKey;
-    private String collectionName;
-    private int vectorSize;
 }

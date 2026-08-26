@@ -75,41 +75,6 @@
                     <i class="far fa-times-circle"></i> <span id="apiKeyError">[[#{invalid}]]</span>
                 </label>
             </div>
-            <div class="form-group row">
-                <label for="collectionName" class="col-md-3 col-form-label">
-                    [[#{collection_name}]] (<span class="text-danger">*</span>)
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="text" name="collectionName" id="collectionName"
-                           class="form-control" th:placeholder="#{collection_name}"
-                           th:value="${#strings.isEmpty(qdrantConnection.collectionName) ? 'ezyrag_vector_collection' : qdrantConnection.collectionName}">
-                    <small class="form-text text-muted">
-                        [[#{collection_name_hint}]]
-                    </small>
-                </div>
-                <label id="collectionNameErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
-                       for="collectionName">
-                    <i class="far fa-times-circle"></i> <span id="collectionNameError">[[#{invalid}]]</span>
-                </label>
-            </div>
-            <div class="form-group row">
-                <label for="vectorSize" class="col-md-3 col-form-label">
-                    [[#{vector_size}]] (<span class="text-danger">*</span>)
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="number" name="vectorSize" id="vectorSize"
-                           class="form-control" th:placeholder="#{vector_size}"
-                           th:min="${minVectorSize}"
-                           th:value="${qdrantVectorSize}">
-                    <small class="form-text text-muted">
-                        [[#{vector_size_hint}]]
-                    </small>
-                </div>
-                <label id="vectorSizeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
-                       for="vectorSize">
-                    <i class="far fa-times-circle"></i> <span id="vectorSizeError">[[#{invalid}]]</span>
-                </label>
-            </div>
             <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-2">
@@ -121,11 +86,18 @@
             </div>
         </form>
     </div>
+    <div class="col-12">
+        <hr class="mb-4" />
+    </div>
+    <th:block th:replace="~{ezyrag/collection/collection-list :: content}" />
+    <th:block th:replace="~{ezyrag/collection/add :: content}" />
+    <th:block th:replace="~{ezyrag/collection/edit :: content}" />
 </div>
 
 <script layout:fragment="scripts" th:inline="javascript">
 /*<![CDATA[*/
 ezyrag.vectorDatabaseServiceName = /*[[${vectorDatabaseServiceName}]]*/ '';
+ezyrag.defaultVectorCollectionName = /*[[${defaultVectorCollectionName}]]*/ '';
 /*]]>*/
 
 ezyrag.saveVectorDatabaseService = function() {
@@ -145,5 +117,9 @@ ezyrag.saveVectorDatabaseService = function() {
     });
 }
 </script>
+<th:block layout:fragment="post-scripts">
+    <th:block th:replace="~{ezyrag/collection/collection-list :: scripts}" />
+    <th:block th:replace="~{ezyrag/collection/scripts :: add-edit}" />
+</th:block>
 </body>
 </html>

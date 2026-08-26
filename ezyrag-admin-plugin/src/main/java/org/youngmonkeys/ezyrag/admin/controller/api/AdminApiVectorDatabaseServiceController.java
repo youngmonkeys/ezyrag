@@ -31,8 +31,6 @@ import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyVectorConnectionPropert
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
-import org.youngmonkeys.ezyrag.admin.vd.AdminRagEzyVectorVectorDatabaseService;
-import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 
 @Api
 @Authenticated
@@ -42,8 +40,6 @@ import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 public class AdminApiVectorDatabaseServiceController {
 
     private final AdminEzyRagSettingService ezyRagSettingService;
-    private final AdminRagQdrantVectorDatabaseService qdrantVectorDatabaseService;
-    private final AdminRagEzyVectorVectorDatabaseService mySqlVectorDatabaseService;
     private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
@@ -58,34 +54,26 @@ public class AdminApiVectorDatabaseServiceController {
     }
 
     @Description("Update a vector database service's connection settings")
-    @DoPut("/vector-database-services/QDRANT/connection-properties")
-    public ResponseEntity vectorDatabaseServicesQdrantConnectionPropertiesPut(
-        @RequestBody AdminSaveQdrantConnectionPropertiesRequest request
-    ) throws Exception {
-        vectorDatabaseServiceValidator.validate(request);
-        ezyRagSettingService.setQdrantConnectionProperties(
-            requestToModelConverter.toModel(request)
-        );
-        ezyRagSettingService.setQdrantVectorSize(
-            request.getVectorSize()
-        );
-        qdrantVectorDatabaseService.createCollectionIfAbsent();
-        return ResponseEntity.noContent();
-    }
-
-    @Description("Update a vector database service's connection settings")
     @DoPut("/vector-database-services/EZYVECTOR/connection-properties")
     public ResponseEntity vectorDatabaseServicesEzyVectorConnectionPropertiesPut(
         @RequestBody AdminSaveEzyVectorConnectionPropertiesRequest request
-    ) throws Exception {
+    ) {
         vectorDatabaseServiceValidator.validate(request);
         ezyRagSettingService.setEzyVectorConnectionProperties(
             requestToModelConverter.toModel(request)
         );
-        ezyRagSettingService.setEzyVectorSize(
-            request.getVectorSize()
+        return ResponseEntity.noContent();
+    }
+
+    @Description("Update a vector database service's connection settings")
+    @DoPut("/vector-database-services/QDRANT/connection-properties")
+    public ResponseEntity vectorDatabaseServicesQdrantConnectionPropertiesPut(
+        @RequestBody AdminSaveQdrantConnectionPropertiesRequest request
+    ) {
+        vectorDatabaseServiceValidator.validate(request);
+        ezyRagSettingService.setQdrantConnectionProperties(
+            requestToModelConverter.toModel(request)
         );
-        mySqlVectorDatabaseService.createCollectionIfAbsent();
         return ResponseEntity.noContent();
     }
 }

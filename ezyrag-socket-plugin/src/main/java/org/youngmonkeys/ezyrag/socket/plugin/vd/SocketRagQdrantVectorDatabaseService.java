@@ -19,6 +19,7 @@ package org.youngmonkeys.ezyrag.socket.plugin.vd;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyhttp.client.HttpClient;
 import org.youngmonkeys.ezyplatform.socket.service.SocketSettingService;
+import org.youngmonkeys.ezyrag.socket.plugin.service.SocketRagVectorCollectionService;
 import org.youngmonkeys.ezyrag.vd.RagQdrantVectorDatabaseService;
 
 @EzySingleton
@@ -27,11 +28,13 @@ public class SocketRagQdrantVectorDatabaseService
 
     public SocketRagQdrantVectorDatabaseService(
         HttpClient httpClient,
-        SocketSettingService settingService
+        SocketSettingService settingService,
+        SocketRagVectorCollectionService vectorCollectionService
     ) {
         super(
             httpClient,
-            settingService
+            settingService,
+            vectorCollectionService
         );
     }
 }

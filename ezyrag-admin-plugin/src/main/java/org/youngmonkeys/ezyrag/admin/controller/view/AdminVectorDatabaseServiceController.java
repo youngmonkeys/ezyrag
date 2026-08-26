@@ -27,15 +27,18 @@ import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollectionStatus;
 import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tvd12.ezyfox.io.EzyLists.newArrayList;
 import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.DEFAULT_HIDDEN_PASSWORD;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.VIEW_VARIABLE_ADDITIONAL_MESSAGE_KEYS;
 import static org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator.MIN_VECTOR_SIZE;
 
 @Controller
@@ -59,7 +62,7 @@ public class AdminVectorDatabaseServiceController {
             )
             .addVariable(
                 "defaultVectorDatabaseServiceName",
-                ezyRagSettingService.getVectorDatabaseService()
+                ezyRagSettingService.getVectorDatabaseServiceName()
             )
             .build();
     }
@@ -76,10 +79,22 @@ public class AdminVectorDatabaseServiceController {
             )
             .addVariable("vectorDatabaseServiceName", serviceName)
             .addVariable(
-                "qdrantVectorSize",
-                ezyRagSettingService.getQdrantVectorSize()
+                "defaultVectorCollectionName",
+                ezyRagSettingService
+                    .getDefaultCollectionNameByVectorDbServiceName(serviceName)
             )
-            .addVariable("minVectorSize", MIN_VECTOR_SIZE);
+            .addVariable("minVectorSize", MIN_VECTOR_SIZE)
+            .addVariable(
+                "vectorCollectionStatuses",
+                RagVectorCollectionStatus.values()
+            )
+            .appendValuesToVariable(
+                VIEW_VARIABLE_ADDITIONAL_MESSAGE_KEYS,
+                newArrayList(
+                    RagVectorCollectionStatus.values(),
+                    it -> it.toString().toLowerCase()
+                )
+            );
         Map<String, Runnable> viewDecoratorByServiceName = new HashMap<>();
         viewDecoratorByServiceName.put(
             RagVectorDatabaseServiceName.EZYVECTOR.toString(),
@@ -110,10 +125,6 @@ public class AdminVectorDatabaseServiceController {
                 isNotBlank(ezyVectorConnectionProperties.getApiKey())
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
-            )
-            .addVariable(
-                "ezyVectorVectorSize",
-                ezyRagSettingService.getEzyVectorVectorSize()
             );
     }
 
@@ -132,10 +143,6 @@ public class AdminVectorDatabaseServiceController {
                 isNotBlank(qdrantConnectionProperties.getApiKey())
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
-            )
-            .addVariable(
-                "qdrantVectorSize",
-                ezyRagSettingService.getQdrantVectorSize()
             );
     }
 

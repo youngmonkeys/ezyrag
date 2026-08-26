@@ -25,6 +25,7 @@ import org.youngmonkeys.ezyai.knowledge.KnowledgeSearchStrategy;
 import org.youngmonkeys.ezyrag.socket.plugin.knowledge.SocketEzyRagKnowledgeSearchStrategy;
 
 import java.util.List;
+import java.util.Map;
 
 @EzySingleton
 @AllArgsConstructor
@@ -36,6 +37,7 @@ public class SocketEzyAIRagSearchStrategy
     @Override
     public List<KnowledgeData> searchKnowledgeDataList(
         String query,
+        Map<String, Object> parameters,
         int limit
     ) {
         SocketEzyRagKnowledgeSearchStrategy strategy = pluginContext
@@ -45,6 +47,7 @@ public class SocketEzyAIRagSearchStrategy
             .getBeanCast(SocketEzyRagKnowledgeSearchStrategy.class);
         return strategy.searchKnowledgeDataList(
             query,
+            parameters,
             limit
         );
     }

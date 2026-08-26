@@ -17,9 +17,25 @@
 package org.youngmonkeys.ezyrag.converter;
 
 import org.youngmonkeys.ezyrag.model.RagDataChunkEmbeddingModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 import org.youngmonkeys.ezyrag.result.RagDataChunkEmbeddingResult;
+import org.youngmonkeys.ezyrag.result.VectorCollectionResult;
 
 public class EzyRagResultToModelConverter {
+
+    public VectorCollectionModel toModel(
+        VectorCollectionResult result
+    ) {
+        if (result == null) {
+            return null;
+        }
+        return VectorCollectionModel.builder()
+            .id(result.getId())
+            .baseUrl(result.getBaseUrl())
+            .name(result.getName())
+            .vectorSize(result.getVectorSize())
+            .build();
+    }
 
     public RagDataChunkEmbeddingModel toModel(
         RagDataChunkEmbeddingResult result

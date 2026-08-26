@@ -32,6 +32,7 @@ import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
 import org.youngmonkeys.ezyrag.admin.service.AdminPaginationRagDataChunkService;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 import org.youngmonkeys.ezyrag.pagination.RagDataChunkFilter;
 
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.POST_TYPE_KNOWLEDGE_DATA;
@@ -75,6 +76,7 @@ public class AdminRagDataChunkControllerService {
 
     public void chunkData(
         long adminId,
+        VectorCollectionModel collection,
         AdminChunkDataRequest request
     ) throws Exception {
         boolean isTextSourceType = CommonContentType
@@ -84,7 +86,7 @@ public class AdminRagDataChunkControllerService {
         RagDataSourceModel dataSource = isTextSourceType
             ? toKnowledgeDataPostDataSourceModel(adminId, request)
             : requestToModelConverter.toDataSourceModel(request);
-        ragClient.chunkData(dataSource);
+        ragClient.chunkData(collection, dataSource);
     }
 
     private RagDataSourceModel toKnowledgeDataPostDataSourceModel(

@@ -30,36 +30,37 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_NAME_COLLECTION_POINT;
+import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_NAME_VECTOR_COLLECTION;
 
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name = TABLE_NAME_COLLECTION_POINT)
+@Table(name = TABLE_NAME_VECTOR_COLLECTION)
 @AllArgsConstructor
 @NoArgsConstructor
-public class RagCollectionPoint {
+public class RagVectorCollection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "collection_id")
-    private long collectionId;
+    @Column(name = "vector_db_service")
+    private String vectorDbService;
 
-    @Column(name = "point_id")
-    private long pointId;
+    private String name;
 
-    private float[] vector;
+    @Column(name = "display_name")
+    private String displayName;
 
-    @Column(name = "payload")
-    private String payload;
+    @Column(name = "base_url")
+    private String baseUrl;
 
-    @Column(name = "status")
+    @Column(name = "vector_size")
+    private long vectorSize;
+
+    private String distance;
+
     private String status;
-
-    @Column(name = "version")
-    private long version;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

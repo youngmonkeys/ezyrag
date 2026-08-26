@@ -19,14 +19,22 @@ package org.youngmonkeys.ezyrag.web.knowledge;
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyrag.knowledge.EzyRagKnowledgeSearchStrategy;
 import org.youngmonkeys.ezyrag.web.client.WebEzyRagClient;
+import org.youngmonkeys.ezyrag.web.service.WebEzyRagSettingService;
+import org.youngmonkeys.ezyrag.web.service.WebRagVectorCollectionService;
 
 @EzySingleton
 public class WebEzyRagKnowledgeSearchStrategy
     extends EzyRagKnowledgeSearchStrategy {
 
     public WebEzyRagKnowledgeSearchStrategy(
-        WebEzyRagClient ezyRagClient
+        WebEzyRagClient ezyRagClient,
+        WebEzyRagSettingService ezyRagSettingService,
+        WebRagVectorCollectionService vectorCollectionService
     ) {
-        super(ezyRagClient);
+        super(
+            ezyRagClient,
+            ezyRagSettingService,
+            vectorCollectionService
+        );
     }
 }

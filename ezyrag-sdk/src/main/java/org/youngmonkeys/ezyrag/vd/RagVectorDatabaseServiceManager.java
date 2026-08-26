@@ -39,7 +39,7 @@ public class RagVectorDatabaseServiceManager {
                 .stream()
                 .collect(
                     Collectors.toMap(
-                        RagVectorDatabaseService::getProviderName,
+                        RagVectorDatabaseService::getServiceName,
                         it -> it,
                         (o, n) -> o
                     )

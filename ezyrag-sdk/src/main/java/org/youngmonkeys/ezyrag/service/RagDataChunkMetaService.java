@@ -21,6 +21,7 @@ import org.youngmonkeys.ezyplatform.model.DataMetaModel;
 import org.youngmonkeys.ezyplatform.service.DataMetaService;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_NAME_DATA_CHUNK;
@@ -49,5 +50,18 @@ public class RagDataChunkMetaService {
             chunkIds,
             DataMetaModel::getMetaValue
         );
+    }
+
+    public Long getDataChunkIdByMetaKeyAndMetaValue(
+        String metaKey,
+        String metaValue
+    ) {
+        return dataMetaService
+            .getDataIdMapByMetaValues(
+                TABLE_NAME_DATA_CHUNK,
+                metaKey,
+                Collections.singletonList(metaValue)
+            )
+            .get(metaValue);
     }
 }

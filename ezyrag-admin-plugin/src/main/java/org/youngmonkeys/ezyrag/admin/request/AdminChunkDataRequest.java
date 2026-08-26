@@ -22,6 +22,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminChunkDataRequest {
+    private String vectorDbServiceName;
+    private String collectionName;
     private String sourceType;
     private long sourceId;
     private String title;

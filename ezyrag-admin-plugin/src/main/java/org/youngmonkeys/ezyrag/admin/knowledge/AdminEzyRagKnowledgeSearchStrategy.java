@@ -18,6 +18,8 @@ package org.youngmonkeys.ezyrag.admin.knowledge;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyrag.admin.client.AdminEzyRagClient;
+import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
+import org.youngmonkeys.ezyrag.admin.service.AdminRagVectorCollectionService;
 import org.youngmonkeys.ezyrag.knowledge.EzyRagKnowledgeSearchStrategy;
 
 @EzySingleton
@@ -25,8 +27,14 @@ public class AdminEzyRagKnowledgeSearchStrategy
     extends EzyRagKnowledgeSearchStrategy {
 
     public AdminEzyRagKnowledgeSearchStrategy(
-        AdminEzyRagClient ezyRagClient
+        AdminEzyRagClient ezyRagClient,
+        AdminEzyRagSettingService ezyRagSettingService,
+        AdminRagVectorCollectionService vectorCollectionService
     ) {
-        super(ezyRagClient);
+        super(
+            ezyRagClient,
+            ezyRagSettingService,
+            vectorCollectionService
+        );
     }
 }

@@ -18,27 +18,25 @@ package org.youngmonkeys.ezyrag.repo;
 
 import com.tvd12.ezydata.database.EzyDatabaseRepository;
 import com.tvd12.ezyfox.database.annotation.EzyQuery;
-import com.tvd12.ezyfox.util.EzyNext;
-import org.youngmonkeys.ezyrag.entity.RagCollectionPoint;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollection;
+import org.youngmonkeys.ezyrag.result.VectorCollectionResult;
 
-import java.util.List;
+public interface RagVectorCollectionRepository
+    extends EzyDatabaseRepository<Long, RagVectorCollection> {
 
-public interface RagCollectionPointRepository
-    extends EzyDatabaseRepository<Long, RagCollectionPoint> {
-
-    RagCollectionPoint findByCollectionIdAndPointId(
-        long collectionId,
-        long pointId
+    RagVectorCollection findByVectorDbServiceAndName(
+        String vectorDbService,
+        String name
     );
 
     @EzyQuery(
-        "SELECT e FROM RagCollectionPoint e " +
-            "WHERE e.collectionId = ?0 AND e.id > ?1 " +
-            "ORDER BY e.id ASC"
+        "SELECT e.id, e.name, e.baseUrl, e.vectorSize " +
+            "FROM RagVectorCollection e " +
+            "WHERE e.vectorDbService = ?0 " +
+            "AND e.name = ?1"
     )
-    List<RagCollectionPoint> findListByCollectionIdAndIdGreaterThan(
-        long collectionId,
-        long id,
-        EzyNext next
+    VectorCollectionResult findCollectionByVectorDbServiceAndName(
+        String vectorDbService,
+        String name
     );
 }

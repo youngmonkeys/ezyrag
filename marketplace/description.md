@@ -14,7 +14,7 @@ Làm sạch HTML rồi chia nội dung theo cấu trúc phân cấp đoạn → 
 Tạo vector embedding qua API OpenAI (mặc định `text-embedding-3-small`, có thể đổi model), cấu hình API key ngay trong trang quản trị.
 
 **Nhiều lựa chọn cơ sở dữ liệu vector**
-Hỗ trợ lưu và tìm kiếm vector qua Qdrant, plugin EzyVector, hoặc trực tiếp trong MySQL — chọn và cấu hình kết nối (URL, API key, kích thước vector) theo nhu cầu hạ tầng.
+Hỗ trợ lưu và tìm kiếm vector qua Qdrant, plugin EzyRag, hoặc trực tiếp trong MySQL — chọn và cấu hình kết nối (URL, API key, kích thước vector) theo nhu cầu hạ tầng.
 
 **Tích hợp chat thời gian thực**
 Cung cấp socket plugin để tra cứu tri thức RAG theo thời gian thực cho tính năng chat, phối hợp cùng EzyAI để trả lời câu hỏi người dùng dựa trên dữ liệu của chính website.
@@ -24,4 +24,4 @@ Trang quản trị EzyPlatform cho phép chọn knowledge builder/data chunker/d
 
 # Yêu cầu
 
-Website EzyPlatform cần cài thêm plugin EzyAI (đảm nhiệm sinh câu trả lời bằng LLM), có API key OpenAI để tạo embedding, và ít nhất một kho vector đang chạy: máy chủ Qdrant, plugin EzyVector, hoặc MySQL.
+Website EzyPlatform cần cài thêm plugin EzyAI (đảm nhiệm sinh câu trả lời bằng LLM), có API key OpenAI để tạo embedding, và ít nhất một kho vector đang chạy: máy chủ Qdrant, plugin EzyRag, hoặc MySQL.

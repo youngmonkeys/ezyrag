@@ -1,12 +1,12 @@
 /*
  * Copyright 2026 youngmonkeys.org
- *
+ * 
  * Licensed under the ezyplatform, Version 1.0.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,14 +14,21 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.socket.plugin.repo;
+package org.youngmonkeys.ezyrag.admin.response;
 
-import com.tvd12.ezydata.database.EzyDatabaseRepository;
-import com.tvd12.ezyfox.database.annotation.EzyRepository;
-import org.youngmonkeys.ezyrag.entity.RagCollectionPoint;
-import org.youngmonkeys.ezyrag.repo.RagCollectionPointRepository;
+import lombok.Builder;
+import lombok.Getter;
 
-@EzyRepository
-public interface SocketRagCollectionPointRepository extends
-    RagCollectionPointRepository,
-    EzyDatabaseRepository<Long, RagCollectionPoint> {}
+@Builder
+@Getter
+public class AdminRagVectorCollectionResponse {
+    private long id;
+    private String name;
+    private String displayName;
+    private String baseUrl;
+    private long vectorSize;
+    private String distance;
+    private String status;
+    private long createdAt;
+    private long updatedAt;
+}

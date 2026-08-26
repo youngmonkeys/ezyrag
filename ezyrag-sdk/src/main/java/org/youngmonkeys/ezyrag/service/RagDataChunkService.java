@@ -45,7 +45,7 @@ public class RagDataChunkService {
         RagSaveDataChunkModel model
     ) {
         RagDataChunk entity = modelToEntityConverter
-            .toEntity(model);
+            .toRagDataChunkEntity(model);
         dataChunkRepository.save(entity);
         return entity.getId();
     }
@@ -55,16 +55,18 @@ public class RagDataChunkService {
         RagSaveDataChunkModel model
     ) {
         RagDataChunk entity = getDataChunkEntityByIdOrThrow(chunkId);
-        modelToEntityConverter.mergeToEntity(model, entity);
+        modelToEntityConverter.mergeToRagDataChunkEntity(model, entity);
         dataChunkRepository.save(entity);
     }
 
     public void updateEmbeddingById(
         long chunkId,
+        String embeddingService,
         float[] embedding
     ) {
         dataChunkRepository.updateEmbeddingById(
             chunkId,
+            embeddingService,
             embedding
         );
     }
@@ -118,6 +120,35 @@ public class RagDataChunkService {
         }
         return newArrayList(
             dataChunkRepository.findListByIds(chunkIds),
+            entityToModelConverter::toModel
+        );
+    }
+
+    public List<RagDataChunkModel> getDataChunksBySourceTypeAndSourceId(
+        String sourceType,
+        long sourceId
+    ) {
+        return newArrayList(
+            dataChunkRepository.findListBySourceTypeAndSourceId(
+                sourceType,
+                sourceId
+            ),
+            entityToModelConverter::toModel
+        );
+    }
+
+    public List<RagDataChunkModel> getDataChunksBySourceTypeAndSourceIds(
+        String sourceType,
+        Collection<Long> sourceIds
+    ) {
+        if (sourceIds == null || sourceIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return newArrayList(
+            dataChunkRepository.findListBySourceTypeAndSourceIdIn(
+                sourceType,
+                sourceIds
+            ),
             entityToModelConverter::toModel
         );
     }

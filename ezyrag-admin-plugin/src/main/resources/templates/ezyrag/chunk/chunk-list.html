@@ -53,6 +53,7 @@
                     <thead>
                     <tr>
                         <th class="text-center">[[#{id}]]</th>
+                        <th>[[#{collection_name}]]</th>
                         <th>[[#{source_type}]]</th>
                         <th class="text-center">[[#{source_id}]]</th>
                         <th class="text-center">[[#{chunk_index}]]</th>
@@ -339,6 +340,7 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
     return `
         <tr>
             <td class="text-center">${dataChunk.id}</td>
+            <td class="text-center text-wrap text-break">${dataChunk.collectionName || ''}</td>
             <td>${ezyadmin.getI18nMessage(dataChunk.sourceType?.toLowerCase() || '')}</td>
             <td class="text-center">${dataChunk.sourceId}</td>
             <td class="text-center">${dataChunk.chunkIndex}</td>

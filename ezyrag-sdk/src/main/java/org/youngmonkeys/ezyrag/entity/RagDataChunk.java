@@ -50,6 +50,12 @@ public class RagDataChunk {
     @Column(name = "source_id")
     private long sourceId;
 
+    @Column(name = "collection_id")
+    private long collectionId;
+
+    @Column(name = "embedding_service")
+    private String embeddingService;
+
     @Column(name = "chunk_index")
     private long chunkIndex;
 
