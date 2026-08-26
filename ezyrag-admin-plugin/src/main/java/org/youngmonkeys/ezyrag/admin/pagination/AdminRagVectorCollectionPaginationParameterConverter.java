@@ -1,12 +1,12 @@
 /*
  * Copyright 2026 youngmonkeys.org
- *
+ * 
  * Licensed under the ezyplatform, Version 1.0.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,19 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.admin.pagination;
 
-public final class EzyRagTableNames {
+import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import org.youngmonkeys.ezyplatform.admin.pagination.AdminPaginationParameterConverter;
+import org.youngmonkeys.ezyrag.pagination.RagVectorCollectionPaginationParameterConverter;
 
-    public static final String TABLE_NAME_DATA_CHUNK = "ezyrag_data_chunks";
-    public static final String TABLE_NAME_VECTOR_COLLECTION =
-        "ezyrag_vector_collections";
+@EzySingleton
+public class AdminRagVectorCollectionPaginationParameterConverter
+    extends RagVectorCollectionPaginationParameterConverter {
 
-    private EzyRagTableNames() {}
+    public AdminRagVectorCollectionPaginationParameterConverter(
+        AdminPaginationParameterConverter converter
+    ) {
+        super(converter);
+    }
 }

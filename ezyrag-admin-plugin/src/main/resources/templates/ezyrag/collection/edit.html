@@ -1,0 +1,209 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+<head>
+    <script>
+        var ezyrag = {};
+    </script>
+</head>
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-12">
+        <form id="editBankForm">
+            <div class="form-group row">
+                <label for="editBankCode" class="col-sm-3 col-form-label">
+                    [[#{code}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="bankCode" id="editBankCode"
+                           class="form-control" th:placeholder="#{bank_code}"
+                           th:value="${bank.code}">
+                </div>
+                <label id="editBankCodeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="editBankCode">
+                    <i class="far fa-times-circle"></i> <span id="editBankCodeError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="editBankBinCode" class="col-sm-3 col-form-label">
+                    [[#{bin_code}]]
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="bankBinCode" id="editBankBinCode"
+                           class="form-control" th:placeholder="#{bin_code}"
+                           th:value="${bank.binCode}">
+                </div>
+                <label id="editBankBinCodeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="editBankBinCode">
+                    <i class="far fa-times-circle"></i> <span id="editBankBinCodeError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="editBankName" class="col-sm-3 col-form-label">
+                    [[#{name}]] (<span class="text-danger">*</span>)
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="bankName" id="editBankName"
+                           class="form-control" th:placeholder="#{bank_name}"
+                           th:value="${bank.name}">
+                </div>
+                <label id="editBankNameErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="editBankName">
+                    <i class="far fa-times-circle"></i> <span id="editBankNameError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="editBankLogoImage" class="col-md-3 col-form-label">
+                    [[#{logo}]]
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <div class="input-group cursor-pointer" onclick="ezyrag.selectLogoImage('add');">
+                        <input type="text" name="bankLogoImage"
+                               id="editBankLogoImage"
+                               class="form-control" th:placeholder="#{select_an_image}"
+                               th:value="${bank.logoImage != null ? bank.logoImage.originalName : ''}">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span>[[#{browse}]]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <label id="editBankLogoImageErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="editBankLogoImage">
+                    <i class="far fa-times-circle"></i> <span id="editBankLogoImageError">[[#{invalid}]]</span>
+                </label>
+                <div class="col-md-3"></div>
+                <div class="col-md-4">
+                    <img id="bankLogoImage" class="object-fit-cover mt-1"
+                         th:classappend="${bank.logoImage != null ? '' : 'd-none'}"
+                         th:src="${bank.logoImage != null ? bank.logoImage.getUrlOrDefault('#') : '#'}"
+                         height="64">
+                </div>
+                <div class="col-md-5"></div>
+            </div>
+            <div class="form-group row">
+                <label for="editBankBannerImage" class="col-md-3 col-form-label">
+                    [[#{banner_image}]]
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <div class="input-group cursor-pointer" onclick="ezyrag.selectBannerImage('add');">
+                        <input type="text" name="bankBannerImage"
+                               id="editBankBannerImage"
+                               class="form-control" th:placeholder="#{select_an_image}"
+                               th:value="${bank.bannerImage != null ? bank.bannerImage.originalName : ''}">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span>[[#{browse}]]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <label id="editBankBannerImageErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="editBankBannerImage">
+                    <i class="far fa-times-circle"></i> <span id="editBankBannerImageError">[[#{invalid}]]</span>
+                </label>
+                <div class="col-md-3"></div>
+                <div class="col-md-4">
+                    <img id="bankBannerImage" class="object-fit-cover mt-1"
+                         th:classappend="${bank.bannerImage != null ? '' : 'd-none'}"
+                         th:src="${bank.bannerImage != null ? bank.bannerImage.getUrlOrDefault('#') : '#'}"
+                         height="64">
+                </div>
+                <div class="col-md-5"></div>
+            </div>
+            <div class="form-group row">
+                <label for="editBankAddress" class="col-sm-3 col-form-label">
+                    [[#{address}]]
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="bankAddress" id="editBankAddress"
+                           class="form-control" th:placeholder="#{bank_address}"
+                           th:value="${bank.address}">
+                </div>
+                <label id="editBankAddressErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="editBankAddress">
+                    <i class="far fa-times-circle"></i> <span id="editBankAddressError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="editBankUrl" class="col-sm-3 col-form-label">
+                    [[#{url}]]
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="bankUrl" id="editBankUrl"
+                           class="form-control" th:placeholder="#{url}"
+                           th:value="${bank.url}">
+                </div>
+                <label id="editBankUrlErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="editBankUrl">
+                    <i class="far fa-times-circle"></i> <span id="editBankUrlError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="editBankStatus" class="col-sm-3 col-form-label">
+                    [[#{status}]]
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <select name="status" id="editBankStatus" class="form-control">
+                        <option th:each="status : ${statuses}"
+                                th:value="${status}"
+                                th:selected="${bank.status == status.toString()}">
+                            [[#{${status.toString().toLowerCase()}}]]
+                        </option>
+                    </select>
+                </div>
+                <label id="editBankStatusErrorLabel"
+                       class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="editBankStatus">
+                    <i class="far fa-times-circle"></i> <span id="editBankStatusError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="button" class="btn btn-primary btn-block" onclick="ezyrag.editBank();">[[#{submit}]]</button>
+                </div>
+                <div class="col-lg-7 col-md-6"></div>
+                <!-- /.col -->
+            </div>
+        </form>
+    </div>
+</div>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyrag.editBankId = /*[[${bank.id}]]*/;
+ezyrag.bankBannerId = /*[[${bank.bannerImage != null ? bank.bannerImage.id : 0}]]*/ '';
+ezyrag.bankLogoId = /*[[${bank.logoImage != null ? bank.logoImage.id : 0}]]*/ '';
+/*]]>*/
+ezyrag.bankLogoImage = {
+  id: ezyrag.bankLogoId
+};
+
+ezyrag.bankBannerImage = {
+  id: ezyrag.bankBannerId
+};
+
+// ========== edit bank =============
+ezyrag.editBank = function() {
+    ezyrag.addOrEditBank('edit')
+        + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+}
+</script>
+<th:block layout:fragment="post-scripts">
+    <th:block th:replace="~{ezyrag/bank/scripts :: add-edit}"  />
+</th:block>
+</body>
+</html>

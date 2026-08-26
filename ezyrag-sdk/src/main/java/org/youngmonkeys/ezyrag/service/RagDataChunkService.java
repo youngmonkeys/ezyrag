@@ -45,7 +45,7 @@ public class RagDataChunkService {
         RagSaveDataChunkModel model
     ) {
         RagDataChunk entity = modelToEntityConverter
-            .toEntity(model);
+            .toRagDataChunkEntity(model);
         dataChunkRepository.save(entity);
         return entity.getId();
     }
@@ -55,7 +55,7 @@ public class RagDataChunkService {
         RagSaveDataChunkModel model
     ) {
         RagDataChunk entity = getDataChunkEntityByIdOrThrow(chunkId);
-        modelToEntityConverter.mergeToEntity(model, entity);
+        modelToEntityConverter.mergeToRagDataChunkEntity(model, entity);
         dataChunkRepository.save(entity);
     }
 

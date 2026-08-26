@@ -30,16 +30,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_NAME_COLLECTION;
+import static org.youngmonkeys.ezyrag.constant.EzyRagTableNames.TABLE_NAME_VECTOR_COLLECTION;
 
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name = TABLE_NAME_COLLECTION)
+@Table(name = TABLE_NAME_VECTOR_COLLECTION)
 @AllArgsConstructor
 @NoArgsConstructor
-public class RagCollection {
+public class RagVectorCollection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -19,31 +19,61 @@ package org.youngmonkeys.ezyrag.converter;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.time.ClockProxy;
 import org.youngmonkeys.ezyrag.entity.RagDataChunk;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollection;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollectionStatus;
 import org.youngmonkeys.ezyrag.model.RagSaveDataChunkModel;
+import org.youngmonkeys.ezyrag.model.SaveRagVectorCollectionModel;
+
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
 @AllArgsConstructor
 public class EzyRagModelToEntityConverter {
 
     private final ClockProxy clock;
 
-    public RagDataChunk toEntity(
+    public RagDataChunk toRagDataChunkEntity(
         RagSaveDataChunkModel model
     ) {
         RagDataChunk entity = new RagDataChunk();
         entity.setSourceType(model.getSourceType());
         entity.setSourceId(model.getSourceId());
         entity.setChunkIndex(model.getChunkIndex());
-        mergeToEntity(model, entity);
+        mergeToRagDataChunkEntity(model, entity);
         entity.setCreatedAt(entity.getUpdatedAt());
         return entity;
     }
 
-    public void mergeToEntity(
+    public void mergeToRagDataChunkEntity(
         RagSaveDataChunkModel model,
         RagDataChunk entity
     ) {
         entity.setContent(model.getContent());
         entity.setContentHash(model.getContentHash());
+        entity.setUpdatedAt(clock.nowDateTime());
+    }
+
+    public RagVectorCollection toVectorCollectionEntity(
+        SaveRagVectorCollectionModel model
+    ) {
+        RagVectorCollection entity = new RagVectorCollection();
+        mergeToVectorCollectionEntity(model, entity);
+        entity.setCreatedAt(entity.getUpdatedAt());
+        return entity;
+    }
+
+    public void mergeToVectorCollectionEntity(
+        SaveRagVectorCollectionModel model,
+        RagVectorCollection entity
+    ) {
+        entity.setName(model.getName());
+        entity.setDisplayName(model.getDisplayName());
+        entity.setVectorSize(model.getVectorSize());
+        entity.setDistance(model.getDistance());
+        String status = model.getStatus();
+        if (isBlank(status)) {
+            status = RagVectorCollectionStatus.ACTIVATED.toString();
+        }
+        entity.setStatus(status);
         entity.setUpdatedAt(clock.nowDateTime());
     }
 }

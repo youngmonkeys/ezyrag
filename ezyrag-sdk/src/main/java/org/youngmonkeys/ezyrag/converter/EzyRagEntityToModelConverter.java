@@ -19,12 +19,32 @@ package org.youngmonkeys.ezyrag.converter;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.time.ClockProxy;
 import org.youngmonkeys.ezyrag.entity.RagDataChunk;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollection;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
+import org.youngmonkeys.ezyrag.model.RagVectorCollectionModel;
 
 @AllArgsConstructor
 public class EzyRagEntityToModelConverter {
 
     private final ClockProxy clock;
+
+    public RagVectorCollectionModel toModel(
+        RagVectorCollection entity
+    ) {
+        if (entity == null) {
+            return null;
+        }
+        return RagVectorCollectionModel.builder()
+            .id(entity.getId())
+            .name(entity.getName())
+            .displayName(entity.getDisplayName())
+            .vectorSize(entity.getVectorSize())
+            .distance(entity.getDistance())
+            .status(entity.getStatus())
+            .createdAt(clock.toTimestamp(entity.getCreatedAt()))
+            .updatedAt(clock.toTimestamp(entity.getUpdatedAt()))
+            .build();
+    }
 
     public RagDataChunkModel toModel(
         RagDataChunk entity

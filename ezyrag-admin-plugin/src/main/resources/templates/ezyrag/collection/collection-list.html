@@ -1,0 +1,262 @@
+<!--
+ ~ Copyright 2026 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<html
+        lang="en"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="content">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-lg-6 col-md-4"></div>
+            <div class="col-lg-3 col-md-4 page-search">
+                <label for="statusSelect" class="text-nowrap">[[#{status}]]: </label>
+                <select id="statusSelect" class="form-control"
+                        onchange="ezyvector.onVectorCollectionFilterChanged();">
+                    <option value="">[[#{all}]]</option>
+                    <option th:each="status : ${vectorCollectionStatuses}"
+                            th:value="${status}"
+                            th:text="${#messages.msg(#strings.toLowerCase(status))}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-4 page-search">
+                <label for="keywordInput" class="text-nowrap">[[#{keyword}]]: </label>
+                <input type="text" id="keywordInput" class="form-control"
+                       th:placeholder="#{keyword}"
+                       onkeydown="ezyvector.onKeydownToFetchVectorCollectionList(event);">
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body table-responsive p-0">
+                <table class="table table-bordered table-hover text-nowrap align-middle-cells">
+                    <thead>
+                    <tr>
+                        <th class="text-center">[[#{id}]]</th>
+                        <th>[[#{name}]]</th>
+                        <th class="text-center">[[#{vector_size}]]</th>
+                        <th class="text-center">[[#{distance}]]</th>
+                        <th class="text-center">[[#{index_type}]]</th>
+                        <th class="text-center">[[#{status}]]</th>
+                        <th class="text-center">[[#{points_count}]]</th>
+                        <th>[[#{config}]]</th>
+                        <th class="text-center">[[#{created_at}]]</th>
+                        <th class="text-center">[[#{updated_at}]]</th>
+                        <th class="text-center">[[#{actions}]]</th>
+                    </tr>
+                    </thead>
+                    <tbody id="vectorCollectionListBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer clearfix">
+                <span><span id="vectorCollectionCountText">0</span>
+                    [[${#strings.toLowerCase(#messages.msg('of'))}]]
+                    <span id="totalVectorCollectionText">0</span>
+                    [[${#strings.toLowerCase(#messages.msg('vector_collections'))}]]
+                </span>
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="firstPageButton"
+                           onclick="ezyvector.fetchVectorCollectionList('first');">
+                            <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="prevPageButton"
+                           onclick="ezyvector.fetchVectorCollectionList('prev');">[[#{prev}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="nextPageButton"
+                           onclick="ezyvector.fetchVectorCollectionList('next');">[[#{next}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="lastPageButton"
+                           onclick="ezyvector.fetchVectorCollectionList('last');">
+                            <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</th:block>
+<script th:fragment="scripts">
+ezyvector.lastVectorCollectionPageToken = {};
+
+ezyvector.onKeydownToFetchVectorCollectionList = function(event) {
+    if (event.key === 'Enter') {
+        ezyvector.fetchVectorCollectionList('first');
+    }
+}
+
+ezyvector.onVectorCollectionFilterChanged = function() {
+    ezyvector.fetchVectorCollectionList('first');
+}
+
+ezyvector.changeBrowserUrl = function() {
+    var url = location.pathname;
+    var queryString = ezyvector.buildVectorCollectionFilterQueryString();
+    if (queryString) {
+        url += '?' + queryString.substring(1);
+    }
+    window.history.pushState({}, '', url);
+}
+
+ezyvector.buildVectorCollectionFilterQueryString = function() {
+    var queryString = '';
+    var keyword = $('#keywordInput').val();
+    var status = $('#statusSelect').val();
+    var sortOrder = $('#sortOrderSelect').val();
+    if (keyword) {
+        queryString += '&keyword=' + encodeURIComponent(keyword);
+    }
+    if (status) {
+        queryString += '&status=' + encodeURIComponent(status);
+    }
+    if (sortOrder) {
+        queryString += '&sortOrder=' + encodeURIComponent(sortOrder);
+    }
+    return queryString;
+}
+
+ezyvector.fillVectorCollectionSearchInputsFromUrl = function() {
+    var params = new URLSearchParams(location.search);
+    $('#keywordInput').val(params.get('keyword') || '');
+    $('#statusSelect').val(params.get('status') || '');
+    $('#sortOrderSelect').val(params.get('sortOrder') || 'ID_DESC');
+}
+
+ezyvector.fetchVectorCollectionList = function(action) {
+    var queryString = ezyvector.buildVectorCollectionFilterQueryString();
+    if (action === 'next') {
+        if (ezyvector.lastVectorCollectionPageToken.next) {
+            queryString += '&nextPageToken='
+                + encodeURIComponent(ezyvector.lastVectorCollectionPageToken.next);
+        } else {
+            return;
+        }
+    } else if (action === 'prev') {
+        if (ezyvector.lastVectorCollectionPageToken.prev) {
+            queryString += '&prevPageToken='
+                + encodeURIComponent(ezyvector.lastVectorCollectionPageToken.prev);
+        } else {
+            return;
+        }
+    } else if (action === 'last') {
+        queryString += '&lastPage=true';
+    }
+    $.ajax({
+        url: '/ezyvector/api/v1/vector-collections?limit=12' + queryString,
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#vectorCollectionCountText').text(data.count);
+        $('#totalVectorCollectionText').text(data.total);
+        ezyvector.lastVectorCollectionPageToken = data.pageToken || {};
+        $('#vectorCollectionListBody').html(
+            ezyvector.buildVectorCollectionListBodyHtml(data.items || [])
+        );
+        ezyvector.decoratePaginationButtons(data);
+        ezyvector.changeBrowserUrl();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyvector.decoratePaginationButtons = function(data) {
+    if (data.continuation && data.continuation.hasNext) {
+        $('#nextPageButton').removeClass('text-secondary');
+        $('#lastPageButton').removeClass('text-secondary');
+    } else {
+        $('#nextPageButton').addClass('text-secondary');
+        $('#lastPageButton').addClass('text-secondary');
+    }
+    if (data.continuation && data.continuation.hasPrevious) {
+        $('#prevPageButton').removeClass('text-secondary');
+        $('#firstPageButton').removeClass('text-secondary');
+    } else {
+        $('#prevPageButton').addClass('text-secondary');
+        $('#firstPageButton').addClass('text-secondary');
+    }
+}
+
+ezyvector.buildVectorCollectionListBodyHtml = function(vectorCollections) {
+    var html = '';
+    vectorCollections.forEach((vectorCollection) => {
+        html += ezyvector.buildVectorCollectionListItemHtml(vectorCollection);
+    });
+    return html;
+}
+
+ezyvector.formatVectorCollectionStatus = function(status) {
+    if (!status) {
+        return '';
+    }
+    return `
+        <span class="${ezyadmin.getTextColorByStatus(status)}">
+            ${ezyadmin.getI18nMessage(status.toLowerCase())}
+        </span>
+        `;
+}
+
+ezyvector.formatVectorCollectionConfig = function(config) {
+    if (!config) {
+        return '';
+    }
+    return ezyadmin.escapeHtml(ezyadmin.truncateString(config, 160, '...'));
+}
+
+ezyvector.buildVectorCollectionListItemHtml = function(vectorCollection) {
+    return `
+        <tr>
+            <td class="text-center">${vectorCollection.id}</td>
+            <td>
+                <a href="/ezyvector/vector-collections/${vectorCollection.id}">
+                    ${ezyadmin.escapeHtml(vectorCollection.name || '')}
+                </a>
+            </td>
+            <td class="text-center">${vectorCollection.vectorSize}</td>
+            <td class="text-center">${ezyadmin.escapeHtml(vectorCollection.distance || '')}</td>
+            <td class="text-center">${ezyadmin.escapeHtml(vectorCollection.indexType || '')}</td>
+            <td class="text-center">
+                ${ezyvector.formatVectorCollectionStatus(vectorCollection.status)}
+            </td>
+            <td class="text-center">${ezyadmin.formatNumberWithCommas(vectorCollection.pointsCount || 0)}</td>
+            <td class="text-wrap" style="min-width: 240px; max-width: 420px;">
+                ${ezyvector.formatVectorCollectionConfig(vectorCollection.config)}
+            </td>
+            <td class="text-center">${ezyadmin.formatTimeStamp(vectorCollection.createdAt)}</td>
+            <td class="text-center">${ezyadmin.formatTimeStamp(vectorCollection.updatedAt)}</td>
+            <td class="text-center">
+                <a class="btn btn-link px-1" href="/ezyvector/vector-collections/${vectorCollection.id}">
+                    <i class="fas fa-eye text-info"></i>
+                </a>
+            </td>
+        </tr>
+        `;
+}
+
+ezyvector.fillVectorCollectionSearchInputsFromUrl();
+ezyvector.fetchVectorCollectionList();
+</script>
+</body>
+</html>

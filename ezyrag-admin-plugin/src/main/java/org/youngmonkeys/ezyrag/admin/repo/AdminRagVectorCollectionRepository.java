@@ -14,13 +14,14 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.constant;
+package org.youngmonkeys.ezyrag.admin.repo;
 
-public final class EzyRagTableNames {
+import com.tvd12.ezydata.database.EzyDatabaseRepository;
+import com.tvd12.ezyfox.database.annotation.EzyRepository;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollection;
+import org.youngmonkeys.ezyrag.repo.RagVectorCollectionRepository;
 
-    public static final String TABLE_NAME_DATA_CHUNK = "ezyrag_data_chunks";
-    public static final String TABLE_NAME_VECTOR_COLLECTION =
-        "ezyrag_vector_collections";
-
-    private EzyRagTableNames() {}
-}
+@EzyRepository
+public interface AdminRagVectorCollectionRepository extends
+    RagVectorCollectionRepository,
+    EzyDatabaseRepository<Long, RagVectorCollection> {}

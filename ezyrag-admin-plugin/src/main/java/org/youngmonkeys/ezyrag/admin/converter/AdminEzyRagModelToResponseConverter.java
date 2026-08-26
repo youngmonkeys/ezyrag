@@ -18,12 +18,45 @@ package org.youngmonkeys.ezyrag.admin.converter;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
+import org.youngmonkeys.ezyrag.admin.response.AdminRagVectorCollectionDetailsResponse;
+import org.youngmonkeys.ezyrag.admin.response.AdminRagVectorCollectionResponse;
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
+import org.youngmonkeys.ezyrag.model.RagVectorCollectionModel;
 
 import java.util.Map;
 
 @EzySingleton
 public class AdminEzyRagModelToResponseConverter {
+
+    public AdminRagVectorCollectionResponse toVectorCollectionResponse(
+        RagVectorCollectionModel model
+    ) {
+        return AdminRagVectorCollectionResponse.builder()
+            .id(model.getId())
+            .name(model.getName())
+            .displayName(model.getDisplayName())
+            .vectorSize(model.getVectorSize())
+            .distance(model.getDistance())
+            .status(model.getStatus())
+            .createdAt(model.getCreatedAt())
+            .updatedAt(model.getUpdatedAt())
+            .build();
+    }
+
+    public AdminRagVectorCollectionDetailsResponse toVectorCollectionDetailsResponse(
+        RagVectorCollectionModel model
+    ) {
+        return AdminRagVectorCollectionDetailsResponse.builder()
+            .id(model.getId())
+            .name(model.getName())
+            .displayName(model.getDisplayName())
+            .vectorSize(model.getVectorSize())
+            .distance(model.getDistance())
+            .status(model.getStatus())
+            .createdAt(model.getCreatedAt())
+            .updatedAt(model.getUpdatedAt())
+            .build();
+    }
 
     public AdminRagDataChunkResponse toDataChunkResponse(
         RagDataChunkModel model,
