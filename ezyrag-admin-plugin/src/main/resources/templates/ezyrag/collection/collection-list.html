@@ -61,6 +61,7 @@
                         <th>[[#{name}]]</th>
                         <th class="text-center">[[#{vector_size}]]</th>
                         <th class="text-center">[[#{distance}]]</th>
+                        <th class="text-center">[[#{default}]]</th>
                         <th class="text-center">[[#{status}]]</th>
                         <th class="text-center">[[#{created_at}]]</th>
                         <th class="text-center">[[#{updated_at}]]</th>
@@ -103,7 +104,12 @@
         </div>
     </div>
 </th:block>
-<script th:fragment="scripts">
+<script th:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.messages.default = /*[[#{default}]]*/ '';
+ezyadmin.messages.set_as = /*[[#{set_as}]]*/ '';
+/*]]>*/
+
 ezyrag.lastVectorCollectionPageToken = {};
 
 ezyrag.onKeydownToFetchVectorCollectionList = function(event) {
@@ -213,6 +219,36 @@ ezyrag.buildVectorCollectionListBodyHtml = function(vectorCollections) {
     return html;
 }
 
+ezyrag.formatVectorCollectionDefault = function(collectionName) {
+    if (collectionName === ezyrag.defaultVectorCollectionName) {
+        return `
+            <span class="text-info">${ezyadmin.getI18nMessage('default')}</span>
+            `;
+    }
+    return `
+        <a class="cursor-pointer"
+           onclick="ezyrag.setDefaultVectorCollection('${escape(collectionName || '')}');">
+            ${ezyadmin.messages.set_as}
+        </a>
+        `;
+}
+
+ezyrag.setDefaultVectorCollection = function(escapedCollectionName) {
+    var collectionName = unescape(escapedCollectionName);
+    $.ajax({
+        type: 'PUT',
+        url: `/ezyrag/api/v1/vector-database-services/${ezyrag.vectorDatabaseServiceName}`
+            + `/vector-collections/${encodeURIComponent(collectionName)}/set-as-default`,
+        success: function() {
+            ezyrag.defaultVectorCollectionName = collectionName;
+            ezyrag.fetchVectorCollectionList();
+        },
+        error: function(e) {
+            ezyadmin.processUpdateApiErrors({}, e);
+        }
+    });
+}
+
 ezyrag.formatVectorCollectionStatus = function(status) {
     if (!status) {
         return '';
@@ -235,6 +271,9 @@ ezyrag.buildVectorCollectionListItemHtml = function(vectorCollection) {
             </td>
             <td class="text-center">${vectorCollection.vectorSize}</td>
             <td class="text-center">${ezyadmin.escapeHtml(vectorCollection.distance || '')}</td>
+            <td class="text-center">
+                ${ezyrag.formatVectorCollectionDefault(vectorCollection.name)}
+            </td>
             <td class="text-center">
                 ${ezyrag.formatVectorCollectionStatus(vectorCollection.status)}
             </td>

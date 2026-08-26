@@ -137,6 +137,11 @@ public class AdminApiVectorCollectionController {
                 collectionId,
                 requestToModelConverter.toModel(request)
             );
+        ezyRagSettingService
+            .setDefaultCollectionNameByVectorDbServiceNameIfAbsent(
+                request.getVectorDbService(),
+                request.getName()
+            );
         RagVectorDatabaseService service = vectorDatabaseServiceManager
             .getVectorDatabaseServiceByName(request.getVectorDbService());
         if (service != null) {

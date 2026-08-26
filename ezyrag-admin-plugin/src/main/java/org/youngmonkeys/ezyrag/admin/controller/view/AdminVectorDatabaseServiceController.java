@@ -78,6 +78,11 @@ public class AdminVectorDatabaseServiceController {
                     serviceName.toLowerCase()
             )
             .addVariable("vectorDatabaseServiceName", serviceName)
+            .addVariable(
+                "defaultVectorCollectionName",
+                ezyRagSettingService
+                    .getDefaultCollectionNameByVectorDbServiceName(serviceName)
+            )
             .addVariable("minVectorSize", MIN_VECTOR_SIZE)
             .addVariable(
                 "vectorCollectionStatuses",
