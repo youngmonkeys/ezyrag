@@ -1,5 +1,5 @@
 <!--
- ~ Copyright 2022 youngmonkeys.org
+ ~ Copyright 2026 youngmonkeys.org
  ~
  ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
  ~ you may not use this file except in compliance with the License.
@@ -14,163 +14,87 @@
  ~ limitations under the License.
 -->
 
-<!DOCTYPE html>
-<html
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{ezyadmin}">
-<head>
-    <script>
-        var ezyrag = {};
-    </script>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div layout:fragment="content" class="row">
-    <div class="col-12">
-        <form id="addBankForm" onsubmit="return false;">
-            <div class="form-group row">
-                <label for="addBankCode" class="col-sm-3 col-form-label">
-                    [[#{code}]] (<span class="text-danger">*</span>)
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="text" name="bankCode" id="addBankCode"
-                           class="form-control" th:placeholder="#{bank_code}">
+<th:block th:fragment="content">
+    <div class="modal fade pt-4rem" id="add-vector-collection">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="add-vector-collection-modal-title">
+                        [[#{add_new_vector_collection}]]
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <label id="addBankCodeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="addBankCode">
-                    <i class="far fa-times-circle"></i> <span id="addBankCodeError">[[#{invalid}]]</span>
-                </label>
-            </div>
-            <div class="form-group row">
-                <label for="addBankBinCode" class="col-sm-3 col-form-label">
-                    [[#{bin_code}]]
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="text" name="bankBinCode" id="addBankBinCode"
-                           class="form-control" th:placeholder="#{bin_code}">
-                </div>
-                <label id="addBankBinCodeErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="addBankBinCode">
-                    <i class="far fa-times-circle"></i> <span id="addBankBinCodeError">[[#{invalid}]]</span>
-                </label>
-            </div>
-            <div class="form-group row">
-                <label for="addBankName" class="col-sm-3 col-form-label">
-                    [[#{name}]] (<span class="text-danger">*</span>)
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="text" name="bankName" id="addBankName"
-                           class="form-control" th:placeholder="#{bank_name}">
-                </div>
-                <label id="addBankNameErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="addBankName">
-                    <i class="far fa-times-circle"></i> <span id="addBankNameError">[[#{invalid}]]</span>
-                </label>
-            </div>
-            <div class="form-group row">
-                <label for="addBankLogoImage" class="col-md-3 col-form-label">
-                    [[#{logo}]]
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <div class="input-group cursor-pointer" onclick="ezyrag.selectLogoImage('add');">
-                        <input type="text" name="bankLogoImage"
-                               id="addBankLogoImage"
-                               class="form-control" th:placeholder="#{select_an_image}">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span>[[#{browse}]]</span>
+                <div class="modal-body">
+                    <form id="addVectorCollectionForm" onsubmit="return false;">
+                        <div class="form-group row">
+                            <label for="addVectorCollectionName" class="col-4 col-form-label">
+                                [[#{name}]] (<span class="text-danger">*</span>)
+                            </label>
+                            <div class="col-8">
+                                <label class="col-form-label text-danger d-none"
+                                       id="addVectorCollectionNameErrorLabel" for="addVectorCollectionName">
+                                    <i class="far fa-times-circle"></i> <span id="addVectorCollectionNameError"></span>
+                                </label>
+                                <input type="text" name="name" id="addVectorCollectionName"
+                                       class="form-control" th:placeholder="#{collection_name_hint}"
+                                       onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'add');">
                             </div>
                         </div>
-                    </div>
-                </div>
-                <label id="addBankLogoImageErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="addBankLogoImage">
-                    <i class="far fa-times-circle"></i> <span id="addBankLogoImageError">[[#{invalid}]]</span>
-                </label>
-                <div class="col-md-3"></div>
-                <div class="col-md-4">
-                    <img id="bankLogoImage" class="object-fit-cover mt-1 d-none" src="#" height="64">
-                </div>
-                <div class="col-md-5"></div>
-            </div>
-            <div class="form-group row">
-                <label for="addBankBannerImage" class="col-md-3 col-form-label">
-                    [[#{banner_image}]]
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <div class="input-group cursor-pointer" onclick="ezyrag.selectBannerImage('add');">
-                        <input type="text" name="bankBannerImage"
-                               id="addBankBannerImage"
-                               class="form-control" th:placeholder="#{select_an_image}">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span>[[#{browse}]]</span>
+                        <div class="form-group row">
+                            <label for="addVectorCollectionDisplayName" class="col-4 col-form-label">
+                                [[#{display_name}]]
+                            </label>
+                            <div class="col-8">
+                                <input type="text" name="displayName" id="addVectorCollectionDisplayName"
+                                       class="form-control" th:placeholder="#{display_name}"
+                                       onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'add');">
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label for="addVectorCollectionVectorSize" class="col-4 col-form-label">
+                                [[#{vector_size}]] (<span class="text-danger">*</span>)
+                            </label>
+                            <div class="col-8">
+                                <label class="col-form-label text-danger d-none"
+                                       id="addVectorCollectionVectorSizeErrorLabel" for="addVectorCollectionVectorSize">
+                                    <i class="far fa-times-circle"></i> <span id="addVectorCollectionVectorSizeError"></span>
+                                </label>
+                                <input type="number" name="vectorSize" id="addVectorCollectionVectorSize"
+                                       class="form-control" th:placeholder="#{vector_size_hint}"
+                                       th:min="${minVectorSize}"
+                                       onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'add');">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="addVectorCollectionDistance" class="col-4 col-form-label">
+                                [[#{distance}]]
+                            </label>
+                            <div class="col-8">
+                                <input type="text" name="distance" id="addVectorCollectionDistance"
+                                       class="form-control" placeholder="Cosine"
+                                       onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'add');">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">[[#{cancel}]]</button>
                     </div>
-                </div>
-                <label id="addBankBannerImageErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="addBankBannerImage">
-                    <i class="far fa-times-circle"></i> <span id="addBankBannerImageError">[[#{invalid}]]</span>
-                </label>
-                <div class="col-md-3"></div>
-                <div class="col-md-4">
-                    <img id="bankBannerImage" class="object-fit-cover mt-1 d-none" src="#" height="64">
-                </div>
-                <div class="col-md-5"></div>
-            </div>
-            <div class="form-group row">
-                <label for="addBankAddress" class="col-sm-3 col-form-label">
-                    [[#{address}]]
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="text" name="bankAddress" id="addBankAddress"
-                           class="form-control" th:placeholder="#{bank_address}">
-                </div>
-                <label id="addBankAddressErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="addBankAddress">
-                    <i class="far fa-times-circle"></i> <span id="addBankAddressError">[[#{invalid}]]</span>
-                </label>
-            </div>
-            <div class="form-group row">
-                <label for="addBankUrl" class="col-sm-3 col-form-label">
-                    [[#{url}]]
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <input type="text" name="bankUrl" id="addBankUrl"
-                           class="form-control" th:placeholder="#{url}">
-                </div>
-                <label id="addBankUrlErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="addBankUrl">
-                    <i class="far fa-times-circle"></i> <span id="addBankUrlError">[[#{invalid}]]</span>
-                </label>
-            </div>
-            <div class="form-group row">
-                <label for="addBankStatus" class="col-sm-3 col-form-label">
-                    [[#{status}]]
-                </label>
-                <div class="col-lg-7 col-md-6">
-                    <select name="status" id="addBankStatus" class="form-control">
-                        <option th:each="status : ${statuses}"
-                                th:value="${status}">
-                            [[#{${status.toString().toLowerCase()}}]]
-                        </option>
-                    </select>
+                    <button type="button" class="btn btn-primary"
+                            onclick="ezyrag.addOrEditVectorCollection('add');">
+                        [[#{add}]]
+                    </button>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-lg-2 col-md-3">
-                    <button type="button" class="btn btn-primary btn-block" onclick="ezyrag.addNewBank();">[[#{submit}]]</button>
-                </div>
-                <div class="col-lg-7 col-md-6"></div>
-                <!-- /.col -->
-            </div>
-        </form>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
-</div>
-<script layout:fragment="scripts">
-// ========== add bank =============
-ezyrag.addNewBank = function() {
-    ezyrag.addOrEditBank('add');
-}
-</script>
-<th:block layout:fragment="post-scripts">
-    <th:block th:replace="~{ezyrag/bank/scripts :: add-edit}"  />
 </th:block>
 </body>
 </html>

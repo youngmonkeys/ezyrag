@@ -1,12 +1,12 @@
 <!--
- ~ Copyright 2022 youngmonkeys.org
- ~ 
+ ~ Copyright 2026 youngmonkeys.org
+ ~
  ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
  ~ you may not use this file except in compliance with the License.
  ~ You may obtain a copy of the License at
- ~ 
+ ~
  ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
- ~ 
+ ~
  ~ Unless required by applicable law or agreed to in writing, software
  ~ distributed under the License is distributed on an "AS IS" BASIS,
  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,114 +14,60 @@
  ~ limitations under the License.
 -->
 
-<!DOCTYPE html>
-<html
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
 <script th:fragment="add-edit">
-// =========== icon ===================
-ezyrag.selectLogoImage = function(action) {
-    ezyadmin.showMediaModal('bankLogoImage')
-        .onMediaSelected(media => {
-            $('#bankLogoImage').attr(
-                'src',
-                ezyadmin.extractMediaUrl(media)
-            )
-            .removeClass('d-none')
-            .show();
-            ezyrag.bankLogoImage = media;
-            $('#' + action + 'BankLogoImage').val(media.originalName);
-            ezyadmin.closeMediaModal();
-        });
+// ========== show add vector collection modal =============
+ezyrag.showAddVectorCollectionModal = function() {
+    $('#add-vector-collection').modal('show');
 }
 
-// =========== banner ===================
-ezyrag.selectBannerImage = function(action) {
-    ezyadmin.showMediaModal('bankBannerImage')
-        .onMediaSelected(media => {
-            $('#bankBannerImage').attr(
-                'src',
-                ezyadmin.extractMediaUrl(media)
-            )
-            .removeClass('d-none')
-            .show();
-            ezyrag.bankBannerImage = media;
-            $('#' + action + 'BankBannerImage').val(media.originalName);
-            ezyadmin.closeMediaModal();
-        });
+// ========== show edit vector collection modal =============
+ezyrag.showEditVectorCollectionModal = function(
+    id,
+    name,
+    displayName,
+    vectorSize,
+    distance,
+    status
+) {
+    ezyrag.selectedVectorCollectionId = id;
+    $('#editVectorCollectionName').val(unescape(name));
+    $('#editVectorCollectionDisplayName').val(unescape(displayName));
+    $('#editVectorCollectionVectorSize').val(vectorSize);
+    $('#editVectorCollectionDistance').val(unescape(distance));
+    $('#editVectorCollectionStatus').val(status);
+    $('#edit-vector-collection').modal('show');
 }
 
-// ========== add or edit bank ===========
-ezyrag.addOrEditBank = function(action) {
-    var formData = ezyadmin.formDataToObject(action + 'BankForm');
-    if (ezyrag.bankLogoImage) {
-        formData['bankLogoImage'] = ezyrag.bankLogoImage.id;
+// ========== add or edit vector collection ===========
+ezyrag.onKeydownToAddOrEditVectorCollection = function(event, action) {
+    if (event.key === 'Enter') {
+        ezyrag.addOrEditVectorCollection(action);
     }
-    if (ezyrag.bankBannerImage) {
-        formData['bankBannerImage'] = ezyrag.bankBannerImage.id;
-    }
+}
+
+ezyrag.addOrEditVectorCollection = function(action) {
+    var formData = ezyadmin.formDataToObject(action + 'VectorCollectionForm');
+    formData.vectorDbService = ezyrag.vectorDatabaseServiceName;
     var url = (action == 'add')
-        ? '/ezyrag/api/v1/banks/add'
-        : '/ezyrag/api/v1/banks/' + ezyrag.editBankId;
+        ? '/ezyrag/api/v1/vector-collections/add'
+        : '/ezyrag/api/v1/vector-collections/' + ezyrag.selectedVectorCollectionId;
     $.ajax({
         type: action == 'add' ? 'POST' : 'PUT',
         url: url,
-        data: JSON.stringify(formData),
         contentType: 'application/json',
-        success: function (data) {
-            var bankId = ezyrag.editBankId || data.addedId;
-            window.location = '/ezyrag/banks/' + bankId
-                + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+        data: JSON.stringify(formData),
+        success: function () {
+            ezyadmin.hideFormErrors(formData);
+            $('#' + action + '-vector-collection').modal('hide');
+            ezyrag.fetchVectorCollectionList('first');
         },
         error: function (data, e) {
             ezyadmin.processUpdateApiErrors(formData, data);
         }
     });
 };
-</script>
-<script th:fragment="delete" th:inline="javascript">
-/*<![CDATA[*/
-ezyadmin.messages.do_you_want_to_delete_bank_pname = /*[[#{do_you_want_to_delete_bank_pname}]]*/;
-/*]]>*/
-// ========== bank delete =============
-ezyrag.onDeleteBankClick = function(bankId, bankName) {
-    ezyrag.selectedBankId = bankId;
-    $('#delete-bank-modal-body-content')
-        .text(
-            ezyadmin
-                .messages
-                .do_you_want_to_delete_bank_pname
-                .replace('{0}', bankName)
-        );
-    $('#delete-bank-modal').modal('show');
-}
-
-ezyrag.deleteBank = function(bankId) {
-    $.ajax({
-        type: 'DELETE',
-        url: '/ezyrag/api/v1/banks/' + (bankId || ezyrag.selectedBankId),
-        timeout: 60000,
-        success: function () {
-            $('#delete-bank-modal').modal('hide');
-            if (ezyrag.fetchBankList) {
-                ezyrag.fetchBankList('current');
-            } else {
-                window.location = '/ezyrag/banks'
-                    + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
-            }
-        },
-        error: function (data, e) {
-            ezyadmin.processUpdateApiErrors({}, data);
-        }
-    });
-}
-
-ezyadmin.onPromptConfirmed = function(modalId) {
-    if (modalId == 'delete-bank-modal') {
-        ezyrag.deleteBank();
-    }
-}
 </script>
 </body>
 </html>

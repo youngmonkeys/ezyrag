@@ -86,29 +86,39 @@
             </div>
         </form>
     </div>
+    <div class="col-12">
+        <hr class="mb-4" />
+    </div>
+    <th:block th:replace="~{ezyrag/collection/collection-list :: content}" />
+    <th:block th:replace="~{ezyrag/collection/add :: content}" />
+    <th:block th:replace="~{ezyrag/collection/edit :: content}" />
 </div>
 
-<script layout:fragment="scripts" th:inline="javascript">
-/*<![CDATA[*/
-ezyrag.vectorDatabaseServiceName = /*[[${vectorDatabaseServiceName}]]*/ '';
-/*]]>*/
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    ezyrag.vectorDatabaseServiceName = /*[[${vectorDatabaseServiceName}]]*/ '';
+    /*]]>*/
 
-ezyrag.saveVectorDatabaseService = function() {
-    var formData = ezyadmin.formDataToObject('updateVectorDatabaseServiceForm');
-    $.ajax({
-        type: 'PUT',
-        url: `/ezyrag/api/v1/vector-database-services/${ezyrag.vectorDatabaseServiceName}/connection-properties`,
-        contentType: 'application/json',
-        data: JSON.stringify(formData),
-        success: function () {
-            ezyadmin.hideFormErrors(formData);
-            ezyadmin.shortToast('bg-success', ezyadmin.messages.save_successfully);
-        },
-        error: function (data, e) {
-            ezyadmin.processUpdateApiErrors(formData, data);
-        }
-    });
-}
-</script>
+    ezyrag.saveVectorDatabaseService = function() {
+        var formData = ezyadmin.formDataToObject('updateVectorDatabaseServiceForm');
+        $.ajax({
+            type: 'PUT',
+            url: `/ezyrag/api/v1/vector-database-services/${ezyrag.vectorDatabaseServiceName}/connection-properties`,
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function () {
+                ezyadmin.hideFormErrors(formData);
+                ezyadmin.shortToast('bg-success', ezyadmin.messages.save_successfully);
+            },
+            error: function (data, e) {
+                ezyadmin.processUpdateApiErrors(formData, data);
+            }
+        });
+    }
+    </script>
+    <th:block th:replace="~{ezyrag/collection/collection-list :: scripts}" />
+    <th:block th:replace="~{ezyrag/collection/scripts :: add-edit}" />
+</th:block>
 </body>
 </html>

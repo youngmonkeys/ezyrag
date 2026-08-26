@@ -27,6 +27,7 @@ import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
 import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollectionStatus;
 import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 
@@ -75,7 +76,11 @@ public class AdminVectorDatabaseServiceController {
                     serviceName.toLowerCase()
             )
             .addVariable("vectorDatabaseServiceName", serviceName)
-            .addVariable("minVectorSize", MIN_VECTOR_SIZE);
+            .addVariable("minVectorSize", MIN_VECTOR_SIZE)
+            .addVariable(
+                "vectorCollectionStatuses",
+                RagVectorCollectionStatus.values()
+            );
         Map<String, Runnable> viewDecoratorByServiceName = new HashMap<>();
         viewDecoratorByServiceName.put(
             RagVectorDatabaseServiceName.EZYVECTOR.toString(),
