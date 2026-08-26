@@ -109,7 +109,9 @@ public class AdminApiVectorCollectionController {
     ) throws Exception {
         vectorCollectionValidator.validate(request);
         RagVectorCollectionModel model = vectorCollectionService
-            .addVectorCollection(requestToModelConverter.toModel(request));
+            .addVectorCollection(
+                requestToModelConverter.toModel(request)
+            );
         ezyRagSettingService
             .setDefaultCollectionNameByVectorDbServiceNameIfAbsent(
                 request.getVectorDbService(),

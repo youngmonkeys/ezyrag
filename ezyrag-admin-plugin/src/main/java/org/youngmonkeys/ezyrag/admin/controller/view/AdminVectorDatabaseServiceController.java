@@ -34,9 +34,11 @@ import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tvd12.ezyfox.io.EzyLists.newArrayList;
 import static com.tvd12.ezyfox.io.EzyStrings.EMPTY_STRING;
 import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.DEFAULT_HIDDEN_PASSWORD;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.VIEW_VARIABLE_ADDITIONAL_MESSAGE_KEYS;
 import static org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator.MIN_VECTOR_SIZE;
 
 @Controller
@@ -80,6 +82,13 @@ public class AdminVectorDatabaseServiceController {
             .addVariable(
                 "vectorCollectionStatuses",
                 RagVectorCollectionStatus.values()
+            )
+            .appendValuesToVariable(
+                VIEW_VARIABLE_ADDITIONAL_MESSAGE_KEYS,
+                newArrayList(
+                    RagVectorCollectionStatus.values(),
+                    it -> it.toString().toLowerCase()
+                )
             );
         Map<String, Runnable> viewDecoratorByServiceName = new HashMap<>();
         viewDecoratorByServiceName.put(

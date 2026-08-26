@@ -66,8 +66,10 @@ public class EzyRagModelToEntityConverter {
         SaveRagVectorCollectionModel model,
         RagVectorCollection entity
     ) {
+        entity.setVectorDbService(model.getVectorDbService());
         entity.setName(model.getName());
         entity.setDisplayName(model.getDisplayName());
+        entity.setBaseUrl(model.getBaseUrl());
         entity.setVectorSize(model.getVectorSize());
         entity.setDistance(model.getDistance());
         String status = model.getStatus();

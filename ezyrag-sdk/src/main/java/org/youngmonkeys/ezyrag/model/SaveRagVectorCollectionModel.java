@@ -25,6 +25,7 @@ public class SaveRagVectorCollectionModel {
     private String vectorDbService;
     private String name;
     private String displayName;
+    private String baseUrl;
     private int vectorSize;
     private String distance;
     private String status;

@@ -241,12 +241,9 @@ ezyrag.buildVectorCollectionListItemHtml = function(vectorCollection) {
             <td class="text-center">${ezyadmin.formatTimeStamp(vectorCollection.createdAt)}</td>
             <td class="text-center">${ezyadmin.formatTimeStamp(vectorCollection.updatedAt)}</td>
             <td class="text-center">
-                <a class="btn btn-link px-1 cursor-pointer"
-                   onclick="ezyrag.showEditVectorCollectionModal(${vectorCollection.id}, '${escape(vectorCollection.name || '')}', '${escape(vectorCollection.displayName || '')}', ${vectorCollection.vectorSize}, '${escape(vectorCollection.distance || '')}', '${vectorCollection.status || ''}')">
-                    <i class="fas fa-edit text-warning"></i>
-                </a>
-                <a class="btn btn-link px-1" href="/ezyrag/vector-collections/${vectorCollection.id}">
-                    <i class="fas fa-eye text-info"></i>
+                <a class="btn btn-linkcursor-pointer"
+                   onclick="ezyrag.showEditVectorCollectionModal(${vectorCollection.id}, '${escape(vectorCollection.name || '')}', '${escape(vectorCollection.displayName || '')}', '${escape(vectorCollection.baseUrl || '')}', ${vectorCollection.vectorSize}, '${escape(vectorCollection.distance || '')}', '${vectorCollection.status || ''}')">
+                    <i class="fas fa-edit text-primary"></i>
                 </a>
             </td>
         </tr>

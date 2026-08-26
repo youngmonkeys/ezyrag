@@ -36,6 +36,7 @@ public class AdminEzyRagRequestToModelConverter {
             .vectorDbService(request.getVectorDbService())
             .name(request.getName())
             .displayName(request.getDisplayName())
+            .baseUrl(request.getBaseUrl())
             .vectorSize(request.getVectorSize())
             .distance(request.getDistance())
             .status(request.getStatus())

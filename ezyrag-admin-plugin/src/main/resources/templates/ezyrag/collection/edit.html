@@ -40,8 +40,11 @@
                                     <i class="far fa-times-circle"></i> <span id="editVectorCollectionNameError"></span>
                                 </label>
                                 <input type="text" name="name" id="editVectorCollectionName"
-                                       class="form-control" th:placeholder="#{collection_name_hint}"
+                                       class="form-control" th:placeholder="#{collection_name}"
                                        onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'edit');">
+                                <small class="form-text text-muted">
+                                    [[#{vector_collection_name_hint}]]
+                                </small>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -55,6 +58,19 @@
                             </div>
                         </div>
                         <div class="form-group row">
+                            <label for="editVectorCollectionBaseUrl" class="col-4 col-form-label">
+                                [[#{base_url}]]
+                            </label>
+                            <div class="col-8">
+                                <input type="text" name="baseUrl" id="editVectorCollectionBaseUrl"
+                                       class="form-control" th:placeholder="#{base_url}"
+                                       onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'edit');">
+                                <small class="form-text text-muted">
+                                    [[#{vector_collection_base_url_hint}]]
+                                </small>
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <label for="editVectorCollectionVectorSize" class="col-4 col-form-label">
                                 [[#{vector_size}]] (<span class="text-danger">*</span>)
                             </label>
@@ -63,10 +79,12 @@
                                        id="editVectorCollectionVectorSizeErrorLabel" for="editVectorCollectionVectorSize">
                                     <i class="far fa-times-circle"></i> <span id="editVectorCollectionVectorSizeError"></span>
                                 </label>
-                                <input type="number" name="vectorSize" id="editVectorCollectionVectorSize"
-                                       class="form-control" th:placeholder="#{vector_size_hint}"
-                                       th:min="${minVectorSize}"
+                                <input type="text" name="vectorSize" id="editVectorCollectionVectorSize"
+                                       class="form-control" th:placeholder="#{vector_size}"
                                        onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'edit');">
+                                <small class="form-text text-muted">
+                                    [[#{vector_size_hint}]]
+                                </small>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -75,7 +93,7 @@
                             </label>
                             <div class="col-8">
                                 <input type="text" name="distance" id="editVectorCollectionDistance"
-                                       class="form-control" placeholder="Cosine"
+                                       class="form-control" th:placeholder="#{distance}"
                                        onkeydown="ezyrag.onKeydownToAddOrEditVectorCollection(event, 'edit');">
                             </div>
                         </div>

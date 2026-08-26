@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-CREATE TABLE IF NOT EXISTS `ezyrag_collections` (
+CREATE TABLE IF NOT EXISTS `ezyrag_vector_collections` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `vector_db_service` varchar(120) NOT NULL,
     `name` varchar(120) NOT NULL,

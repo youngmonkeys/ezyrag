@@ -27,6 +27,7 @@ ezyrag.showEditVectorCollectionModal = function(
     id,
     name,
     displayName,
+    baseUrl,
     vectorSize,
     distance,
     status
@@ -34,6 +35,7 @@ ezyrag.showEditVectorCollectionModal = function(
     ezyrag.selectedVectorCollectionId = id;
     $('#editVectorCollectionName').val(unescape(name));
     $('#editVectorCollectionDisplayName').val(unescape(displayName));
+    $('#editVectorCollectionBaseUrl').val(unescape(baseUrl));
     $('#editVectorCollectionVectorSize').val(vectorSize);
     $('#editVectorCollectionDistance').val(unescape(distance));
     $('#editVectorCollectionStatus').val(status);
