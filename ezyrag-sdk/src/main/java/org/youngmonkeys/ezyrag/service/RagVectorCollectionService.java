@@ -134,6 +134,32 @@ public class RagVectorCollectionService {
         );
     }
 
+    public VectorCollectionModel getVectorCollectionByDbServiceNameAndCollectionNameOrDefault(
+        String vectorDbServiceName,
+        String collectionName
+    ) {
+        String serviceName = isBlank(vectorDbServiceName)
+            ? settingService.getTextValue(
+                SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
+                RagVectorDatabaseServiceName.EZYVECTOR.toString()
+            )
+            : vectorDbServiceName;
+        String collection = isBlank(collectionName)
+            ? settingService.getTextValue(
+                settingNameDefaultCollectionNameOfVectorDbService(
+                    serviceName
+                )
+            )
+            : collectionName;
+        return resultToModelConverter.toModel(
+            collectionRepository
+                .findCollectionByVectorDbServiceAndName(
+                    serviceName,
+                    collection
+                )
+        );
+    }
+
     public VectorCollectionModel getDefaultVectorCollection() {
         String serviceName = settingService.getTextValue(
             SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
