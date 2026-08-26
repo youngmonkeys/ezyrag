@@ -86,7 +86,7 @@ public class AdminRagDataChunkControllerService {
         RagDataSourceModel dataSource = isTextSourceType
             ? toKnowledgeDataPostDataSourceModel(adminId, request)
             : requestToModelConverter.toDataSourceModel(request);
-        ragClient.chunkData(dataSource);
+        ragClient.chunkData(collection, dataSource);
     }
 
     private RagDataSourceModel toKnowledgeDataPostDataSourceModel(

@@ -20,6 +20,7 @@ import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import com.tvd12.ezyhttp.client.HttpClient;
 import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
 import org.youngmonkeys.ezyrag.vd.RagQdrantVectorDatabaseService;
+import org.youngmonkeys.ezyrag.web.service.WebRagVectorCollectionService;
 
 @EzySingleton
 public class WebRagQdrantVectorDatabaseService
@@ -27,11 +28,13 @@ public class WebRagQdrantVectorDatabaseService
 
     public WebRagQdrantVectorDatabaseService(
         HttpClient httpClient,
-        WebSettingService settingService
+        WebSettingService settingService,
+        WebRagVectorCollectionService vectorCollectionService
     ) {
         super(
             httpClient,
-            settingService
+            settingService,
+            vectorCollectionService
         );
     }
 }

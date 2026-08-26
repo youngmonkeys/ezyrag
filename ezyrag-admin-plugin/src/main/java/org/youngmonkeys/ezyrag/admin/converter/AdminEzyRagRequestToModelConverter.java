@@ -49,7 +49,6 @@ public class AdminEzyRagRequestToModelConverter {
             .builder()
             .baseUrl(request.getBaseUrl())
             .apiKey(request.getApiKey())
-            .collectionName(request.getCollectionName())
             .build();
     }
 
@@ -60,7 +59,6 @@ public class AdminEzyRagRequestToModelConverter {
             .builder()
             .baseUrl(request.getBaseUrl())
             .apiKey(request.getApiKey())
-            .collectionName(request.getCollectionName())
             .build();
     }
 

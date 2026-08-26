@@ -114,7 +114,7 @@ public class AdminApiVectorCollectionController {
             .setDefaultCollectionNameByVectorDbServiceNameIfAbsent(
                 request.getVectorDbService(),
                 request.getName()
-            );
+        );
         RagVectorDatabaseService service = vectorDatabaseServiceManager
             .getVectorDatabaseServiceByName(request.getVectorDbService());
         if (service != null) {
@@ -189,7 +189,7 @@ public class AdminApiVectorCollectionController {
             .setDefaultCollectionNameByVectorDbServiceName(
                 serviceName,
                 collectionName
-            );
+        );
         return ResponseEntity.noContent();
     }
 }

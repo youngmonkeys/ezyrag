@@ -75,10 +75,6 @@ public class AdminVectorDatabaseServiceController {
                     serviceName.toLowerCase()
             )
             .addVariable("vectorDatabaseServiceName", serviceName)
-            .addVariable(
-                "qdrantVectorSize",
-                ezyRagSettingService.getQdrantVectorSize()
-            )
             .addVariable("minVectorSize", MIN_VECTOR_SIZE);
         Map<String, Runnable> viewDecoratorByServiceName = new HashMap<>();
         viewDecoratorByServiceName.put(
@@ -110,10 +106,6 @@ public class AdminVectorDatabaseServiceController {
                 isNotBlank(ezyVectorConnectionProperties.getApiKey())
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
-            )
-            .addVariable(
-                "ezyVectorVectorSize",
-                ezyRagSettingService.getEzyVectorVectorSize()
             );
     }
 
@@ -132,10 +124,6 @@ public class AdminVectorDatabaseServiceController {
                 isNotBlank(qdrantConnectionProperties.getApiKey())
                     ? DEFAULT_HIDDEN_PASSWORD
                     : EMPTY_STRING
-            )
-            .addVariable(
-                "qdrantVectorSize",
-                ezyRagSettingService.getQdrantVectorSize()
             );
     }
 

@@ -63,12 +63,6 @@ public class AdminRagVectorDatabaseServiceValidator {
         if (isBlank(request.getApiKey())) {
             errors.put("apiKey", "required");
         }
-        if (isBlank(request.getCollectionName())) {
-            errors.put("collectionName", "required");
-        }
-        if (request.getVectorSize() < MIN_VECTOR_SIZE) {
-            errors.put("vectorSize", "invalid");
-        }
         if (!errors.isEmpty()) {
             throw new HttpBadRequestException(errors);
         }
@@ -88,12 +82,6 @@ public class AdminRagVectorDatabaseServiceValidator {
         }
         if (isBlank(request.getApiKey())) {
             errors.put("apiKey", "required");
-        }
-        if (isBlank(request.getCollectionName())) {
-            errors.put("collectionName", "required");
-        }
-        if (request.getVectorSize() < MIN_VECTOR_SIZE) {
-            errors.put("vectorSize", "invalid");
         }
         if (!errors.isEmpty()) {
             throw new HttpBadRequestException(errors);
