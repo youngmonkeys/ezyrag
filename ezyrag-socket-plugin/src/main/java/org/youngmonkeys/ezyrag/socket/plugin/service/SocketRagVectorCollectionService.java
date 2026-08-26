@@ -16,7 +16,7 @@
 
 package org.youngmonkeys.ezyrag.socket.plugin.service;
 
-import com.tvd12.ezyhttp.server.core.annotation.Service;
+import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyplatform.socket.service.SocketSettingService;
 import org.youngmonkeys.ezyrag.service.RagVectorCollectionService;
 import org.youngmonkeys.ezyrag.socket.plugin.converter.SocketEzyRagEntityToModelConverter;
@@ -24,7 +24,7 @@ import org.youngmonkeys.ezyrag.socket.plugin.converter.SocketEzyRagModelToEntity
 import org.youngmonkeys.ezyrag.socket.plugin.converter.SocketEzyRagResultToModelConverter;
 import org.youngmonkeys.ezyrag.socket.plugin.repo.SocketRagVectorCollectionRepository;
 
-@Service
+@EzySingleton
 public class SocketRagVectorCollectionService
     extends RagVectorCollectionService {
 

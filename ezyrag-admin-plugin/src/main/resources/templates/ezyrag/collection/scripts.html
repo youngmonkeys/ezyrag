@@ -55,17 +55,20 @@ ezyrag.addOrEditVectorCollection = function(action) {
     var url = (action == 'add')
         ? '/ezyrag/api/v1/vector-collections/add'
         : '/ezyrag/api/v1/vector-collections/' + ezyrag.selectedVectorCollectionId;
+    ezyadmin.showLoadingScreen();
     $.ajax({
         type: action == 'add' ? 'POST' : 'PUT',
         url: url,
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function () {
+            ezyadmin.hideLoadingScreen();
             ezyadmin.hideFormErrors(formData);
             $('#' + action + '-vector-collection').modal('hide');
             ezyrag.fetchVectorCollectionList('first');
         },
         error: function (data, e) {
+            ezyadmin.hideLoadingScreen();
             ezyadmin.processUpdateApiErrors(formData, data);
         }
     });

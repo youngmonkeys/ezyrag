@@ -21,6 +21,9 @@ import com.tvd12.ezyfox.database.annotation.EzyQuery;
 import org.youngmonkeys.ezyrag.entity.RagDataChunk;
 import org.youngmonkeys.ezyrag.result.RagDataChunkEmbeddingResult;
 
+import java.util.Collection;
+import java.util.List;
+
 public interface RagDataChunkRepository
     extends EzyDatabaseRepository<Long, RagDataChunk> {
 
@@ -45,6 +48,28 @@ public interface RagDataChunkRepository
         String sourceType,
         long sourceId,
         long chunkIndex
+    );
+
+    @EzyQuery(
+        "SELECT e FROM RagDataChunk e " +
+            "WHERE e.sourceType = ?0 " +
+            "AND e.sourceId = ?1 " +
+            "ORDER BY e.chunkIndex ASC"
+    )
+    List<RagDataChunk> findListBySourceTypeAndSourceId(
+        String sourceType,
+        long sourceId
+    );
+
+    @EzyQuery(
+        "SELECT e FROM RagDataChunk e " +
+            "WHERE e.sourceType = ?0 " +
+            "AND e.sourceId IN ?1 " +
+            "ORDER BY e.sourceId ASC, e.chunkIndex ASC"
+    )
+    List<RagDataChunk> findListBySourceTypeAndSourceIdIn(
+        String sourceType,
+        Collection<Long> sourceIds
     );
 
     @EzyQuery(

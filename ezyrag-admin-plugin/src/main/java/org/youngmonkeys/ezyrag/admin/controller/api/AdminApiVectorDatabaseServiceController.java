@@ -31,8 +31,6 @@ import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyVectorConnectionPropert
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorDatabaseServiceValidator;
-import org.youngmonkeys.ezyrag.admin.vd.AdminRagEzyVectorVectorDatabaseService;
-import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 
 @Api
 @Authenticated
@@ -42,8 +40,6 @@ import org.youngmonkeys.ezyrag.admin.vd.AdminRagQdrantVectorDatabaseService;
 public class AdminApiVectorDatabaseServiceController {
 
     private final AdminEzyRagSettingService ezyRagSettingService;
-    private final AdminRagQdrantVectorDatabaseService qdrantVectorDatabaseService;
-    private final AdminRagEzyVectorVectorDatabaseService ezyVectorVectorDatabaseService;
     private final AdminRagVectorDatabaseServiceValidator vectorDatabaseServiceValidator;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 

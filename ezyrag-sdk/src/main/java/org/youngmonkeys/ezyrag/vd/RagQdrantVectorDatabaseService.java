@@ -16,6 +16,7 @@
 
 package org.youngmonkeys.ezyrag.vd;
 
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfox.util.EzyMapBuilder;
 import com.tvd12.ezyhttp.client.HttpClient;
 import com.tvd12.ezyhttp.client.request.GetRequest;
@@ -23,6 +24,7 @@ import com.tvd12.ezyhttp.client.request.PostRequest;
 import com.tvd12.ezyhttp.client.request.PutRequest;
 import com.tvd12.ezyhttp.client.request.RequestEntity;
 import com.tvd12.ezyhttp.core.constant.ContentTypes;
+import com.tvd12.ezyhttp.core.exception.HttpConflictException;
 import org.youngmonkeys.ezyplatform.service.MutableSettingService;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
@@ -43,6 +45,7 @@ import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRA
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
 
 public class RagQdrantVectorDatabaseService
+    extends EzyLoggable
     implements RagVectorDatabaseService {
 
     private final HttpClient httpClient;
@@ -99,21 +102,25 @@ public class RagQdrantVectorDatabaseService
             )
             .toMap();
         String collectionName = collection.getName();
-        httpClient.call(
-            new PutRequest()
-                .setURL(
-                    getCollectionUrl(
-                        collection.getBaseUrl(properties::getBaseUrl),
-                        collectionName
+        try {
+            httpClient.call(
+                new PutRequest()
+                    .setURL(
+                        getCollectionUrl(
+                            collection.getBaseUrl(properties::getBaseUrl),
+                            collectionName
+                        )
                     )
-                )
-                .setEntity(
-                    requestEntity(
-                        properties.getApiKey(),
-                        requestBody
+                    .setEntity(
+                        requestEntity(
+                            properties.getApiKey(),
+                            requestBody
+                        )
                     )
-                )
-        );
+            );
+        } catch (HttpConflictException e) {
+            logger.info("collection: {} existed", collectionName);
+        }
         refreshQdrantVectorSize(
             collection.getId(),
             collectionName,

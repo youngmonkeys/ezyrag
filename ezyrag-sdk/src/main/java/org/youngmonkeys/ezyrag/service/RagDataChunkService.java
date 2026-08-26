@@ -124,6 +124,35 @@ public class RagDataChunkService {
         );
     }
 
+    public List<RagDataChunkModel> getDataChunksBySourceTypeAndSourceId(
+        String sourceType,
+        long sourceId
+    ) {
+        return newArrayList(
+            dataChunkRepository.findListBySourceTypeAndSourceId(
+                sourceType,
+                sourceId
+            ),
+            entityToModelConverter::toModel
+        );
+    }
+
+    public List<RagDataChunkModel> getDataChunksBySourceTypeAndSourceIds(
+        String sourceType,
+        Collection<Long> sourceIds
+    ) {
+        if (sourceIds == null || sourceIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return newArrayList(
+            dataChunkRepository.findListBySourceTypeAndSourceIdIn(
+                sourceType,
+                sourceIds
+            ),
+            entityToModelConverter::toModel
+        );
+    }
+
     private RagDataChunk getDataChunkEntityByIdOrThrow(
         long chunkId
     ) {

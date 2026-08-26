@@ -136,6 +136,9 @@ ezyrag.buildVectorCollectionFilterQueryString = function() {
     var keyword = $('#keywordInput').val();
     var status = $('#statusSelect').val();
     var sortOrder = $('#sortOrderSelect').val();
+    if (ezyrag.vectorDatabaseServiceName) {
+        queryString += '&vectorDbServiceName=' + ezyrag.vectorDatabaseServiceName;
+    }
     if (keyword) {
         queryString += '&keyword=' + encodeURIComponent(keyword);
     }
