@@ -280,9 +280,13 @@ ezyrag.buildVectorCollectionListItemHtml = function(vectorCollection) {
             <td class="text-center">${ezyadmin.formatTimeStamp(vectorCollection.createdAt)}</td>
             <td class="text-center">${ezyadmin.formatTimeStamp(vectorCollection.updatedAt)}</td>
             <td class="text-center">
-                <a class="btn btn-linkcursor-pointer"
+                <a class="btn btn-link pr-1 cursor-pointer"
                    onclick="ezyrag.showEditVectorCollectionModal(${vectorCollection.id}, '${escape(vectorCollection.name || '')}', '${escape(vectorCollection.displayName || '')}', '${escape(vectorCollection.baseUrl || '')}', ${vectorCollection.vectorSize}, '${escape(vectorCollection.distance || '')}', '${vectorCollection.status || ''}')">
                     <i class="fas fa-edit text-primary"></i>
+                </a>
+                <a class="btn btn-link pl-1 cursor-pointer"
+                   href="/ezyrag/data-chunks?vectorDbServiceName=${encodeURIComponent(ezyrag.vectorDatabaseServiceName || '')}&collectionName=${encodeURIComponent(vectorCollection.name || '')}">
+                    <i class="fas fa-stream text-info"></i>
                 </a>
             </td>
         </tr>
