@@ -18,8 +18,6 @@ package org.youngmonkeys.ezyrag.socket.plugin.repo;
 
 import com.tvd12.ezydata.database.EzyDatabaseRepository;
 import com.tvd12.ezyfox.database.annotation.EzyRepository;
-import org.youngmonkeys.ezyrag.entity.RagCollectionPoint;
-import org.youngmonkeys.ezyrag.repo.RagCollectionPointRepository;
 
 @EzyRepository
 public interface SocketRagCollectionPointRepository extends

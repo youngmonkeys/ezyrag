@@ -20,9 +20,6 @@ public final class EzyRagTableNames {
 
     public static final String TABLE_NAME_DATA_CHUNK = "ezyrag_data_chunks";
     public static final String TABLE_NAME_COLLECTION = "ezyrag_collections";
-    public static final String TABLE_NAME_COLLECTION_POINT = "ezyrag_collection_points";
-    public static final String TABLE_NAME_COLLECTION_SEGMENT =
-        "ezyrag_collection_segments";
 
     private EzyRagTableNames() {}
 }

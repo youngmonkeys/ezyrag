@@ -14,20 +14,18 @@
  * limitations under the License.
 */
 
-CREATE TABLE IF NOT EXISTS `ezyrag_data_chunks` (
+CREATE TABLE IF NOT EXISTS `ezyrag_collections` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-    `source_type` varchar(120) NOT NULL,
-    `source_id` bigint unsigned NOT NULL DEFAULT 0,
-    `collection_id` bigint unsigned NOT NULL DEFAULT 0,
-    `embedding_service` char(120),
-    `chunk_index` bigint unsigned NOT NULL DEFAULT 0,
-    `content` mediumtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
-    `content_hash` char(128) NOT NULL,
-    `embedding` mediumblob,
+    `vector_db_service` varchar(120) NOT NULL,
+    `name` varchar(120) NOT NULL,
+    `display_name` varchar(120),
+    `vector_size` bigint unsigned NOT NULL,
+    `distance` varchar(50),
+    `status` varchar(50) NOT NULL,
     `created_at` datetime NOT NULL,
     `updated_at` datetime NOT NULL,
     PRIMARY KEY (`id`),
-    INDEX `index_collection_id_pagination` (`collection_id`, `source_type`, `source_id`, `chunk_index`, `content_hash`, `id`),
-    INDEX `index_source_pagination` (`source_type`, `source_id`, `chunk_index`, `content_hash`, `id`),
-    INDEX `index_embedding_service_id` (`embedding_service`, `id`)
+    UNIQUE KEY `key_vector_db_service_name` (`vector_db_service`, `name`),
+    INDEX `index_vector_db_service_pagination` (`vector_db_service`, `distance`, `status`, `vector_size`, `id`),
+    INDEX `index_status` (`status`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;

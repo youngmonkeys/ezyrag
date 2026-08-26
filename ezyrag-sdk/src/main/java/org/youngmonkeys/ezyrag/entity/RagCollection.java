@@ -44,26 +44,20 @@ public class RagCollection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "name")
+    @Column(name = "vector_db_service")
+    private String vectorDbService;
+
     private String name;
+
+    @Column(name = "display_name")
+    private String displayName;
 
     @Column(name = "vector_size")
     private int vectorSize;
 
-    @Column(name = "distance")
     private String distance;
 
-    @Column(name = "index_type")
-    private String indexType;
-
-    @Column(name = "status")
     private String status;
-
-    @Column(name = "points_count")
-    private long pointsCount;
-
-    @Column(name = "config")
-    private String config;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
