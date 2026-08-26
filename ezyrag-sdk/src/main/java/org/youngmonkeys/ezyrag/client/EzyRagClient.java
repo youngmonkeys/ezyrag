@@ -123,12 +123,15 @@ public class EzyRagClient {
                     .builder()
                     .sourceType(sourceType)
                     .sourceId(sourceId)
+                    .collectionId(collection.getId())
                     .chunkIndex(chunkIndex + 1)
                     .content(content)
                     .contentHash(contentHash)
                     .build();
                 if (chunkEmbedding == null) {
-                    chunkId = dataChunkService.addDataChunk(saveDataChunk);
+                    chunkId = dataChunkService.addDataChunk(
+                        saveDataChunk
+                    );
                 } else {
                     chunkId = chunkEmbedding.getId();
                     contentHashInDb = chunkEmbedding.getContentHash();
@@ -153,6 +156,7 @@ public class EzyRagClient {
                     );
                     dataChunkService.updateEmbeddingById(
                         chunkId,
+                        embeddingService.getServiceName(),
                         embedding
                     );
                 }

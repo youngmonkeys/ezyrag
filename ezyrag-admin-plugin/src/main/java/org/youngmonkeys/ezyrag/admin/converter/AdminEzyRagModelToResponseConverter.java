@@ -62,12 +62,16 @@ public class AdminEzyRagModelToResponseConverter {
 
     public AdminRagDataChunkResponse toDataChunkResponse(
         RagDataChunkModel model,
+        RagVectorCollectionModel collection,
         Map<String, String> metadata
     ) {
         return AdminRagDataChunkResponse.builder()
             .id(model.getId())
             .sourceType(model.getSourceType())
             .sourceId(model.getSourceId())
+            .collectionId(collection.getId())
+            .collectionName(collection.getName())
+            .embeddingService(model.getEmbeddingService())
             .chunkIndex(model.getChunkIndex())
             .content(model.getContent())
             .contentHash(model.getContentHash())

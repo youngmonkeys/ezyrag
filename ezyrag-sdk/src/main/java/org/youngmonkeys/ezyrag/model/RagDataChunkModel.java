@@ -25,6 +25,8 @@ public class RagDataChunkModel {
     private long id;
     private String sourceType;
     private long sourceId;
+    private long collectionId;
+    private String embeddingService;
     private long chunkIndex;
     private String content;
     private String contentHash;

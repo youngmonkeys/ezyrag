@@ -29,6 +29,11 @@ import org.youngmonkeys.ezyrag.model.SaveRagVectorCollectionModel;
 import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 import org.youngmonkeys.ezyrag.repo.RagVectorCollectionRepository;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.settingNameDefaultCollectionNameOfVectorDbService;
@@ -149,6 +154,23 @@ public class RagVectorCollectionService {
             collectionName,
             serviceName
         );
+    }
+
+    public Map<Long, RagVectorCollectionModel> getVectorCollectionMapByIds(
+        Collection<Long> collectionIds
+    ) {
+        if (collectionIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return collectionRepository
+            .findListByIds(collectionIds)
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    RagVectorCollection::getId,
+                    entityToModelConverter::toModel
+                )
+            );
     }
 
     private RagVectorCollection getRagVectorCollectionEntityByIdOrThrow(

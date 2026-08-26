@@ -24,6 +24,7 @@ import lombok.Getter;
 public class RagSaveDataChunkModel {
     private String sourceType;
     private long sourceId;
+    private long collectionId;
     private long chunkIndex;
     private String content;
     private String contentHash;

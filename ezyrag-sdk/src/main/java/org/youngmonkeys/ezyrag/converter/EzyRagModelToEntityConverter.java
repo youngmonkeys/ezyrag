@@ -38,6 +38,7 @@ public class EzyRagModelToEntityConverter {
         entity.setSourceType(model.getSourceType());
         entity.setSourceId(model.getSourceId());
         entity.setChunkIndex(model.getChunkIndex());
+        entity.setCollectionId(model.getCollectionId());
         mergeToRagDataChunkEntity(model, entity);
         entity.setCreatedAt(entity.getUpdatedAt());
         return entity;

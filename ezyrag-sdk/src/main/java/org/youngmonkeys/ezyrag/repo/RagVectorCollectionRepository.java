@@ -30,7 +30,7 @@ public interface RagVectorCollectionRepository
     );
 
     @EzyQuery(
-        "SELECT e.name, e.baesUrl, e.vectorSize " +
+        "SELECT e.id, e.name, e.baesUrl, e.vectorSize " +
             "FROM RagVectorCollection e " +
             "WHERE e.vectorDbService = ?0 " +
             "AND e.name = ?1"

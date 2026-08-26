@@ -26,11 +26,12 @@ public interface RagDataChunkRepository
 
     @EzyQuery(
         "UPDATE RagDataChunk e " +
-            "SET e.embedding = ?1 " +
+            "SET e.embeddingService = ?0, e.embedding = ?1 " +
             "WHERE e.id = ?0"
     )
     void updateEmbeddingById(
         long chunkId,
+        String embeddingService,
         float[] embedding
     );
 

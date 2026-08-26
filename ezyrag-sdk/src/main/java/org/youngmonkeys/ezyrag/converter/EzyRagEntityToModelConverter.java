@@ -57,6 +57,8 @@ public class EzyRagEntityToModelConverter {
             .id(entity.getId())
             .sourceType(entity.getSourceType())
             .sourceId(entity.getSourceId())
+            .collectionId(entity.getCollectionId())
+            .embeddingService(entity.getEmbeddingService())
             .chunkIndex(entity.getChunkIndex())
             .content(entity.getContent())
             .contentHash(entity.getContentHash())

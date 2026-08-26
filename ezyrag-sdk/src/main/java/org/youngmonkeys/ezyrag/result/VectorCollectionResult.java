@@ -24,6 +24,7 @@ import lombok.Setter;
 @Setter
 @EzyQueryResult
 public class VectorCollectionResult {
+    private long id;
     private String name;
     private String baseUrl;
     private long vectorSize;

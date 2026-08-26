@@ -26,6 +26,7 @@ import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 @Getter
 @Builder
 public class VectorCollectionModel {
+    private long id;
     private String name;
     private String baseUrl;
     private long vectorSize;

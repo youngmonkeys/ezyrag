@@ -30,6 +30,7 @@ public class EzyRagResultToModelConverter {
             return null;
         }
         return VectorCollectionModel.builder()
+            .id(result.getId())
             .baseUrl(result.getBaseUrl())
             .name(result.getName())
             .vectorSize(result.getVectorSize())

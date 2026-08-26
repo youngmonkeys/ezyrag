@@ -61,10 +61,12 @@ public class RagDataChunkService {
 
     public void updateEmbeddingById(
         long chunkId,
+        String embeddingService,
         float[] embedding
     ) {
         dataChunkRepository.updateEmbeddingById(
             chunkId,
+            embeddingService,
             embedding
         );
     }

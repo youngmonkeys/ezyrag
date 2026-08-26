@@ -27,6 +27,9 @@ public class AdminRagDataChunkResponse {
     private long id;
     private String sourceType;
     private long sourceId;
+    private long collectionId;
+    private String collectionName;
+    private String embeddingService;
     private long chunkIndex;
     private String content;
     private String contentHash;
