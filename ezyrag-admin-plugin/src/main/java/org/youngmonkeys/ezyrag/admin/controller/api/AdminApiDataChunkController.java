@@ -92,13 +92,27 @@ public class AdminApiDataChunkController {
         @AdminId long adminId,
         @RequestBody AdminChunkDataRequest request
     ) throws Exception {
-        VectorCollectionModel collection = vectorCollectionService
-            .getDefaultVectorCollection();
+        VectorCollectionModel collection = getVectorCollection(request);
         if (collection == null) {
             throw new ResourceNotFoundException("defaultVectorCollection");
         }
         dataChunkControllerService.chunkData(adminId, collection, request);
         return ResponseEntity.noContent();
+    }
+
+    private VectorCollectionModel getVectorCollection(
+        AdminChunkDataRequest request
+    ) {
+        String vectorDbServiceName = trimOrNull(request.getVectorDbServiceName());
+        String collectionName = trimOrNull(request.getCollectionName());
+        if (vectorDbServiceName != null && collectionName != null) {
+            return vectorCollectionService
+                .getVectorCollectionByDbServiceNameAndCollectionName(
+                    vectorDbServiceName,
+                    collectionName
+                );
+        }
+        return vectorCollectionService.getDefaultVectorCollection();
     }
 
     @DoPost("/chunk-data/search")

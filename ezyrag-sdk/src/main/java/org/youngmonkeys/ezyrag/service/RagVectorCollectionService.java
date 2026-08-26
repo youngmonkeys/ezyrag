@@ -151,8 +151,8 @@ public class RagVectorCollectionService {
             return null;
         }
         return getVectorCollectionByDbServiceNameAndCollectionName(
-            collectionName,
-            serviceName
+            serviceName,
+            collectionName
         );
     }
 

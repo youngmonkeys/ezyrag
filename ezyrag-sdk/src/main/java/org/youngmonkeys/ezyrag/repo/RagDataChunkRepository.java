@@ -26,7 +26,7 @@ public interface RagDataChunkRepository
 
     @EzyQuery(
         "UPDATE RagDataChunk e " +
-            "SET e.embeddingService = ?0, e.embedding = ?1 " +
+            "SET e.embeddingService = ?1, e.embedding = ?2 " +
             "WHERE e.id = ?0"
     )
     void updateEmbeddingById(
