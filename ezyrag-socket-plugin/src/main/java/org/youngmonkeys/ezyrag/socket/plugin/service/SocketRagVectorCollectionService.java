@@ -14,26 +14,26 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.web.service;
+package org.youngmonkeys.ezyrag.socket.plugin.service;
 
 import com.tvd12.ezyhttp.server.core.annotation.Service;
-import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
+import org.youngmonkeys.ezyplatform.socket.service.SocketSettingService;
 import org.youngmonkeys.ezyrag.service.RagVectorCollectionService;
-import org.youngmonkeys.ezyrag.web.converter.WebEzyRagEntityToModelConverter;
-import org.youngmonkeys.ezyrag.web.converter.WebEzyRagModelToEntityConverter;
-import org.youngmonkeys.ezyrag.web.converter.WebEzyRagResultToModelConverter;
-import org.youngmonkeys.ezyrag.web.repo.WebRagVectorCollectionRepository;
+import org.youngmonkeys.ezyrag.socket.plugin.converter.SocketEzyRagEntityToModelConverter;
+import org.youngmonkeys.ezyrag.socket.plugin.converter.SocketEzyRagModelToEntityConverter;
+import org.youngmonkeys.ezyrag.socket.plugin.converter.SocketEzyRagResultToModelConverter;
+import org.youngmonkeys.ezyrag.socket.plugin.repo.SocketRagVectorCollectionRepository;
 
 @Service
-public class WebRagVectorCollectionService
+public class SocketRagVectorCollectionService
     extends RagVectorCollectionService {
 
-    public WebRagVectorCollectionService(
-        WebSettingService settingService,
-        WebRagVectorCollectionRepository collectionRepository,
-        WebEzyRagEntityToModelConverter entityToModelConverter,
-        WebEzyRagModelToEntityConverter modelToEntityConverter,
-        WebEzyRagResultToModelConverter resultToModelConverter
+    public SocketRagVectorCollectionService(
+        SocketSettingService settingService,
+        SocketRagVectorCollectionRepository collectionRepository,
+        SocketEzyRagEntityToModelConverter entityToModelConverter,
+        SocketEzyRagModelToEntityConverter modelToEntityConverter,
+        SocketEzyRagResultToModelConverter resultToModelConverter
     ) {
         super(
             settingService,

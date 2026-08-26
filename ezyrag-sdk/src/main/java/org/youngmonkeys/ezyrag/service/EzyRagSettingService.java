@@ -17,7 +17,6 @@
 package org.youngmonkeys.ezyrag.service;
 
 import org.youngmonkeys.ezyplatform.service.DefaultSettingService;
-import org.youngmonkeys.ezyplatform.util.Numbers;
 import org.youngmonkeys.ezyrag.constant.EmbeddingServiceName;
 import org.youngmonkeys.ezyrag.constant.RagDataChunkerName;
 import org.youngmonkeys.ezyrag.constant.RagDataRetrieverName;
@@ -32,15 +31,14 @@ import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLE
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_OPENAI_EMBEDDING_MODEL;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.settingNameDefaultCollectionNameOfVectorDbService;
 
 public class EzyRagSettingService {
 
@@ -50,20 +48,6 @@ public class EzyRagSettingService {
         DefaultSettingService settingService
     ) {
         this.settingService = settingService;
-        settingService.cacheValueIfNotNull(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            settingService.getIntValue(
-                SETTING_NAME_QDRANT_VECTOR_SIZE,
-                DEFAULT_VECTOR_SIZE
-            )
-        );
-        settingService.addValueConverter(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            Numbers::toIntOrZero
-        );
-        settingService.scheduleCacheValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE
-        );
         settingService.cacheValueIfNotNull(
             SETTING_NAME_OPENAI_EMBEDDING_MODEL,
             settingService.getTextValue(
@@ -141,17 +125,20 @@ public class EzyRagSettingService {
         );
     }
 
-    public String getVectorDatabaseService() {
+    public String getVectorDatabaseServiceName() {
         return settingService.getTextValue(
             SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
             RagVectorDatabaseServiceName.EZYVECTOR.toString()
         );
     }
 
-    public int getQdrantVectorSize() {
-        return settingService.getCachedValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            DEFAULT_VECTOR_SIZE
+    public String getDefaultCollectionNameByVectorDbServiceName(
+        String vectorDbServiceName
+    ) {
+        return settingService.getTextValue(
+            settingNameDefaultCollectionNameOfVectorDbService(
+                vectorDbServiceName
+            )
         );
     }
 }

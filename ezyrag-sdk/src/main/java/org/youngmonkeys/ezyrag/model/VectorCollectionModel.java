@@ -14,21 +14,27 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.admin.response;
+package org.youngmonkeys.ezyrag.model;
 
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+import java.util.function.Supplier;
+
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
+
 @Getter
-public class AdminRagVectorCollectionResponse {
-    private long id;
+@Builder
+public class VectorCollectionModel {
     private String name;
-    private String displayName;
     private String baseUrl;
     private long vectorSize;
-    private String distance;
-    private String status;
-    private long createdAt;
-    private long updatedAt;
+
+    public String getBaseUrl(
+        Supplier<String> defaulUrlSupplier
+    ) {
+        return isBlank(baseUrl)
+            ? defaulUrlSupplier.get()
+            : baseUrl;
+    }
 }

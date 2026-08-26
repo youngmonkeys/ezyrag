@@ -20,12 +20,27 @@ import com.tvd12.ezyfox.bean.annotation.EzySingleton;
 import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyVectorConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveRagVectorCollectionRequest;
 import org.youngmonkeys.ezyrag.model.RagDataSourceModel;
 import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.model.SaveRagVectorCollectionModel;
 
 @EzySingleton
 public class AdminEzyRagRequestToModelConverter {
+
+    public SaveRagVectorCollectionModel toModel(
+        AdminSaveRagVectorCollectionRequest request
+    ) {
+        return SaveRagVectorCollectionModel.builder()
+            .vectorDbService(request.getVectorDbService())
+            .name(request.getName())
+            .displayName(request.getDisplayName())
+            .vectorSize(request.getVectorSize())
+            .distance(request.getDistance())
+            .status(request.getStatus())
+            .build();
+    }
 
     public RagQdrantConnectionPropertiesModel toModel(
         AdminSaveQdrantConnectionPropertiesRequest request

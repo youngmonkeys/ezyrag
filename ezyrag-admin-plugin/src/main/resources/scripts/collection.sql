@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `ezyrag_collections` (
     `vector_db_service` varchar(120) NOT NULL,
     `name` varchar(120) NOT NULL,
     `display_name` varchar(120),
+    `base_url` varchar(300),
     `vector_size` bigint unsigned NOT NULL,
     `distance` varchar(50),
     `status` varchar(50) NOT NULL,

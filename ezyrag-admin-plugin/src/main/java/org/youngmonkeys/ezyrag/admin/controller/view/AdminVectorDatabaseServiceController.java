@@ -59,7 +59,7 @@ public class AdminVectorDatabaseServiceController {
             )
             .addVariable(
                 "defaultVectorDatabaseServiceName",
-                ezyRagSettingService.getVectorDatabaseService()
+                ezyRagSettingService.getVectorDatabaseServiceName()
             )
             .build();
     }

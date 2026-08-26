@@ -38,6 +38,7 @@ public class EzyRagEntityToModelConverter {
             .id(entity.getId())
             .name(entity.getName())
             .displayName(entity.getDisplayName())
+            .baseUrl(entity.getBaseUrl())
             .vectorSize(entity.getVectorSize())
             .distance(entity.getDistance())
             .status(entity.getStatus())

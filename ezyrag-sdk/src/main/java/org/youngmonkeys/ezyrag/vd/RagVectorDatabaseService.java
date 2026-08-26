@@ -16,25 +16,29 @@
 
 package org.youngmonkeys.ezyrag.vd;
 
+import org.youngmonkeys.ezyrag.model.RagVectorCollectionModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 
 import java.util.List;
 
 public interface RagVectorDatabaseService {
 
-    void createCollectionIfAbsent() throws Exception;
+    void createCollectionIfAbsent(
+        RagVectorCollectionModel collection
+    ) throws Exception;
 
     void upsert(
+        VectorCollectionModel collection,
         List<RagVectorPointModel> points
     ) throws Exception;
 
     List<RagVectorSearchResultModel> search(
+        VectorCollectionModel collection,
         float[] vector,
         int limit
     ) throws Exception;
 
-    int getVectorSize();
-
-    String getProviderName();
+    String getServiceName();
 }

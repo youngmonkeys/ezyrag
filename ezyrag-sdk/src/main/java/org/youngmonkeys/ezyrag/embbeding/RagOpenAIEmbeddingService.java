@@ -48,7 +48,7 @@ public class RagOpenAIEmbeddingService
     @Override
     public float[] embed(
         RagEmbeddingData data,
-        int vectorSize
+        long vectorSize
     ) throws Exception {
         String apiKey = ezyRagSettingService.getOpenAiApiKey();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()

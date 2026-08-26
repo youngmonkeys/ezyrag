@@ -23,21 +23,20 @@ import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
 
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDDEN_PASSWORD;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.settingNameDefaultCollectionNameOfVectorDbService;
 
 @Service
 public class AdminEzyRagSettingService extends EzyRagSettingService {
@@ -113,7 +112,6 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
             EzyMapBuilder.mapBuilder()
                 .put("baseUrl", model.getBaseUrl())
-                .put("collectionName", model.getCollectionName())
                 .toMap()
         );
         String apiKey = model.getApiKey();
@@ -137,17 +135,6 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         );
     }
 
-    public void setQdrantVectorSize(int vectorSize) {
-        settingService.setIntValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            vectorSize
-        );
-        settingService.cacheValueIfNotNull(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            vectorSize
-        );
-    }
-
     public void setEzyVectorConnectionProperties(
         RagEzyVectorConnectionPropertiesModel model
     ) {
@@ -155,7 +142,6 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES,
             EzyMapBuilder.mapBuilder()
                 .put("baseUrl", model.getBaseUrl())
-                .put("collectionName", model.getCollectionName())
                 .toMap()
         );
         String apiKey = model.getApiKey();
@@ -179,17 +165,6 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         );
     }
 
-    public void setEzyVectorSize(int vectorSize) {
-        settingService.setIntValue(
-            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
-            vectorSize
-        );
-        settingService.cacheValueIfNotNull(
-            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
-            vectorSize
-        );
-    }
-
     public RagEzyVectorConnectionPropertiesModel getEzyVectorConnectionPropertiesInDb() {
         RagEzyVectorConnectionPropertiesModel model =
             settingService
@@ -209,13 +184,6 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
             : new RagEzyVectorConnectionPropertiesModel();
     }
 
-    public int getEzyVectorVectorSize() {
-        return settingService.getIntValue(
-            SETTING_NAME_EZY_VECTOR_VECTOR_SIZE,
-            DEFAULT_VECTOR_SIZE
-        );
-    }
-
     public RagQdrantConnectionPropertiesModel getConnectionPropertiesInDb() {
         RagQdrantConnectionPropertiesModel model =
             settingService
@@ -233,6 +201,33 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         return model != null
             ? model
             : new RagQdrantConnectionPropertiesModel();
+    }
+
+    public void setDefaultCollectionNameByVectorDbServiceName(
+        String vectorDbServiceName,
+        String collectionName
+    ) {
+        settingService.setTextValue(
+            settingNameDefaultCollectionNameOfVectorDbService(
+                vectorDbServiceName
+            ),
+            collectionName
+        );
+    }
+
+    public void setDefaultCollectionNameByVectorDbServiceNameIfAbsent(
+        String vectorDbServiceName,
+        String collectionName
+    ) {
+        String settingName = settingNameDefaultCollectionNameOfVectorDbService(
+            vectorDbServiceName
+        );
+        String current = getDefaultCollectionNameByVectorDbServiceName(
+            settingName
+        );
+        if (isBlank(current)) {
+            settingService.setTextValue(settingName, collectionName);
+        }
     }
 
     private void setAndCacheTextValue(String settingName, String value) {

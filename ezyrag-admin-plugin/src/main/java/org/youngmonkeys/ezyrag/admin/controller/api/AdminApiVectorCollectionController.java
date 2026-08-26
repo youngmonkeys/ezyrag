@@ -30,19 +30,22 @@ import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import com.tvd12.ezyhttp.server.core.annotation.RequestParam;
 import lombok.AllArgsConstructor;
-import org.youngmonkeys.ecommerce.entity.BankStatus;
-import org.youngmonkeys.ecommerce.request.SaveBankRequest;
 import org.youngmonkeys.ezyplatform.admin.validator.AdminCommonValidator;
 import org.youngmonkeys.ezyplatform.model.PaginationModel;
 import org.youngmonkeys.ezyplatform.response.AddedIdResponse;
 import org.youngmonkeys.ezyrag.admin.controller.service.AdminRagVectorCollectionControllerService;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
+import org.youngmonkeys.ezyrag.admin.request.AdminSaveRagVectorCollectionRequest;
+import org.youngmonkeys.ezyrag.admin.response.AdminRagVectorCollectionDetailsResponse;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagVectorCollectionResponse;
+import org.youngmonkeys.ezyrag.admin.service.AdminEzyRagSettingService;
 import org.youngmonkeys.ezyrag.admin.service.AdminRagVectorCollectionService;
 import org.youngmonkeys.ezyrag.admin.validator.AdminRagVectorCollectionValidator;
-import org.youngmonkeys.ezyrag.entity.RagVectorCollection;
+import org.youngmonkeys.ezyrag.admin.vd.AdminRagVectorDatabaseServiceManager;
+import org.youngmonkeys.ezyrag.entity.RagVectorCollectionStatus;
+import org.youngmonkeys.ezyrag.model.RagVectorCollectionModel;
 import org.youngmonkeys.ezyrag.pagination.DefaultRagVectorCollectionFilter;
-import org.youngmonkeys.ezyrag.service.RagVectorCollectionService;
+import org.youngmonkeys.ezyrag.vd.RagVectorDatabaseService;
 
 import static org.youngmonkeys.ezyplatform.util.StringConverters.trimOrNull;
 
@@ -53,16 +56,20 @@ import static org.youngmonkeys.ezyplatform.util.StringConverters.trimOrNull;
 @AllArgsConstructor
 public class AdminApiVectorCollectionController {
 
-    private final AdminRagVectorCollectionService ragVectorCollectionService;
+    private final AdminRagVectorDatabaseServiceManager
+        vectorDatabaseServiceManager;
+    private final AdminEzyRagSettingService ezyRagSettingService;
+    private final AdminRagVectorCollectionService vectorCollectionService;
     private final AdminRagVectorCollectionControllerService
         vectorCollectionControllerService;
     private final AdminCommonValidator commonValidator;
     private final AdminRagVectorCollectionValidator vectorCollectionValidator;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
-    @Description("Get the data chunks with pagination")
+    @Description("Get the vector collections with pagination")
     @DoGet("/vector-collections")
     public PaginationModel<AdminRagVectorCollectionResponse> vectorCollectionsGet(
+        @RequestParam(value = "vectorDbServiceName") String vectorDbServiceName,
         @RequestParam(value = "keyword") String keyword,
         @RequestParam(value = "status") String status,
         @RequestParam(value = "sortOrder") String sortOrder,
@@ -74,6 +81,7 @@ public class AdminApiVectorCollectionController {
         commonValidator.validatePageSize(limit);
         return vectorCollectionControllerService.getVectorCollections(
             DefaultRagVectorCollectionFilter.builder()
+                .vectorDbService(trimOrNull(vectorDbServiceName))
                 .likeKeyword(trimOrNull(keyword))
                 .status(trimOrNull(status))
                 .build(),
@@ -85,62 +93,103 @@ public class AdminApiVectorCollectionController {
         );
     }
 
-    @Description("Add bank")
-    @DoPost("/banks/add")
-    public AddedIdResponse banksAddPost(
-        @RequestBody SaveBankRequest request
+    @Description("Get vector collection detail")
+    @DoGet("/vector-collections/{id}")
+    public AdminRagVectorCollectionDetailsResponse vectorCollectionsIdGet(
+        @PathVariable long collectionId
     ) {
+        return vectorCollectionControllerService
+            .getVectorCollectionById(collectionId);
+    }
+
+    @Description("Add vector collection")
+    @DoPost("/vector-collections/add")
+    public AddedIdResponse vectorCollectionsAddPost(
+        @RequestBody AdminSaveRagVectorCollectionRequest request
+    ) throws Exception {
         vectorCollectionValidator.validate(request);
-        long addedId = bankService.addBank(
-            requestToModelConverter.toModel(request)
-        );
-        return new AddedIdResponse(addedId);
+        RagVectorCollectionModel model = vectorCollectionService
+            .addVectorCollection(requestToModelConverter.toModel(request));
+        ezyRagSettingService
+            .setDefaultCollectionNameByVectorDbServiceNameIfAbsent(
+                request.getVectorDbService(),
+                request.getName()
+            );
+        RagVectorDatabaseService service = vectorDatabaseServiceManager
+            .getVectorDatabaseServiceByName(request.getVectorDbService());
+        if (service != null) {
+            service.createCollectionIfAbsent(model);
+        }
+        return new AddedIdResponse(model.getId());
     }
 
-    @Description("Update bank")
-    @DoPut("/banks/{id}")
-    public ResponseEntity banksIdPut(
-        @PathVariable long bankId,
-        @RequestBody SaveBankRequest request
+    @Description("Update vector collection")
+    @DoPut("/vector-collections/{id}")
+    public ResponseEntity vectorCollectionsIdPut(
+        @PathVariable long collectionId,
+        @RequestBody AdminSaveRagVectorCollectionRequest request
+    ) throws Exception {
+        vectorCollectionValidator.validate(collectionId, request);
+        RagVectorCollectionModel model = vectorCollectionService
+            .updateVectorCollection(
+                collectionId,
+                requestToModelConverter.toModel(request)
+            );
+        RagVectorDatabaseService service = vectorDatabaseServiceManager
+            .getVectorDatabaseServiceByName(request.getVectorDbService());
+        if (service != null) {
+            service.createCollectionIfAbsent(model);
+        }
+        return ResponseEntity.noContent();
+    }
+
+    @Description("Delete vector collection")
+    @DoDelete("/vector-collections/{id}")
+    public ResponseEntity vectorCollectionsIdDelete(
+        @PathVariable long collectionId
     ) {
-        bankValidator.validate(bankId, request);
-        bankService.updateBank(
-            bankId,
-            requestToModelConverter.toModel(request)
+        vectorCollectionService.deleteVectorCollectionById(collectionId);
+        return ResponseEntity.noContent();
+    }
+
+    @Description("Activate vector collection")
+    @DoPut("/vector-collections/{id}/activate")
+    public ResponseEntity vectorCollectionsIdActivatePut(
+        @PathVariable long collectionId
+    ) {
+        vectorCollectionService.updateVectorCollectionStatus(
+            collectionId,
+            RagVectorCollectionStatus.ACTIVATED.toString()
         );
         return ResponseEntity.noContent();
     }
 
-    @Description("Delete bank")
-    @DoDelete("/banks/{id}")
-    public ResponseEntity banksIdDelete(
-        @PathVariable long bankId
+    @Description("Deactivate vector collection")
+    @DoPut("/vector-collections/{id}/deactivate")
+    public ResponseEntity vectorCollectionsIdDeactivatePut(
+        @PathVariable long collectionId
     ) {
-        ragVectorCollectionService.deleteBankById(bankId);
-        return ResponseEntity.noContent();
-    }
-
-    @Description("Activate bank")
-    @DoPut("/banks/{id}/activate")
-    public ResponseEntity banksIdActivatePut(
-        @PathVariable long bankId
-    ) {
-        ragVectorCollectionService.updateBankStatus(
-            bankId,
-            BankStatus.ACTIVATED.toString()
+        vectorCollectionService.updateVectorCollectionStatus(
+            collectionId,
+            RagVectorCollectionStatus.INACTIVATED.toString()
         );
         return ResponseEntity.noContent();
     }
 
-    @Description("Deactivate bank")
-    @DoPut("/banks/{id}/deactivate")
-    public ResponseEntity banksIdDeactivatePut(
-        @PathVariable long bankId
+    @Description("Set the default vector collection of a vector db service")
+    @DoPut(
+        "/vector-database-services/{serviceName}" +
+            "/vector-collections/{collectionName}/set-as-default"
+    )
+    public ResponseEntity settingsAiChatServicesProfilesSetAsDefaultPut(
+        @PathVariable String serviceName,
+        @PathVariable String collectionName
     ) {
-        ragVectorCollectionService.updateBankStatus(
-            bankId,
-            BankStatus.INACTIVATED.toString()
-        );
+        ezyRagSettingService
+            .setDefaultCollectionNameByVectorDbServiceName(
+                serviceName,
+                collectionName
+            );
         return ResponseEntity.noContent();
     }
 }

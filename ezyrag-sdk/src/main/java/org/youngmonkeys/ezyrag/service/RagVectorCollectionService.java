@@ -18,38 +18,81 @@ package org.youngmonkeys.ezyrag.service;
 
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.exception.ResourceNotFoundException;
+import org.youngmonkeys.ezyplatform.service.SettingService;
+import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 import org.youngmonkeys.ezyrag.converter.EzyRagEntityToModelConverter;
 import org.youngmonkeys.ezyrag.converter.EzyRagModelToEntityConverter;
+import org.youngmonkeys.ezyrag.converter.EzyRagResultToModelConverter;
 import org.youngmonkeys.ezyrag.entity.RagVectorCollection;
 import org.youngmonkeys.ezyrag.model.RagVectorCollectionModel;
 import org.youngmonkeys.ezyrag.model.SaveRagVectorCollectionModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 import org.youngmonkeys.ezyrag.repo.RagVectorCollectionRepository;
+
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.settingNameDefaultCollectionNameOfVectorDbService;
 
 @AllArgsConstructor
 public class RagVectorCollectionService {
 
+    private final SettingService settingService;
     private final RagVectorCollectionRepository collectionRepository;
     private final EzyRagEntityToModelConverter entityToModelConverter;
     private final EzyRagModelToEntityConverter modelToEntityConverter;
+    private final EzyRagResultToModelConverter resultToModelConverter;
 
-    public long addRagVectorCollection(
+    public RagVectorCollectionModel addVectorCollection(
         SaveRagVectorCollectionModel model
     ) {
         RagVectorCollection entity = modelToEntityConverter
             .toVectorCollectionEntity(model);
         collectionRepository.save(entity);
-        return entity.getId();
+        return entityToModelConverter.toModel(entity);
     }
 
-    public void updateRagVectorCollection(
-        long bankId,
+    public RagVectorCollectionModel updateVectorCollection(
+        long collectionId,
         SaveRagVectorCollectionModel model
     ) {
         RagVectorCollection entity =
-            getRagVectorCollectionEntityByIdOrThrow(bankId);
+            getRagVectorCollectionEntityByIdOrThrow(collectionId);
         modelToEntityConverter
             .mergeToVectorCollectionEntity(model, entity);
         collectionRepository.save(entity);
+        return entityToModelConverter.toModel(entity);
+    }
+
+    public void updateVectorSize(
+        long collectionId,
+        long vectorSize
+    ) {
+        RagVectorCollection entity =
+            getRagVectorCollectionEntityByIdOrThrow(collectionId);
+        entity.setVectorSize(vectorSize);
+        modelToEntityConverter.mergeUpdatedAtToCollectionEntity(
+            entity
+        );
+        collectionRepository.save(entity);
+    }
+
+    public void updateVectorCollectionStatus(
+        long collectionId,
+        String status
+    ) {
+        RagVectorCollection entity =
+            getRagVectorCollectionEntityByIdOrThrow(collectionId);
+        entity.setStatus(status);
+        modelToEntityConverter.mergeUpdatedAtToCollectionEntity(
+            entity
+        );
+        collectionRepository.save(entity);
+    }
+
+    public void deleteVectorCollectionById(
+        long collectionId
+    ) {
+        collectionRepository.delete(collectionId);
     }
 
     public RagVectorCollectionModel getCollectionById(
@@ -60,21 +103,61 @@ public class RagVectorCollectionService {
         );
     }
 
-    public RagVectorCollectionModel getCollectionByName(
+    public RagVectorCollectionModel getCollectionByVectorDbServiceNameAndName(
+        String vectorDbServiceName,
         String collectionName
     ) {
         return entityToModelConverter.toModel(
-            collectionRepository.findByName(collectionName)
+            collectionRepository
+                .findByVectorDbServiceAndName(
+                    vectorDbServiceName,
+                    collectionName
+                )
+        );
+    }
+
+    public VectorCollectionModel getVectorCollectionByDbServiceNameAndCollectionName(
+        String vectorDbServiceName,
+        String collectionName
+    ) {
+        return resultToModelConverter.toModel(
+            collectionRepository
+                .findCollectionByVectorDbServiceAndName(
+                    vectorDbServiceName,
+                    collectionName
+                )
+        );
+    }
+
+    public VectorCollectionModel getDefaultVectorCollection() {
+        String serviceName = settingService.getTextValue(
+            SETTING_NAME_VECTOR_DATABASE_SERVICE_NAME,
+            RagVectorDatabaseServiceName.EZYVECTOR.toString()
+        );
+        if (isBlank(serviceName)) {
+            return null;
+        }
+        String collectionName = settingService.getTextValue(
+            settingNameDefaultCollectionNameOfVectorDbService(
+                serviceName
+            )
+        );
+        if (isBlank(collectionName)) {
+            return null;
+        }
+        return getVectorCollectionByDbServiceNameAndCollectionName(
+            collectionName,
+            serviceName
         );
     }
 
     private RagVectorCollection getRagVectorCollectionEntityByIdOrThrow(
-        long bankId
+        long collectionId
     ) {
         RagVectorCollection entity = collectionRepository
-            .findById(bankId);
+            .findById(collectionId);
         if (entity == null) {
-            throw new ResourceNotFoundException("bank");
+            throw new ResourceNotFoundException("vectorCollection");
         }
         return entity;
     }

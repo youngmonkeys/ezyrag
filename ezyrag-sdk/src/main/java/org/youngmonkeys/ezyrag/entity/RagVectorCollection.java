@@ -52,8 +52,11 @@ public class RagVectorCollection {
     @Column(name = "display_name")
     private String displayName;
 
+    @Column(name = "base_url")
+    private String baseUrl;
+
     @Column(name = "vector_size")
-    private int vectorSize;
+    private long vectorSize;
 
     private String distance;
 

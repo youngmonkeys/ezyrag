@@ -32,5 +32,4 @@ import lombok.Setter;
 public class RagEzyVectorConnectionPropertiesModel {
     private String baseUrl;
     private String apiKey;
-    private String collectionName;
 }

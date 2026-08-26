@@ -25,6 +25,7 @@ import java.util.Collection;
 @Getter
 @Builder
 public class DefaultRagVectorCollectionFilter implements RagVectorCollectionFilter {
+    public final String vectorDbService;
     public final Collection<String> keywords;
     public final String likeKeyword;
     public final String keywordPrefix;
@@ -42,6 +43,9 @@ public class DefaultRagVectorCollectionFilter implements RagVectorCollectionFilt
     @Override
     public String matchingCondition() {
         EzyQueryConditionBuilder answer = new EzyQueryConditionBuilder();
+        if (vectorDbService != null) {
+            answer.and("e.vectorDbService = :vectorDbService");
+        }
         if (keywordPrefix != null || keywords != null) {
             answer.and("k.dataType = 'ezyvector_collections'");
             if (keywordPrefix != null) {

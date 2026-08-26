@@ -19,12 +19,18 @@ package org.youngmonkeys.ezyrag.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.function.Supplier;
+
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_DISTANCE;
+
 @Builder
 @Getter
 public class RagVectorCollectionModel {
     private long id;
     private String name;
     private String displayName;
+    private String baseUrl;
     private long vectorSize;
     private String distance;
     private String indexType;
@@ -33,4 +39,16 @@ public class RagVectorCollectionModel {
     private String config;
     private long createdAt;
     private long updatedAt;
+
+    public String getBaseUrl(
+        Supplier<String> defaulUrlSupplier
+    ) {
+        return isBlank(baseUrl)
+            ? defaulUrlSupplier.get()
+            : baseUrl;
+    }
+
+    public String getDistance() {
+        return isBlank(distance) ? DEFAULT_DISTANCE : distance;
+    }
 }

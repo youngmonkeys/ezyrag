@@ -17,7 +17,10 @@
 package org.youngmonkeys.ezyrag.admin.service;
 
 import com.tvd12.ezyhttp.server.core.annotation.Service;
+import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagEntityToModelConverter;
+import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagModelToEntityConverter;
+import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagResultToModelConverter;
 import org.youngmonkeys.ezyrag.admin.repo.AdminRagVectorCollectionRepository;
 import org.youngmonkeys.ezyrag.service.RagVectorCollectionService;
 
@@ -25,12 +28,18 @@ import org.youngmonkeys.ezyrag.service.RagVectorCollectionService;
 public class AdminRagVectorCollectionService extends RagVectorCollectionService {
 
     public AdminRagVectorCollectionService(
+        AdminSettingService settingService,
         AdminRagVectorCollectionRepository collectionRepository,
-        AdminEzyRagEntityToModelConverter entityToModelConverter
+        AdminEzyRagEntityToModelConverter entityToModelConverter,
+        AdminEzyRagModelToEntityConverter modelToEntityConverter,
+        AdminEzyRagResultToModelConverter resultToModelConverter
     ) {
         super(
+            settingService,
             collectionRepository,
-            entityToModelConverter
+            entityToModelConverter,
+            modelToEntityConverter,
+            resultToModelConverter
         );
     }
 }

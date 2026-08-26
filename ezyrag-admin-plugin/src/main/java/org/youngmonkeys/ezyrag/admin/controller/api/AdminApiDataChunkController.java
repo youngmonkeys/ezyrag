@@ -29,12 +29,15 @@ import com.tvd12.ezyhttp.server.core.annotation.RequestParam;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyplatform.admin.validator.AdminCommonValidator;
 import org.youngmonkeys.ezyplatform.annotation.AdminId;
+import org.youngmonkeys.ezyplatform.exception.ResourceNotFoundException;
 import org.youngmonkeys.ezyplatform.model.PaginationModel;
 import org.youngmonkeys.ezyrag.admin.client.AdminEzyRagClient;
 import org.youngmonkeys.ezyrag.admin.controller.service.AdminRagDataChunkControllerService;
 import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
 import org.youngmonkeys.ezyrag.admin.response.AdminRagDataChunkResponse;
+import org.youngmonkeys.ezyrag.admin.service.AdminRagVectorCollectionService;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 import org.youngmonkeys.ezyrag.pagination.DefaultRagDataChunkFilter;
 
 import java.util.List;
@@ -51,6 +54,7 @@ import static org.youngmonkeys.ezyplatform.util.StringConverters.trimOrNull;
 public class AdminApiDataChunkController {
 
     private final AdminEzyRagClient ragClient;
+    private final AdminRagVectorCollectionService vectorCollectionService;
     private final AdminRagDataChunkControllerService dataChunkControllerService;
     private final AdminCommonValidator commonValidator;
 
@@ -88,7 +92,12 @@ public class AdminApiDataChunkController {
         @AdminId long adminId,
         @RequestBody AdminChunkDataRequest request
     ) throws Exception {
-        dataChunkControllerService.chunkData(adminId, request);
+        VectorCollectionModel collection = vectorCollectionService
+            .getDefaultVectorCollection();
+        if (collection == null) {
+            throw new ResourceNotFoundException("defaultVectorCollection");
+        }
+        dataChunkControllerService.chunkData(adminId, collection, request);
         return ResponseEntity.noContent();
     }
 
@@ -97,7 +106,13 @@ public class AdminApiDataChunkController {
         @RequestParam(value = "query") String query,
         @RequestParam(value = "limit", defaultValue = "12") int limit
     ) throws Exception {
+        VectorCollectionModel collection = vectorCollectionService
+            .getDefaultVectorCollection();
+        if (collection == null) {
+            throw new ResourceNotFoundException("defaultVectorCollection");
+        }
         return ragClient.searchDataList(
+            collection,
             query,
             limit
         );

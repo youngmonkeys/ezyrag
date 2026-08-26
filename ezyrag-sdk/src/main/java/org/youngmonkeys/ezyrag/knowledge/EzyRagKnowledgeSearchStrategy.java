@@ -21,9 +21,15 @@ import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyai.knowledge.KnowledgeData;
 import org.youngmonkeys.ezyai.knowledge.KnowledgeSearchStrategy;
 import org.youngmonkeys.ezyrag.client.EzyRagClient;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
+import org.youngmonkeys.ezyrag.service.EzyRagSettingService;
+import org.youngmonkeys.ezyrag.service.RagVectorCollectionService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
 
 @AllArgsConstructor
 public class EzyRagKnowledgeSearchStrategy
@@ -31,16 +37,73 @@ public class EzyRagKnowledgeSearchStrategy
     implements KnowledgeSearchStrategy {
 
     private final EzyRagClient ezyRagClient;
+    private final EzyRagSettingService ezyRagSettingService;
+    private final RagVectorCollectionService vectorCollectionService;
 
+    @SuppressWarnings("MethodLength")
     @Override
     public List<KnowledgeData> searchKnowledgeDataList(
         String query,
+        Map<String, Object> parameters,
         int limit
     ) {
+        String vectorDatabaseServiceName = (String) parameters
+            .get("vector_database_service_name");
+        if (isBlank(vectorDatabaseServiceName)) {
+            vectorDatabaseServiceName = ezyRagSettingService
+                .getVectorDatabaseServiceName();
+        }
+        if (isBlank(vectorDatabaseServiceName)) {
+            logger.warn(
+                "there is no vector database service, " +
+                    "you need set as default one"
+            );
+            return Collections.emptyList();
+        }
+        String collectionName = (String) parameters
+            .get("rag_collection_name");
+        if (isBlank(collectionName)) {
+            collectionName = ezyRagSettingService
+                .getDefaultCollectionNameByVectorDbServiceName(
+                    vectorDatabaseServiceName
+                );
+        }
+        if (isBlank(collectionName)) {
+            logger.warn(
+                "there is no vector collection, " +
+                    "you need set as default one"
+            );
+            return Collections.emptyList();
+        }
+        VectorCollectionModel collection = vectorCollectionService
+            .getVectorCollectionByDbServiceNameAndCollectionName(
+                vectorDatabaseServiceName,
+                collectionName
+            );
+        if (collection == null) {
+            logger.warn(
+                "vector collection: {} of db service: {}, no found",
+                vectorDatabaseServiceName,
+                collectionName
+            );
+            return Collections.emptyList();
+        }
         try {
-            return ezyRagClient.getKnowledgeDataList(query, limit);
+            return ezyRagClient.getKnowledgeDataList(
+                collection,
+                query,
+                limit
+            );
         } catch (Exception e) {
-            logger.warn("search: {} limit; {} error", query, limit, e);
+            logger.warn(
+                "search: {} limit; {} in collection: {} " +
+                    "of vector db service: {} error",
+                query,
+                limit,
+                vectorDatabaseServiceName,
+                collectionName,
+                e
+            );
             return Collections.emptyList();
         }
     }

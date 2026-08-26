@@ -39,6 +39,7 @@ import org.youngmonkeys.ezyrag.model.RagInputData;
 import org.youngmonkeys.ezyrag.model.RagSaveDataChunkModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 import org.youngmonkeys.ezyrag.processor.RagQueryProcessorManager;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetriever;
 import org.youngmonkeys.ezyrag.retriever.RagDataRetrieverManager;
@@ -72,6 +73,7 @@ public class EzyRagClient {
 
     @SuppressWarnings("MethodLength")
     public void chunkData(
+        VectorCollectionModel collection,
         RagDataSourceModel dataSource
     ) throws Exception {
         String sourceType = dataSource.getSourceType();
@@ -84,7 +86,6 @@ public class EzyRagClient {
         RagEmbeddingService embeddingService = getEmbeddingService();
         RagVectorDatabaseService vectorDatabaseService =
             getVectorDatabaseService();
-        int vectorSize = vectorDatabaseService.getVectorSize();
         RagDataChunker chunker = getDataChunker();
         Iterator<RagInputData> iterator = dataLoader
             .load(dataSource);
@@ -148,7 +149,7 @@ public class EzyRagClient {
                             .data(content)
                             .dataType(CommonContentType.TEXT.toString())
                             .build(),
-                        vectorSize
+                        collection.getVectorSize()
                     );
                     dataChunkService.updateEmbeddingById(
                         chunkId,
@@ -162,6 +163,7 @@ public class EzyRagClient {
                     .put("chunkIndex", chunkIndex + 1)
                     .toMap();
                 vectorDatabaseService.upsert(
+                    collection,
                     Collections.singletonList(
                         RagVectorPointModel.builder()
                             .id(chunkId)
@@ -181,6 +183,7 @@ public class EzyRagClient {
     }
 
     public List<RagVectorSearchResultModel> searchDataList(
+        VectorCollectionModel collection,
         String query,
         int limit
     ) throws Exception {
@@ -194,12 +197,13 @@ public class EzyRagClient {
                 .data(processedQuery)
                 .dataType(CommonContentType.TEXT.toString())
                 .build(),
-            vectorDatabaseService.getVectorSize()
+            collection.getVectorSize()
         );
-        return vectorDatabaseService.search(vector, limit);
+        return vectorDatabaseService.search(collection, vector, limit);
     }
 
     public List<KnowledgeData> getKnowledgeDataList(
+        VectorCollectionModel collection,
         String query,
         int limit
     ) throws Exception {
@@ -207,6 +211,7 @@ public class EzyRagClient {
         RagKnowledgeDataBuilder knowledgeDataBuilder =
             getKnowledgeDataBuilder();
         List<RagVectorSearchResultModel> result = searchDataList(
+            collection,
             query,
             limit
         );
@@ -299,7 +304,7 @@ public class EzyRagClient {
 
     private RagVectorDatabaseService getVectorDatabaseService() {
         String vectorDatabaseServiceName = settingService
-            .getVectorDatabaseService();
+            .getVectorDatabaseServiceName();
         if (isBlank(vectorDatabaseServiceName)) {
             throw new IllegalStateException(
                 "Vector database service has not been set up"

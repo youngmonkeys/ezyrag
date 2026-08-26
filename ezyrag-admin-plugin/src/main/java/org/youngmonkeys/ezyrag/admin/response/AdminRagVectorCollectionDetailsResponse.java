@@ -25,6 +25,7 @@ public class AdminRagVectorCollectionDetailsResponse {
     private long id;
     private String name;
     private String displayName;
+    private String baseUrl;
     private long vectorSize;
     private String distance;
     private String status;

@@ -76,4 +76,10 @@ public class EzyRagModelToEntityConverter {
         entity.setStatus(status);
         entity.setUpdatedAt(clock.nowDateTime());
     }
+
+    public void mergeUpdatedAtToCollectionEntity(
+        RagVectorCollection entity
+    ) {
+        entity.setUpdatedAt(clock.nowDateTime());
+    }
 }

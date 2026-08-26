@@ -14,21 +14,17 @@
  * limitations under the License.
 */
 
-package org.youngmonkeys.ezyrag.admin.response;
+package org.youngmonkeys.ezyrag.result;
 
-import lombok.Builder;
+import com.tvd12.ezyfox.database.annotation.EzyQueryResult;
 import lombok.Getter;
+import lombok.Setter;
 
-@Builder
 @Getter
-public class AdminRagVectorCollectionResponse {
-    private long id;
+@Setter
+@EzyQueryResult
+public class VectorCollectionResult {
     private String name;
-    private String displayName;
     private String baseUrl;
     private long vectorSize;
-    private String distance;
-    private String status;
-    private long createdAt;
-    private long updatedAt;
 }

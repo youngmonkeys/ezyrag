@@ -26,32 +26,37 @@ import com.tvd12.ezyhttp.core.constant.ContentTypes;
 import org.youngmonkeys.ezyplatform.service.MutableSettingService;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
+import org.youngmonkeys.ezyrag.model.RagVectorCollectionModel;
 import org.youngmonkeys.ezyrag.model.RagVectorPointModel;
 import org.youngmonkeys.ezyrag.model.RagVectorSearchResultModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
+import org.youngmonkeys.ezyrag.service.RagVectorCollectionService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isBlank;
+import static org.youngmonkeys.ezyplatform.constant.CommonConstants.ZERO_LONG;
 import static org.youngmonkeys.ezyplatform.util.Numbers.toLongOrZeroFromObject;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_VECTOR_SIZE;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_CONNECTION_PROPERTIES;
-import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_QDRANT_VECTOR_SIZE;
 
 public class RagQdrantVectorDatabaseService
     implements RagVectorDatabaseService {
 
     private final HttpClient httpClient;
     private final MutableSettingService settingService;
+    private final RagVectorCollectionService vectorCollectionService;
 
     public RagQdrantVectorDatabaseService(
         HttpClient httpClient,
-        MutableSettingService settingService
+        MutableSettingService settingService,
+        RagVectorCollectionService vectorCollectionService
     ) {
         this.httpClient = httpClient;
         this.settingService = settingService;
+        this.vectorCollectionService = vectorCollectionService;
         settingService.watchLastUpdatedTime(
             SETTING_NAME_QDRANT_CONNECTION_PROPERTIES,
             () -> settingService.cacheValueIfNotNull(
@@ -79,24 +84,27 @@ public class RagQdrantVectorDatabaseService
     }
 
     @Override
-    public void createCollectionIfAbsent() throws Exception {
+    public void createCollectionIfAbsent(
+        RagVectorCollectionModel collection
+    ) throws Exception {
         RagQdrantConnectionPropertiesModel properties =
             getConnectionProperties();
         Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
             .put(
                 "vectors",
                 EzyMapBuilder.mapBuilder()
-                    .put("size", getVectorSize())
+                    .put("size", collection.getVectorSize())
                     .put("distance", "Cosine")
                     .toMap()
             )
             .toMap();
+        String collectionName = collection.getName();
         httpClient.call(
             new PutRequest()
                 .setURL(
                     getCollectionUrl(
-                        properties.getBaseUrl(),
-                        properties.getCollectionName()
+                        collection.getBaseUrl(properties::getBaseUrl),
+                        collectionName
                     )
                 )
                 .setEntity(
@@ -106,11 +114,16 @@ public class RagQdrantVectorDatabaseService
                     )
                 )
         );
-        refreshQdrantVectorSize(properties);
+        refreshQdrantVectorSize(
+            collection.getId(),
+            collectionName,
+            properties
+        );
     }
 
     @Override
     public void upsert(
+        VectorCollectionModel collection,
         List<RagVectorPointModel> points
     ) throws Exception {
         RagQdrantConnectionPropertiesModel properties =
@@ -132,8 +145,8 @@ public class RagQdrantVectorDatabaseService
             new PutRequest()
                 .setURL(
                     getPointsUrl(
-                        properties.getBaseUrl(),
-                        properties.getCollectionName()
+                        collection.getBaseUrl(properties::getBaseUrl),
+                        collection.getName()
                     ) + "?wait=true"
                 )
                 .setEntity(
@@ -148,6 +161,7 @@ public class RagQdrantVectorDatabaseService
     @Override
     @SuppressWarnings("unchecked")
     public List<RagVectorSearchResultModel> search(
+        VectorCollectionModel collection,
         float[] vector,
         int limit
     ) throws Exception {
@@ -162,8 +176,8 @@ public class RagQdrantVectorDatabaseService
             new PostRequest()
                 .setURL(
                     getPointsUrl(
-                        properties.getBaseUrl(),
-                        properties.getCollectionName()
+                        collection.getBaseUrl(properties::getBaseUrl),
+                        collection.getName()
                     ) + "/search"
                 )
                 .setEntity(
@@ -221,6 +235,8 @@ public class RagQdrantVectorDatabaseService
 
     @SuppressWarnings("unchecked")
     private void refreshQdrantVectorSize(
+        long collectionId,
+        String collectionName,
         RagQdrantConnectionPropertiesModel properties
     ) throws Exception {
         Map<String, Object> responseBody = httpClient.call(
@@ -228,7 +244,7 @@ public class RagQdrantVectorDatabaseService
                 .setURL(
                     getCollectionUrl(
                         properties.getBaseUrl(),
-                        properties.getCollectionName()
+                        collectionName
                     )
                 )
                 .setEntity(
@@ -252,54 +268,35 @@ public class RagQdrantVectorDatabaseService
             params == null
                 ? null
                 : (Map<String, Object>) params.get("vectors");
-        int vectorSize = getVectorSize(vectors);
-        if (vectorSize <= 0) {
+        long vectorSize = getVectorSize(vectors);
+        if (vectorSize <= ZERO_LONG) {
             return;
         }
-        settingService.setIntValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            vectorSize
-        );
-        settingService.cacheValueIfNotNull(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
+        vectorCollectionService.updateVectorSize(
+            collectionId,
             vectorSize
         );
     }
 
     @SuppressWarnings("unchecked")
-    private int getVectorSize(Map<String, Object> vectors) {
+    private long getVectorSize(Map<String, Object> vectors) {
         if (vectors == null || vectors.isEmpty()) {
-            return 0;
+            return ZERO_LONG;
         }
         Object size = vectors.get("size");
         if (size instanceof Number) {
-            return ((Number) size).intValue();
+            return ((Number) size).longValue();
         }
         for (Object item : vectors.values()) {
             if (item instanceof Map) {
                 Object namedVectorSize =
                     ((Map<String, Object>) item).get("size");
                 if (namedVectorSize instanceof Number) {
-                    return ((Number) namedVectorSize).intValue();
+                    return ((Number) namedVectorSize).longValue();
                 }
             }
         }
-        return 0;
-    }
-
-    @Override
-    public int getVectorSize() {
-        int size = settingService.getCachedValue(
-            SETTING_NAME_QDRANT_VECTOR_SIZE,
-            0
-        );
-        if (size <= 0) {
-            size = settingService.getIntValue(
-                SETTING_NAME_QDRANT_VECTOR_SIZE,
-                DEFAULT_VECTOR_SIZE
-            );
-        }
-        return size;
+        return ZERO_LONG;
     }
 
     private RagQdrantConnectionPropertiesModel getConnectionProperties() {
@@ -313,7 +310,7 @@ public class RagQdrantVectorDatabaseService
         return properties;
     }
 
-    public String getProviderName() {
+    public String getServiceName() {
         return RagVectorDatabaseServiceName.QDRANT.toString();
     }
 }
