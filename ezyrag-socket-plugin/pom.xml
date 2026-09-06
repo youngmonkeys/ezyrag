@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.youngmonkeys</groupId>
         <artifactId>ezyrag</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </parent>
 
     <artifactId>ezyrag-socket-plugin</artifactId>
@@ -111,7 +111,7 @@
             <artifactId>graphql-sdk</artifactId>
             <version>${graphql.version}</version>
             <scope>system</scope>
-            <systemPath>${ezyplatform.home}/web/plugins/graphql/lib/graphql-sdk-${graphql.version}.jar</systemPath>
+            <systemPath>${ezyplatform.home}/socket/plugins/graphql/lib/graphql-sdk-${graphql.version}.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.youngmonkeys</groupId>
