@@ -83,7 +83,7 @@
             <artifactId>ezyarticle-sdk</artifactId>
             <version>${ezyarticle.version}</version>
             <scope>system</scope>
-            <systemPath>${ezyplatform.home}/admin/plugins/ezyarticle/lib/ezyarticle-sdk-${ezyarticle.version}.jar</systemPath>
+            <systemPath>${ezyplatform.home}/socket/plugins/ezyarticle/lib/ezyarticle-sdk-${ezyarticle.version}.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.youngmonkeys</groupId>
@@ -139,7 +139,7 @@
             <artifactId>ecommerce-sdk</artifactId>
             <version>${ecommerce.version}</version>
             <scope>system</scope>
-            <systemPath>${ezyplatform.home}/web/plugins/ecommerce/lib/ecommerce-sdk-${ecommerce.version}.jar</systemPath>
+            <systemPath>${ezyplatform.home}/socket/plugins/ecommerce/lib/ecommerce-sdk-${ecommerce.version}.jar</systemPath>
         </dependency>
     </dependencies>
 
