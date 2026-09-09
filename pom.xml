@@ -31,12 +31,12 @@
     <properties>
         <!--suppress UnresolvedMavenProperty -->
         <ezyplatform.home>${env.EZYPLATFORM_HOME}</ezyplatform.home>
-    <ecommerce.version>1.4.0</ecommerce.version>
+    <ecommerce.version>1.4.1</ecommerce.version>
         <ezyaccount.version>0.1.9</ezyaccount.version>
-        <ezyarticle.version>1.3.8</ezyarticle.version>
-        <ezychat.version>0.1.8</ezychat.version>
+        <ezyarticle.version>1.3.9</ezyarticle.version>
+        <ezychat.version>0.2.1</ezychat.version>
         <ezycrm.version>0.5.3</ezycrm.version>
-        <ezylogin.version>0.3.5</ezylogin.version>
+        <ezylogin.version>0.3.6</ezylogin.version>
         <ezymail.version>0.2.5</ezymail.version>
         <ezysupport.version>0.5.2</ezysupport.version>
         <graphql.version>0.2.9</graphql.version>
@@ -46,7 +46,7 @@
         <poi.version>5.2.5</poi.version>
         <socket.monitor.version>0.0.1</socket.monitor.version>
         <zxing.version>3.5.3</zxing.version>
-        <ezyai.version>0.0.9</ezyai.version>
+        <ezyai.version>0.1.0</ezyai.version>
     </properties>
 
     <modules>
