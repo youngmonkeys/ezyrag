@@ -1,57 +1,17 @@
 # EzyRag
 
-                         ┌──────────────────────┐
-                         │       USER           │
-                         │     Câu hỏi          │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │   Query Processing   │
-                         │ Chuẩn hóa câu hỏi    │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │   Embedding Model    │
-                         │ Text → Vector        │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                    ┌──────────────────────────────┐
-                    │      Vector Database         │
-                    │                              │
-                    │  Qdrant / Pinecone /         │
-                    │  Weaviate / pgvector         │
-                    └──────────────┬───────────────┘
-                                   │
-                         Tìm tài liệu liên quan
-                                   │
-                                   ▼
-                    ┌──────────────────────────────┐
-                    │        Retriever             │
-                    │                              │
-                    │  Top-K đoạn nội dung         │
-                    │  liên quan nhất              │
-                    └──────────────┬───────────────┘
-                                   │
-                                   ▼
-                    ┌──────────────────────────────┐
-                    │      Context Builder         │
-                    │                              │
-                    │ Question + Retrieved Context │
-                    └──────────────┬───────────────┘
-                                   │
-                                   ▼
-                    ┌──────────────────────────────┐
-                    │            LLM               │
-                    │                              │
-                    │ GPT / Claude / Gemini /      │
-                    │ DeepSeek / Local LLM         │
-                    └──────────────┬───────────────┘
-                                   │
-                                   ▼
-                         ┌──────────────────────┐
-                         │      ANSWER          │
-                         │  Câu trả lời cuối    │
-                         └──────────────────────┘
+A RAG (Retrieval-Augmented Generation) plugin for EzyPlatform.
+
+# Document
+
+Learn more here: https://ezyplatform.com/market/items/ezyrag
+
+# Contributing
+
+This repo scans for secrets before every commit and on every push/PR via [gitleaks](https://github.com/gitleaks/gitleaks).
+To enable the local pre-commit check after cloning:
+
+```
+git config core.hooksPath .githooks
+brew install gitleaks
+```
