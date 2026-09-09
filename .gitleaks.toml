@@ -1,0 +1,12 @@
+title = "ezyrag gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "known false positives: these are variable/method names, not actual secret values"
+regexes = [
+  '''apiKey\s*=\s*(ezyRagSettingService|settingService)''',
+  '''accessToken\s*=\s*(ezyRagSettingService|settingService)''',
+  '''get(OpenAiApiKey|QdrantApiKey|PasswordValue)\(''',
+]

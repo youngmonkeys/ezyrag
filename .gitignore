@@ -20,3 +20,14 @@ target/
 **/.idea
 .vscode/
 .history/
+
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+settings.xml
+**/settings.xml
