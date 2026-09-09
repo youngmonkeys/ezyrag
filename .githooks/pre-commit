@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "[pre-commit] gitleaks not installed, skipping secret scan."
+  echo "[pre-commit] install it with: brew install gitleaks"
+  exit 0
+fi
+
+gitleaks protect --staged --redact -v
