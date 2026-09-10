@@ -24,16 +24,16 @@ import org.youngmonkeys.ezyrag.constant.RagKnowledgeDataBuilderName;
 import org.youngmonkeys.ezyrag.constant.RagVectorDatabaseServiceName;
 
 import static com.tvd12.ezyfox.io.EzyStrings.isEmpty;
-import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.DEFAULT_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
-import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_PARAGRAPH_SEPARATOR;
 import static org.youngmonkeys.ezyai.constant.EzyAIConstants.SETTING_NAME_KNOWLEDGE_CHUNK_SENTENCE_BOUNDARY_PATTERN;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_OPENAI_EMBEDDING_MODEL;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_CHUNKER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA_RETRIEVER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;

@@ -92,6 +92,23 @@
                     <i class="far fa-times-circle"></i> <span id="dataRetrieverNameError">[[#{invalid}]]</span>
                 </label>
             </div>
+            <div class="form-group row">
+                <label for="knowledgeChunkMaxLength" class="col-sm-3 col-form-label">
+                    [[#{knowledge_chunk_max_length}]]
+                </label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="knowledgeChunkMaxLength" id="knowledgeChunkMaxLength"
+                           class="form-control" th:placeholder="#{knowledge_chunk_max_length}"
+                           th:value="${knowledgeChunkMaxLength}">
+                    <small class="form-text text-muted">
+                        [[#{knowledge_chunk_max_length_hint}]]
+                    </small>
+                </div>
+                <label id="knowledgeChunkMaxLengthErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none"
+                       for="knowledgeChunkMaxLength">
+                    <i class="far fa-times-circle"></i> <span id="knowledgeChunkMaxLengthError">[[#{invalid}]]</span>
+                </label>
+            </div>
             <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-2 mb-2">

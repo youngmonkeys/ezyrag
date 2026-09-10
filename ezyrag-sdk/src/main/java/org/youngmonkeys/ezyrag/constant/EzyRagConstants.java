@@ -21,6 +21,7 @@ public final class EzyRagConstants {
     public static final String DEFAULT_OPENAI_EMBEDDING_MODEL =
         "text-embedding-3-small";
     public static final String DEFAULT_DISTANCE = "Cosine";
+    public static final int DEFAULT_KNOWLEDGE_CHUNK_MAX_LENGTH = 600;
 
     public static final String SETTING_NAME_OPENAI_API_KEY =
         "ezyrag_openai_api_key";
@@ -36,6 +37,8 @@ public final class EzyRagConstants {
         "ezyrag_ezy_vector_connection_properties";
     public static final String SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME =
         "ezyrag_knowledge_data_builder_name";
+    public static final String SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH =
+        "ezyrag_knowledge_chunk_max_length";
     public static final String SETTING_NAME_DATA_CHUNKER_NAME =
         "ezyrag_knowledge_data_chunker_name";
     public static final String SETTING_NAME_EMBEDDING_SERVICE_NAME =

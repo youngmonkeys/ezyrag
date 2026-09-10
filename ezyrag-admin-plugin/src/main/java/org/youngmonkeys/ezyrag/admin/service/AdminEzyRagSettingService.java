@@ -30,6 +30,7 @@ import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_DATA
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EMBEDDING_SERVICE_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_EZY_VECTOR_CONNECTION_PROPERTIES;
+import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_API_KEY;
 import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.SETTING_NAME_OPENAI_EMBEDDING_MODEL;
@@ -74,6 +75,13 @@ public class AdminEzyRagSettingService extends EzyRagSettingService {
         setAndCacheTextValue(
             SETTING_NAME_KNOWLEDGE_DATA_BUILDER_NAME,
             name
+        );
+    }
+
+    public void setKnowledgeChunkMaxLength(int value) {
+        settingService.setIntValue(
+            SETTING_NAME_KNOWLEDGE_CHUNK_MAX_LENGTH,
+            value
         );
     }
 

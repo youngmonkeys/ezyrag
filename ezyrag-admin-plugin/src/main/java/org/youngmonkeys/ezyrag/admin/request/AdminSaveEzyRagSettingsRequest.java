@@ -23,6 +23,7 @@ import lombok.Setter;
 @Setter
 public class AdminSaveEzyRagSettingsRequest {
     private String knowledgeDataBuilderName;
+    private int knowledgeChunkMaxLength;
     private String dataChunkerName;
     private String dataRetrieverName;
 }
