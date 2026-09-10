@@ -17,6 +17,8 @@
 package org.youngmonkeys.ezyrag.admin.converter;
 
 import com.tvd12.ezyfox.bean.annotation.EzySingleton;
+import org.youngmonkeys.ezyarticle.sdk.entity.PostStatus;
+import org.youngmonkeys.ezyarticle.sdk.model.SavePostModel;
 import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveEzyVectorConnectionPropertiesRequest;
 import org.youngmonkeys.ezyrag.admin.request.AdminSaveQdrantConnectionPropertiesRequest;
@@ -26,8 +28,21 @@ import org.youngmonkeys.ezyrag.model.RagEzyVectorConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.RagQdrantConnectionPropertiesModel;
 import org.youngmonkeys.ezyrag.model.SaveRagVectorCollectionModel;
 
+import static org.youngmonkeys.ezyai.constant.EzyAIConstants.POST_TYPE_KNOWLEDGE_DATA;
+
 @EzySingleton
 public class AdminEzyRagRequestToModelConverter {
+
+    public SavePostModel toSavePostModel(
+        AdminChunkDataRequest request
+    ) {
+        return SavePostModel.builder()
+            .postType(POST_TYPE_KNOWLEDGE_DATA)
+            .title(request.getTitle())
+            .content(request.getData())
+            .status(PostStatus.PUBLISHED.toString())
+            .build();
+    }
 
     public SaveRagVectorCollectionModel toModel(
         AdminSaveRagVectorCollectionRequest request

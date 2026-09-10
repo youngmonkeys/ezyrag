@@ -63,6 +63,7 @@
                         <th class="text-center">[[#{has_embedding}]]</th>
                         <th class="text-center">[[#{created_at}]]</th>
                         <th class="text-center">[[#{updated_at}]]</th>
+                        <th class="text-center">[[#{actions}]]</th>
                     </tr>
                     </thead>
                     <tbody id="dataChunkListBody">
@@ -100,11 +101,16 @@
             </div>
         </div>
     </div>
+    <th:block th:replace="~{fragments/prompt :: content(id='delete-data-chunk-modal', title=confirm, confirmButton=delete, closeButton=close)}" />
 </th:block>
-<script th:fragment="scripts">
+<script th:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.messages.do_you_want_to_delete_data_chunk_pdata_chunk = /*[[#{do_you_want_to_delete_data_chunk_pdata_chunk}]]*/;
+/*]]>*/
 ezyrag.lastDataChunkPageToken = {};
 ezyrag.dataChunkScoreById = {};
 ezyrag.searchDataChunkIds = [];
+ezyrag.selectedDataChunkId = 0;
 
 ezyrag.onKeydownToFetchDataChunkList = function(event) {
     if (event.key === 'Enter') {
@@ -354,8 +360,46 @@ ezyrag.buildDataChunkListItemHtml = function(dataChunk) {
             <td class="text-center">${dataChunk.hasEmbedding ? '<i class="fas fa-check text-success"></i>' : ''}</td>
             <td class="text-center">${ezyadmin.formatTimeStamp(dataChunk.createdAt)}</td>
             <td class="text-center">${ezyadmin.formatTimeStamp(dataChunk.updatedAt)}</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-link text-danger"
+                        onclick="ezyrag.onDeleteDataChunkClick(${dataChunk.id});">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
         </tr>
         `;
+}
+
+ezyrag.onDeleteDataChunkClick = function(dataChunkId) {
+    ezyrag.selectedDataChunkId = dataChunkId;
+    $('#delete-data-chunk-modal-body-content').text(
+        ezyadmin.messages.do_you_want_to_delete_data_chunk_pdata_chunk
+            .replace('{0}', dataChunkId)
+    );
+    $('#delete-data-chunk-modal').modal('show');
+}
+
+ezyrag.deleteDataChunk = function() {
+    ezyadmin.showLoadingScreen();
+    $.ajax({
+        type: 'DELETE',
+        url: '/ezyrag/api/v1/data-chunks/' + ezyrag.selectedDataChunkId,
+        success: function() {
+            ezyadmin.hideLoadingScreen();
+            $('#delete-data-chunk-modal').modal('hide');
+            ezyrag.fetchDataChunkList('first');
+        },
+        error: function(data) {
+            ezyadmin.hideLoadingScreen();
+            ezyadmin.processUpdateApiErrors({}, data);
+        }
+    });
+}
+
+ezyadmin.onPromptConfirmed = function(modalId) {
+    if (modalId === 'delete-data-chunk-modal') {
+        ezyrag.deleteDataChunk();
+    }
 }
 
 ezyrag.fillSearchInputsFromUrl();

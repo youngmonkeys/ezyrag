@@ -34,6 +34,11 @@ public interface RagVectorDatabaseService {
         List<RagVectorPointModel> points
     ) throws Exception;
 
+    void deletePoints(
+        VectorCollectionModel collection,
+        List<Long> pointIds
+    ) throws Exception;
+
     List<RagVectorSearchResultModel> search(
         VectorCollectionModel collection,
         float[] vector,

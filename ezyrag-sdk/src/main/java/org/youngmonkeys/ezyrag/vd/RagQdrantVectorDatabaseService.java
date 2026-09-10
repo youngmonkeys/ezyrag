@@ -166,6 +166,33 @@ public class RagQdrantVectorDatabaseService
     }
 
     @Override
+    public void deletePoints(
+        VectorCollectionModel collection,
+        List<Long> pointIds
+    ) throws Exception {
+        RagQdrantConnectionPropertiesModel properties =
+            getConnectionProperties();
+        Map<String, Object> requestBody = EzyMapBuilder.mapBuilder()
+            .put("points", pointIds)
+            .toMap();
+        httpClient.call(
+            new PostRequest()
+                .setURL(
+                    getPointsUrl(
+                        collection.getBaseUrl(properties::getBaseUrl),
+                        collection.getName()
+                    ) + "/delete?wait=true"
+                )
+                .setEntity(
+                    requestEntity(
+                        properties.getApiKey(),
+                        requestBody
+                    )
+                )
+        );
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public List<RagVectorSearchResultModel> search(
         VectorCollectionModel collection,
