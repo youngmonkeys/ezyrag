@@ -22,7 +22,7 @@
     </parent>
     <artifactId>ezyrag</artifactId>
     <groupId>org.youngmonkeys</groupId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <packaging>pom</packaging>
 
     <name>ezyrag</name>

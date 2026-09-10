@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.youngmonkeys</groupId>
         <artifactId>ezyrag</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.6</version>
     </parent>
 
     <artifactId>ezyrag-socket-plugin</artifactId>
