@@ -83,6 +83,16 @@ public class RagDataChunkService {
         );
     }
 
+    public void deleteDataChunkById(long chunkId) {
+        dataChunkRepository.delete(chunkId);
+    }
+
+    public RagDataChunkModel getDataChunkByIdOrThrow(long chunkId) {
+        return entityToModelConverter.toModel(
+            getDataChunkEntityByIdOrThrow(chunkId)
+        );
+    }
+
     public RagDataChunkModel getDataChunkBySourceTypeAndSourceIdAndIndex(
         String sourceType,
         long sourceId,

@@ -22,8 +22,10 @@ import com.tvd12.ezyhttp.core.response.ResponseEntity;
 import com.tvd12.ezyhttp.server.core.annotation.Api;
 import com.tvd12.ezyhttp.server.core.annotation.Authenticated;
 import com.tvd12.ezyhttp.server.core.annotation.Controller;
+import com.tvd12.ezyhttp.server.core.annotation.DoDelete;
 import com.tvd12.ezyhttp.server.core.annotation.DoGet;
 import com.tvd12.ezyhttp.server.core.annotation.DoPost;
+import com.tvd12.ezyhttp.server.core.annotation.PathVariable;
 import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import com.tvd12.ezyhttp.server.core.annotation.RequestParam;
 import lombok.AllArgsConstructor;
@@ -85,6 +87,15 @@ public class AdminApiDataChunkController {
             lastPage,
             limit
         );
+    }
+
+    @Description("Delete a data chunk")
+    @DoDelete("/data-chunks/{id}")
+    public ResponseEntity dataChunksIdDelete(
+        @PathVariable long chunkId
+    ) throws Exception {
+        dataChunkControllerService.deleteDataChunk(chunkId);
+        return ResponseEntity.noContent();
     }
 
     @DoPost("/chunk-data")
