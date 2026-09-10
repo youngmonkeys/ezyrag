@@ -19,13 +19,12 @@ package org.youngmonkeys.ezyrag.admin.controller.service;
 import com.tvd12.ezyhttp.server.core.annotation.Service;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyarticle.admin.service.AdminPostService;
-import org.youngmonkeys.ezyarticle.sdk.entity.PostStatus;
-import org.youngmonkeys.ezyarticle.sdk.model.SavePostModel;
 import org.youngmonkeys.ezyplatform.constant.CommonContentType;
 import org.youngmonkeys.ezyplatform.exception.ResourceNotFoundException;
 import org.youngmonkeys.ezyplatform.model.PaginationModel;
 import org.youngmonkeys.ezyrag.admin.client.AdminEzyRagClient;
 import org.youngmonkeys.ezyrag.admin.controller.decorator.AdminRagDataChunkModelDecorator;
+import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagModelToModelConverter;
 import org.youngmonkeys.ezyrag.admin.converter.AdminEzyRagRequestToModelConverter;
 import org.youngmonkeys.ezyrag.admin.pagination.AdminRagDataChunkPaginationParameterConverter;
 import org.youngmonkeys.ezyrag.admin.request.AdminChunkDataRequest;
@@ -43,7 +42,6 @@ import org.youngmonkeys.ezyrag.vd.RagVectorDatabaseService;
 
 import java.util.Collections;
 
-import static org.youngmonkeys.ezyai.constant.EzyAIConstants.POST_TYPE_KNOWLEDGE_DATA;
 import static org.youngmonkeys.ezyarticle.sdk.constant.TableNames.TABLE_NAME_POST;
 import static org.youngmonkeys.ezyplatform.pagination.PaginationModelFetchers.getPaginationModelBySortOrder;
 
@@ -61,6 +59,7 @@ public class AdminRagDataChunkControllerService {
     private final AdminRagDataChunkModelDecorator dataChunkModelDecorator;
     private final AdminRagDataChunkPaginationParameterConverter
         paginationParameterConverter;
+    private final AdminEzyRagModelToModelConverter modelToModelConverter;
     private final AdminEzyRagRequestToModelConverter requestToModelConverter;
 
     public PaginationModel<AdminRagDataChunkResponse> getDataChunks(
@@ -121,12 +120,7 @@ public class AdminRagDataChunkControllerService {
             );
         }
         vectorDatabaseService.deletePoints(
-            VectorCollectionModel.builder()
-                .id(collection.getId())
-                .name(collection.getName())
-                .baseUrl(collection.getBaseUrl())
-                .vectorSize(collection.getVectorSize())
-                .build(),
+            modelToModelConverter.toModel(collection),
             Collections.singletonList(chunkId)
         );
         dataChunkService.deleteDataChunkById(chunkId);
@@ -138,12 +132,7 @@ public class AdminRagDataChunkControllerService {
     ) {
         long postId = postService.addPostFromAdmin(
             adminId,
-            SavePostModel.builder()
-                .postType(POST_TYPE_KNOWLEDGE_DATA)
-                .title(request.getTitle())
-                .content(request.getData())
-                .status(PostStatus.PUBLISHED.toString())
-                .build()
+            requestToModelConverter.toSavePostModel(request)
         );
         return RagDataSourceModel
             .builder()
