@@ -36,6 +36,7 @@ public class EzyRagEntityToModelConverter {
         }
         return RagVectorCollectionModel.builder()
             .id(entity.getId())
+            .vectorDbService(entity.getVectorDbService())
             .name(entity.getName())
             .displayName(entity.getDisplayName())
             .baseUrl(entity.getBaseUrl())

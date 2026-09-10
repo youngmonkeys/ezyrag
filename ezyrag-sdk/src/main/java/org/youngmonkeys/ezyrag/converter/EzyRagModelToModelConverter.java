@@ -18,10 +18,26 @@ package org.youngmonkeys.ezyrag.converter;
 
 import org.youngmonkeys.ezyrag.model.RagDataChunkModel;
 import org.youngmonkeys.ezyrag.model.RagDocumentModel;
+import org.youngmonkeys.ezyrag.model.RagVectorCollectionModel;
+import org.youngmonkeys.ezyrag.model.VectorCollectionModel;
 
 import java.util.Map;
 
 public class EzyRagModelToModelConverter {
+
+    public VectorCollectionModel toModel(
+        RagVectorCollectionModel model
+    ) {
+        if (model == null) {
+            return null;
+        }
+        return VectorCollectionModel.builder()
+            .id(model.getId())
+            .name(model.getName())
+            .baseUrl(model.getBaseUrl())
+            .vectorSize(model.getVectorSize())
+            .build();
+    }
 
     public RagDocumentModel toDocument(
         RagDataChunkModel chunk,

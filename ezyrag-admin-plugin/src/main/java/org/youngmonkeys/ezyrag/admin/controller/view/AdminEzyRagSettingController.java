@@ -67,6 +67,10 @@ public class AdminEzyRagSettingController {
                 "knowledgeDataBuilderName",
                 settingsService.getKnowledgeDataBuilderName()
             )
+            .addVariable(
+                "knowledgeChunkMaxLength",
+                settingsService.getKnowledgeChunkMaxLength()
+            )
             .build();
     }
 }

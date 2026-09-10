@@ -41,6 +41,9 @@ public class AdminApiEzyRagSettingController {
         ezyRagSettingService.setKnowledgeDataBuilderName(
             request.getKnowledgeDataBuilderName()
         );
+        ezyRagSettingService.setKnowledgeChunkMaxLength(
+            request.getKnowledgeChunkMaxLength()
+        );
         ezyRagSettingService.setDataChunkerName(
             request.getDataChunkerName()
         );

@@ -28,6 +28,7 @@ import static org.youngmonkeys.ezyrag.constant.EzyRagConstants.DEFAULT_DISTANCE;
 @Getter
 public class RagVectorCollectionModel {
     private long id;
+    private String vectorDbService;
     private String name;
     private String displayName;
     private String baseUrl;
